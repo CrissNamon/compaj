@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 public interface Variable<N, D> extends Constant<N, D> {
   Supplier<D> getBinder();
-  void setData(D data);
-  void bind(Supplier<D> formula);
+  void s(D data);
+  void b(Supplier<D> formula);
+  D g();
 }

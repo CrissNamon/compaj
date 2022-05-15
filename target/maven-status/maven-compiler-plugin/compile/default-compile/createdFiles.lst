@@ -1,0 +1,13 @@
+com/hiddenproject/compaj/core/translator/base/GroovyTranslatorUtils$ClassOverrider.class
+com/hiddenproject/compaj/core/utils/CompajMathUtils.class
+com/hiddenproject/compaj/core/data/DataGetter.class
+com/hiddenproject/compaj/core/translator/base/GroovyTranslatorUtils$MethodOverrider.class
+com/hiddenproject/compaj/core/model/epidemic/BaseSIRModel.class
+com/hiddenproject/compaj/core/CompaJ.class
+com/hiddenproject/compaj/core/CompaJ$ExitManager.class
+com/hiddenproject/compaj/core/translator/base/GroovyTranslatorUtils.class
+com/hiddenproject/compaj/core/translator/Translator.class
+com/hiddenproject/compaj/core/model/base/FirstOrderDifferentialModel.class
+com/hiddenproject/compaj/core/translator/base/GroovyTranslator.class
+com/hiddenproject/compaj/core/translator/base/GroovyTranslatorUtils$StringData.class
+com/hiddenproject/compaj/core/translator/TranslatorUtils.class

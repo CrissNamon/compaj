@@ -1,0 +1,48 @@
+/*
+difSIR = :DEModel("SIR")
+
+(s, i, r) = difSIR.a(["S", "I", "R"], [997d, 3d, 0d])
+
+s.b({
+    -0.5 * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R)
+})
+i.b({
+    0.5 * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R) - 0.04 * difSIR>I(1)
+})
+r.b({
+    0.04 * difSIR>I
+})
+
+difSIR.compute()
+
+println difSIR>S
+println difSIR>I
+println difSIR>R
+
+integrator = :EulerIntegrator(1)
+bsir = :BaseSIRModel(997, 3, 0)
+bsir.i(integrator)
+bsir.compute(0, 100)
+println bsir>S
+println bsir>I
+println bsir>R
+
+m = :MySIR(997, 3, 0)
+m.compute(0, 100)
+println m>S
+println m>I
+println m>R
+*/
+MySIR(s, i, r)**BaseSIRModel.v(s,p)::Double {
+    println variablesLog().size()
+    super.v(s,p)
+}
+
+m = :MySIR(997, 3, 0)
+m.compute(0, 100)
+d = 3.0
+t = "This ( 42.73) wont be replaced"
+f = 3.0g
+println m>S
+println "m>I"
+println m>R
