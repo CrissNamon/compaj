@@ -2,35 +2,28 @@ package com.hiddenproject.compaj.core.model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-import com.hiddenproject.compaj.core.data.Constant;
 import com.hiddenproject.compaj.core.data.DataGetter;
-import com.hiddenproject.compaj.core.data.Variable;
+import com.hiddenproject.compaj.core.data.Equation;
+import org.apache.commons.math3.linear.RealVector;
 
-public interface Model<N, D> extends DataGetter {
-  Variable<N, D> a(N label, D data);
-  Variable<N, D> a(N label);
-  List<Variable<N, D>> a(List<N> label, List<D> data);
-  List<Variable<N, D>> a(List<N> label);
-  void ad(N variable, D... data);
-  void a(Constant<N, D> constant);
-  @Deprecated
-  void b(String variableLabel, Supplier<D> binder);
-  @Deprecated
-  void b(String variableLabel, D fixedBinder);
-  Map<N, Variable<N, D>> variables();
-  Map<N, List<D>> variablesLog();
-  Map<N, Constant<N, D>> constants();
+public interface Model<N> extends DataGetter<Double> {
+  boolean a(Equation<N, Double> e, Double... data);
+  boolean a(Equation<N, Double> e, RealVector data);
+  List<Equation<N, Double>> a(List<N> label);
+  List<Equation<N, Double>> a(List<N> label, Double... initializer);
+  List<Equation<N, Double>> a(List<N> label, List<Double> initializer);
+  void ad(N variable, Double... data);
+  Map<N, Equation<N, Double>> eqs();
+  Map<N, List<Double>> eqslog();
+  boolean isCase(Equation<N, Double> eq);
+  boolean isCase(N eq);
 
   @Override
-  D v(String label);
+  Double v(String label);
 
   @Override
-  D v(String label, int position);
-
-  D c(N label);
+  Double v(String label, int position);
   void compute();
   String getName();
-  void bindUpdater(VoidSupplier binder);
+  void bu(VoidSupplier binder);
 }

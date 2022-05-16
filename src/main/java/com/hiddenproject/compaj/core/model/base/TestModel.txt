@@ -1,29 +1,32 @@
 /*
-difSIR = :DEModel("SIR")
+difSIR = :FirstOrderDifferentialModel("SIR")
 
-(s, i, r) = difSIR.a(["S", "I", "R"], [997d, 3d, 0d])
+(s, i, r) = difSIR.a(["S", "I", "R"], [1000d, 1d, 0d])
+
+a = 0.05
+b = 0.0005
 
 s.b({
-    -0.5 * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R)
+    -b * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R)
 })
 i.b({
-    0.5 * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R) - 0.04 * difSIR>I(1)
+    b * difSIR>S * difSIR>I / (difSIR>S + difSIR>I + difSIR>R) - a * difSIR>I(1)
 })
 r.b({
-    0.04 * difSIR>I
+    a * difSIR>I
 })
 
-difSIR.compute()
+difSIR.compute(0, 150)
 
 println difSIR>S
 println difSIR>I
 println difSIR>R
 
-integrator = :EulerIntegrator(1)
-bsir = :BaseSIRModel(997, 3, 0)
-bsir.i(integrator)
-bsir.compute(0, 100)
-println bsir>S
+//integrator = :EulerIntegrator(1)
+bsir = :BaseSIRModel(1000, 1, 0)
+//bsir.i(integrator)
+bsir.compute(0, 1500)
+println "S: " + bsir>S
 println bsir>I
 println bsir>R
 
@@ -32,7 +35,7 @@ m.compute(0, 100)
 println m>S
 println m>I
 println m>R
-*/
+
 MySIR(s, i, r)**BaseSIRModel.v(s,p)::Double {
     println variablesLog().size()
     super.v(s,p)
@@ -46,3 +49,20 @@ f = 3.0g
 println m>S
 println "m>I"
 println m>R
+*/
+integrator = :EulerIntegrator(0.1)
+bsir = :BaseSIRModel(997, 3, 0)
+bsir.i(integrator)
+bsir.compute(0, 20)
+println bsir>S
+println bsir>I
+println bsir>R
+bsir.hello()
+
+BaseSIRModel::!hello() {
+    println "GLOBAL"
+}
+
+BaseSIRModel:::test(s) { println s }
+bsir.test("LOCAL")
+bsir = :BaseSIRModel(997,3,0)

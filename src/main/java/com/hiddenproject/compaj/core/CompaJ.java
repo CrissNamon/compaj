@@ -6,22 +6,17 @@ import java.nio.file.Paths;
 import java.security.Permission;
 import com.hiddenproject.compaj.core.translator.Translator;
 import com.hiddenproject.compaj.core.translator.TranslatorUtils;
-import com.hiddenproject.compaj.core.translator.base.GroovyTranslator;
-import com.hiddenproject.compaj.core.translator.base.GroovyTranslatorUtils;
-import groovy.lang.Binding;
 
 public class CompaJ {
 
   private static CompaJ INSTANCE;
   private static ExitManager exitManager;
 
-  private final Translator translator;
-  private final TranslatorUtils translatorUtils;
+  private Translator translator;
+  private TranslatorUtils translatorUtils;
 
   private CompaJ() {
     exitManager = new ExitManager();
-    translatorUtils = new GroovyTranslatorUtils();
-    translator = new GroovyTranslator(translatorUtils);
   }
 
   public static CompaJ getInstance() {
@@ -31,8 +26,12 @@ public class CompaJ {
     return INSTANCE;
   }
 
-  public static void useCompaJSyntax(boolean f) {
-    GroovyTranslatorUtils.enableRawGroovy(!f);
+  public void setTranslator(Translator translator) {
+    this.translator = translator;
+  }
+
+  public void useCompaJSyntax(boolean f) {
+    translatorUtils.useRawGroovy(!f);
   }
 
   public static void readFile(String url) throws IOException {
@@ -47,10 +46,6 @@ public class CompaJ {
   public static void exit() {
     exitManager.reset();
     System.exit(0);
-  }
-
-  public static String getTranslatorBindings() {
-    return
   }
 
   private static class ExitManager extends SecurityManager {

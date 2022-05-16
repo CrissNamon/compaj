@@ -3,7 +3,8 @@ package com.hiddenproject.compaj.core.model.epidemic;
 import java.util.HashMap;
 import java.util.Map;
 import com.hiddenproject.compaj.core.data.DataGetter;
-import com.hiddenproject.compaj.core.data.Variable;
+import com.hiddenproject.compaj.core.data.Equation;
+import com.hiddenproject.compaj.core.data.base.BaseEquation;
 import com.hiddenproject.compaj.core.model.base.FirstOrderDifferentialModel;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
@@ -11,14 +12,12 @@ public class BaseSIRModel implements DataGetter<Double> {
 
   private final FirstOrderDifferentialModel model;
 
-  private final Map<String, Double> consts;
+  private final Double a = 0.04;
+  private final Double b = 0.4;
 
-  private final double initA = 0.04;
-  private final double initB = 0.5;
-
-  private Variable<String, Double> S;
-  private Variable<String, Double> I;
-  private Variable<String, Double> R;
+  private Equation<String, Double> S;
+  private Equation<String, Double> I;
+  private Equation<String, Double> R;
 
   public BaseSIRModel(Double sInit, Double iInit, Double rInit) {
     this("BaseSIRModel", sInit, iInit, rInit);
@@ -26,19 +25,15 @@ public class BaseSIRModel implements DataGetter<Double> {
 
   public BaseSIRModel(String name, Double sInit, Double iInit, Double rInit) {
     model = new FirstOrderDifferentialModel(name);
-    consts = new HashMap<>();
-    consts.put("a", initA);
-    consts.put("b", initB);
-    S = model.a("S", sInit);
+    S = new BaseEquation("S");
+    I = new BaseEquation("I");
+    R = new BaseEquation("R");
+    model.a(S, sInit);
+    model.a(I, iInit);
+    model.a(R, rInit);
     S.b(this::susceptible);
-    I = model.a("I", iInit);
     I.b(this::infected);
-    R = model.a("R", rInit);
     R.b(this::recovered);
-  }
-
-  public void sC(String name, Double data) {
-    consts.put(name, data);
   }
 
   public void compute() {
@@ -54,17 +49,17 @@ public class BaseSIRModel implements DataGetter<Double> {
   }
 
   public Double susceptible() {
-    return -consts.get("b") * model.v("S") * model.v("I") / (model.v("S") + model.v("I") + model.v("R"));
+    return -b * model.v("S") * model.v("I") / (model.v("S") + model.v("I") + model.v("R"));
   }
 
   public Double infected() {
-    return consts.get("b") * model.v("S") * model.v("I")
+    return b * model.v("S") * model.v("I")
         / (model.v("S") + model.v("I") + model.v("R"))
-        - consts.get("a") * model.v("I");
+        - a * model.v("I");
   }
 
   public Double recovered() {
-    return consts.get("a") * model.v("I");
+    return a * model.v("I");
   }
 
   @Override
@@ -75,5 +70,10 @@ public class BaseSIRModel implements DataGetter<Double> {
   @Override
   public Double v(String label, int position) {
     return model.v(label, position);
+  }
+
+  @Override
+  public String toString() {
+    return model.toString();
   }
 }

@@ -1,127 +1,115 @@
 package com.hiddenproject.compaj.core.model.base;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import com.hiddenproject.compaj.core.data.Constant;
-import com.hiddenproject.compaj.core.data.Variable;
-import com.hiddenproject.compaj.core.data.base.BaseVariable;
+import com.hiddenproject.compaj.core.data.Equation;
+import com.hiddenproject.compaj.core.data.base.BaseEquation;
 import com.hiddenproject.compaj.core.model.Model;
 import com.hiddenproject.compaj.core.model.VoidSupplier;
-import groovy.lang.GroovyObject;
-import groovy.lang.GroovyObjectSupport;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.linear.RealVector;
 
-public class BaseModel implements Model<String, Double> {
+public class BaseModel implements Model<String> {
 
   private final String name;
 
-  private Map<String, Constant<String, Double>> constants;
-  protected Map<String, Variable<String, Double>> variables;
-  private Map<String, List<Double>> variablesLog;
+  protected Map<String, Equation<String, Double>> equationMap;
+  private Map<String, List<Double>> equationsLog;
 
   private VoidSupplier updateBinder;
 
   public BaseModel(String name) {
-    this.variables = new HashMap<>();
-    this.constants = new HashMap<>();
-    this.variablesLog = new HashMap<>();
+    this.equationMap = new HashMap<>();
+    this.equationsLog = new HashMap<>();
     this.name = name;
     this.updateBinder = this::defaultUpdater;
   }
 
-  public static BaseModel from(Model<String, Double> startModel) {
+  public static BaseModel from(Model<String> startModel) {
     BaseModel model = new BaseModel(startModel.getName());
-    model.variables = new HashMap<>(startModel.variables());
-    model.constants = new HashMap<>(startModel.constants());
-    model.variablesLog = new HashMap<>(startModel.variablesLog());
+    model.equationMap = new HashMap<>(startModel.eqs());
+    model.equationsLog = new HashMap<>(startModel.eqslog());
     return model;
   }
 
   @Override
-  public Variable<String, Double> a(String variable, Double data) {
-    Variable<String, Double> v = new BaseVariable(variable, data);
-    variables.put(variable, v);
-    variablesLog.put(variable, new ArrayList<>());
-    variablesLog.get(variable).add(data);
-    return v;
-  }
-
-  @Override
-  public Variable<String, Double> a(String label) {
-    return a(label, 0.0);
-  }
-
-  @Override
-  public List<Variable<String, Double>> a(List<String> label, List<Double> data) {
-    List<Variable<String, Double>> vars = new ArrayList<>();
-    IntStream.range(0, label.size())
-        .forEach(i -> vars.add(
-            a(label.get(i), data.get(i))
-        ));
-    return vars;
-  }
-
-  @Override
-  public List<Variable<String, Double>> a(List<String> label) {
-    List<Variable<String, Double>> vars = new ArrayList<>();
-    IntStream.range(0, label.size())
-        .forEach(i -> vars.add(
-            a(label.get(i))
-        ));
-    return vars;
-  }
-
-  @Override
-  public void ad(String variable, Double... data) {
-    for(Double d : data) {
-      variablesLog.get(variable).add(d);
+  public boolean a(Equation<String, Double> e, Double... data) {
+    if(equationMap.containsKey(e.getName())) {
+      return false;
     }
-    variables.get(variable).s(data[data.length-1]);
+    equationMap.put(e.getName(), e);
+    equationsLog.put(e.getName(), Arrays.stream(data).collect(Collectors.toList()));
+    return true;
   }
 
   @Override
-  public void a(Constant<String, Double> constant) {
-    constants.putIfAbsent(constant.getName(), constant);
+  public boolean a(Equation<String, Double> e, RealVector data) {
+    return a(e, ArrayUtils.toObject(data.toArray()));
   }
 
   @Override
-  public void b(String variableLabel, Double fixedBinder) {
-    variables().get(variableLabel).b(() -> fixedBinder);
+  public List<Equation<String, Double>> a(List<String> label) {
+    return label.stream().map(l -> {
+      Equation<String, Double> e = new BaseEquation(l);
+      a(e);
+      ad(l);
+      return e;
+    })
+        .collect(Collectors.toList());
   }
 
   @Override
-  public Map<String, Variable<String, Double>> variables() {
-    return Collections.unmodifiableMap(variables);
+  public List<Equation<String, Double>> a(List<String> label, Double... initializer) {
+    IntStream.range(0, label.size())
+        .forEachOrdered(i -> {
+          String l = label.get(i);
+          Equation<String, Double> e = new BaseEquation(l);
+          a(e);
+          ad(l, initializer[i]);
+        });
+    return new ArrayList<>(eqs().values());
   }
 
   @Override
-  public Map<String, List<Double>> variablesLog() {
-    return variablesLog;
+  public List<Equation<String, Double>> a(List<String> label, List<Double> initializer) {
+    return a(label, initializer.toArray(Double[]::new));
   }
 
   @Override
-  public Map<String, Constant<String, Double>> constants() {
-    return Collections.unmodifiableMap(constants);
+  public void ad(String label, Double... data) {
+    equationsLog.get(label).addAll(List.of(data));
+    //equationMap.get(label).b(data[data.length-1]);
+  }
+
+  @Override
+  public Map<String, Equation<String, Double>> eqs() {
+    return Collections.unmodifiableMap(equationMap);
+  }
+
+  @Override
+  public Map<String, List<Double>> eqslog() {
+    return equationsLog;
+  }
+
+  @Override
+  public boolean isCase(Equation<String, Double> eq) {
+    return eqs().containsKey(eq.getName());
+  }
+
+  @Override
+  public boolean isCase(String eq) {
+    return eqs().containsKey(eq);
   }
 
   @Override
   public Double v(String label) {
-    return variablesLog.get(label).get(variablesLog.get(label).size()-1);
+    return v(label, 1);
   }
 
   @Override
   public Double v(String label, int position) {
-    return variablesLog.get(label).get(variablesLog.get(label).size() - position);
-  }
-
-  @Override
-  public final void b(String variableLabel, Supplier<Double> binder) {
-    variables.get(variableLabel).b(binder);
-  }
-
-  @Override
-  public Double c(String label) {
-    return constants.get(label).getData();
+    return equationsLog.get(label).get(equationsLog.get(label).size() - position);
   }
 
   @Override
@@ -135,21 +123,28 @@ public class BaseModel implements Model<String, Double> {
   }
 
   @Override
-  public void bindUpdater(VoidSupplier binder) {
+  public void bu(VoidSupplier binder) {
     updateBinder = binder;
   }
 
+  @Override
+  public String toString() {
+    return "BaseModel{" +
+        "name='" + name + '\'' +
+        ", equationMap=" + equationMap +
+        '}';
+  }
+
   private void defaultUpdater() {
-    Map<String, Variable<String, Double>> tmp = new HashMap<>(variables());
-    for (Map.Entry<String, Variable<String, Double>> entry : variables().entrySet()) {
-      Variable<String, Double> val = new BaseVariable(entry.getKey(), entry.getValue().getBinder().get());
-      val.b(entry.getValue().getBinder());
+    Map<String, Equation<String, Double>> tmp = new HashMap<>(eqs());
+    for (Map.Entry<String, Equation<String, Double>> entry : eqs().entrySet()) {
+      Equation<String, Double> val = new BaseEquation(entry.getKey(), entry.getValue().getBinder());
       tmp.put(entry.getKey(), val);
     }
-    for (Map.Entry<String, Variable<String, Double>> entry : tmp.entrySet()) {
-      variablesLog.get(entry.getKey()).add(entry.getValue().getData());
+    for (Map.Entry<String, Equation<String, Double>> entry : tmp.entrySet()) {
+      equationsLog.get(entry.getKey()).add(entry.getValue().g());
     }
-    variables.putAll(tmp);
+    equationMap.putAll(tmp);
     tmp.clear();
   }
 }

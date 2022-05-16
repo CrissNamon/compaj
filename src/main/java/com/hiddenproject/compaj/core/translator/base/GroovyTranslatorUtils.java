@@ -6,68 +6,81 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.hiddenproject.compaj.core.translator.Translator;
+import com.hiddenproject.compaj.core.translator.CodeCheck;
+import com.hiddenproject.compaj.core.translator.CodeTranslation;
 import com.hiddenproject.compaj.core.translator.TranslatorUtils;
-import org.junit.internal.Classes;
+import groovy.lang.GroovyRuntimeException;
 
 public class GroovyTranslatorUtils implements TranslatorUtils {
 
-  private final static List<String> imports;
-  private static boolean useRawGroovy;
+  private final static List<String> metaClassChanges;
+  private boolean useRawGroovy;
 
+  private List<CodeCheck> syntaxCheckers;
+  private List<CodeTranslation> codeTranslations;
   private List<StringData> strings;
 
-  static {
-    imports = new ArrayList<>();
-    imports.add("import com.hiddenproject.compaj.core.CompaJ");
-    imports.add("import com.hiddenproject.compaj.core.data.*");
-    imports.add("import com.hiddenproject.compaj.core.data.base.*");
-    imports.add("import com.hiddenproject.compaj.core.model.base.*");
-    imports.add("import com.hiddenproject.compaj.core.model.*");
-    imports.add("import com.hiddenproject.compaj.core.model.epidemic.*");
-    imports.add("import org.apache.commons.math3.ode.nonstiff.*");
-    imports.add("import org.apache.commons.math3.linear.*");
-    imports.add("import static java.lang.Math.*");
-    imports.add("import static com.hiddenproject.compaj.core.utils.CompajMathUtils.*");
-    imports.add("import static com.hiddenproject.compaj.core.CompaJ.exit");
-    imports.add("import java.util.function.Consumer");
-  }
-
-  public GroovyTranslatorUtils() {
+  {
+    syntaxCheckers = new ArrayList<>();
+    codeTranslations = new ArrayList<>();
     strings = new ArrayList<>();
   }
 
-  public String translate(String script, Classes[] cache) {
-    if(!useRawGroovy) {
-      script = translateRemoveComments(script);
-      updateStrings(script);
-      script = translateNewObjects(script);
-      updateStrings(script);
-      script = translateDoubleSuffix(script);
-      updateStrings(script);
-      //script = translateEmptyFunctionalInterfaces(script);
-      script = translateReplaceModelVar(script);
-      updateStrings(script);
-      script = translateOverrideMethods(script);
-      script = translateAddImports(script);
-      script = script
-          + "\nClass klass = this.getClass().getName()\n" +
-          "";
-    }
-    System.out.println("EVALUATING: " + script);
-    return script;
+  {
+    syntaxCheckers.add(this::isMetaClassChangeAllowed);
+  }
+
+  {
+    codeTranslations.add(this::translateRemoveComments);
+    codeTranslations.add(this::translateAddMetaClassChanges);
+    codeTranslations.add(this::translateGlobalMetaClassMethod);
+    codeTranslations.add(this::translateNewObjects);
+    codeTranslations.add(this::translateLocalMetaClassMethod);
+    codeTranslations.add(this::translateDoubleSuffix);
+    codeTranslations.add(this::translateReplaceModelVar);
+    codeTranslations.add(this::translateOverrideMethods);
+  }
+
+  static {
+    metaClassChanges = new ArrayList<>();
+    //metaClassChanges.add("Double.metaClass.plus = { Variable v -> v.g() + doubleValue() }");
+    metaClassChanges.add("Double.metaClass.minus = { Variable v -> v.g() - doubleValue() }");
+    metaClassChanges.add("Double.metaClass.div = { Variable v -> v.g() / doubleValue() }");
+    metaClassChanges.add("Double.metaClass.multiply = { Variable v -> v.g() * doubleValue() }");
+    metaClassChanges.add("Integer.metaClass.plus = { Variable v -> v.g() + doubleValue() }");
+    metaClassChanges.add("Integer.metaClass.minus = { Variable v -> v.g() - doubleValue() }");
+    metaClassChanges.add("Integer.metaClass.div = { Variable v -> v.g() / doubleValue() }");
+    metaClassChanges.add("Integer.metaClass.multiply = { Variable v -> v.g() * doubleValue() }");
   }
 
   public String translate(String script) {
-    return translate(script, new Classes[]{});
+    if(!useRawGroovy) {
+      applySyntaxCheck(script);
+      script = applyTranslations(script);
+    }
+   // System.out.println("EVALUATING: " + script);
+    return script;
   }
 
-  public void startUp(Translator translator) {
-    //translator.evaluate(translateAddImports(""));
-  }
-
-  public static void enableRawGroovy(boolean f) {
+  public void useRawGroovy(boolean f) {
     useRawGroovy = f;
+  }
+
+  public boolean isUseRawGroovy() {
+    return useRawGroovy;
+  }
+
+  private String applyTranslations(String script) {
+    for(CodeTranslation codeTranslation : codeTranslations) {
+      script = codeTranslation.translate(script);
+    }
+    return script;
+  }
+
+  private void applySyntaxCheck(String script) {
+    for(CodeCheck codeCheck : syntaxCheckers) {
+      codeCheck.check(script);
+    }
   }
 
   private List<StringData> getAllStrings(String script) {
@@ -103,76 +116,145 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
         offset++;
       }
     }
+    updateStrings(script);
     return script;
   }
 
   private String translateNewObjects(String script) {
     Pattern p = Pattern.compile("(?<![:\\[])(:)(\\w++)(\\(.*\\))?(?![ ]*[{\\]])");
     Matcher m = p.matcher(script);
-    int offset = 0;
+    StringBuilder sb = new StringBuilder();
     while(m.find()) {
       if(!isLexemeInString(m.start(), m.end())) {
-        int start = m.start() + offset;
-        int end = m.end() + offset;
-        String params = m.group(3);
-        if(params == null) {
-          params = "()";
-        }
-        script = script.substring(0, start)
-            + "new "
-            + m.group(2)
-            + params
-            + script.substring(end);
-        offset++;
+        String r = "new " + m.group().substring(1);
+        m.appendReplacement(sb, r);
       }
     }
-    return script;
+    m.appendTail(sb);
+    updateStrings(script);
+    return sb.toString();
   }
 
-  private String translateEmptyFunctionalInterfaces(String script) {
-    return script.replaceAll("(?<=[\\( ])(::)(?=[\\s\\S]*\\))", "()->");
-  }
-
-  private String translateAddImports(String script) {
-    return imports.stream().reduce((x, y) -> x + "\n" + y).orElse("") + "\n\n" + script;
+  private String translateAddMetaClassChanges(String script) {
+    return metaClassChanges.stream().reduce((x, y) -> x + "\n" + y).orElse("") + "\n\n" + script;
   }
 
   private String translateReplaceModelVar(String script) {
-    Pattern p = Pattern.compile("(?>(\\w+)(?>>)(\\w+)(?:\\(([+\\-0-9]+)\\))?)");
+    Pattern p = Pattern.compile("(?>(\\w+)[ ]*(?>>)[\\s]*(\\w+)(?:\\(([+\\-0-9]+)\\))?)");
     Matcher m = p.matcher(script);
+    StringBuilder sb = new StringBuilder();
     while(m.find()) {
       if(!isLexemeInString(m.start(), m.end())) {
-        StringBuilder statement = new StringBuilder(m.group(1))
-            .append(".v(\"")
-            .append(m.group(2))
-            .append("\"");
-        if(m.group(3) != null) {
-          statement.append(", ")
-              .append(m.group(3));
+        String r = m.group(1)
+            + ".v(\""
+            + m.group(2)
+            + "\"";
+        if (m.group(3) != null) {
+          r += ", "
+              + m.group(3);
         }
-        statement.append(")");
-        script = script.replace(m.group(), statement.toString());
+        r += ")";
+        m.appendReplacement(sb, r);
       }
     }
-    return script;
-    /*
-    return script.replaceAll("(?>(\\w+)(?>\\>)(\\w+)(?!\\([0-9]+\\)))", "$1.v(\"$2\")")
-        .replaceAll("(\\w+)(?>\\>)(\\w)(?>\\(([1-9]+)\\))", "$1.v(\"$2\", $3)");
-
-     */
+    m.appendTail(sb);
+    updateStrings(script);
+    return sb.toString();
   }
 
   private String translateRemoveComments(String script) {
-    return script.replaceAll("\\/\\*[\\s\\S]*\\*\\/", "");
+    script =  script.replaceAll("\\/\\*[\\s\\S]*\\*\\/", "");
+    updateStrings(script);
+    return script;
+  }
+
+  private boolean isMetaClassChangeAllowed(String className) {
+    return true;
+  }
+
+  private void checkExplicitMetaClassChanges(String script) {
+    Pattern p = Pattern.compile("\\w+\\.metaClass(?:\\.\\w+)?");
+    Matcher m = p.matcher(script);
+    while(m.find()) {
+      if(isLexemeInString(m.start(), m.end())) {
+        continue;
+      }
+      throw new GroovyRuntimeException("Explicit MetaClass changes are not allowed!\n" + m.group());
+    }
+  }
+
+  private String translateLocalMetaClassMethod(String script) {
+    Pattern p = Pattern.compile("(\\w+):::((\\w+)\\(([\\w, .]*)\\))[\\n ]*\\{");
+    Matcher m = p.matcher(script);
+    StringBuilder sb = new StringBuilder();
+    while(m.find()) {
+      if(isLexemeInString(m.start(), m.end())) {
+        continue;
+      }
+      if(!isMetaClassChangeAllowed(m.group(1))) {
+        throw new GroovyRuntimeException("Extensions for class " + m.group(1) + " is now allowed");
+      }
+      String r = m.group(1) + ".metaClass." + m.group(3)
+          + " = { " + m.group(4).trim()
+          + " -> ";
+      m.appendReplacement(sb, r);
+    }
+    m.appendTail(sb);
+    updateStrings(script);
+    return sb.toString();
+  }
+
+  private String translateGlobalMetaClassMethod(String script) {
+    Pattern p = Pattern.compile("(\\w+)::!((\\w+)\\(([\\w, .]*)\\))[\\n ]*\\{");
+    Matcher m = p.matcher(script);
+    String tmp = script;
+    Map<String, List<MethodOverrider>> methodOverriderMap = new HashMap<>();
+    while(m.find()) {
+      if(isLexemeInString(m.start(), m.end())) {
+        continue;
+      }
+      if(!isMetaClassChangeAllowed(m.group(1))) {
+        throw new GroovyRuntimeException("Extensions for class " + m.group(1) + " is now allowed");
+      }
+      int o = 1;
+      int c = 0;
+      int i = m.end()+1;
+      while(o!=c && i < tmp.length()) {
+        if(tmp.charAt(i) == '}') c++;
+        if(tmp.charAt(i) == '{') o++;
+        i++;
+      }
+      String body = "";
+      if(i<=tmp.length()) {
+        body = tmp.substring(m.end(), i);
+      }else{
+        throw new RuntimeException("UNCLOSED BREAKETS");
+      }
+      script = script.replace(m.group() + body, "");
+      methodOverriderMap.putIfAbsent(m.group(1), new ArrayList<>());
+      methodOverriderMap.get(m.group(1)).add(new MethodOverrider(m.group(3), m.group(4), body));
+    }
+    for(Map.Entry<String, List<MethodOverrider>> entry : methodOverriderMap.entrySet()) {
+      for(MethodOverrider methodOverrider : entry.getValue()) {
+        script = entry.getKey() + ".metaClass." + methodOverrider.name + " = { "
+            + methodOverrider.getReturnType() + " -> "
+            + methodOverrider.getBody() + "\n" + script;
+      }
+    }
+    updateStrings(script);
+    return script;
   }
 
   private String translateOverrideMethods(String script) {
-    Pattern p = Pattern.compile("(\\w+)(\\([\\w, ]*\\))\\*\\*(\\w+)\\.(\\w+(\\([\\w, .]*\\)))(?>::(\\w+))?[ ]*\\{");
+    Pattern p = Pattern.compile("(\\w+)(\\([\\w, ]*\\))\\*\\*(\\w+)\\.(\\w+(\\([\\w, .]*\\)))(?>::(\\w+))?[\n ]*\\{");
     Matcher m = p.matcher(script);
     Map<String, ClassOverrider> extenders = new HashMap<>();
     Map<String, List<MethodOverrider>> methodOverriderMap = new HashMap<>();
     String tmp = script;
     while(m.find()) {
+      if(isLexemeInString(m.start(), m.end())) {
+        continue;
+      }
       extenders.putIfAbsent(m.group(1), new ClassOverrider(m.group(1), m.group(3), m.group(2)));
       methodOverriderMap.putIfAbsent(m.group(1), new ArrayList<>());
       String returnType = m.group(6);
@@ -204,6 +286,7 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
       overriders.append(constructClass(entry.getKey(), entry.getValue().getBase(), entry.getValue().getConstructor(), methodOverriderMap.get(entry.getKey())));
     }
     script = overriders.toString() + script.replaceAll("(?m)^[ \\t]*\\r?\\n", "");
+    updateStrings(script);
     return script;
   }
 
