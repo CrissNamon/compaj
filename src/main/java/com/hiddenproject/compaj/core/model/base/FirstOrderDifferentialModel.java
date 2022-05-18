@@ -58,21 +58,6 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
   }
 
   @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label) {
-    return baseModel.a(label);
-  }
-
-  @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label, Double... initializer) {
-    return baseModel.a(label, initializer);
-  }
-
-  @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label, List<Double> initializer) {
-    return baseModel.a(label, initializer);
-  }
-
-  @Override
   public void ad(String variable, Double... data) {
     baseModel.ad(variable, data);
   }

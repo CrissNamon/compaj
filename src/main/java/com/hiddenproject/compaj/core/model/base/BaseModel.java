@@ -49,34 +49,6 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label) {
-    return label.stream().map(l -> {
-      NamedFunction<String, Double, Double> e = new RealFunction(l);
-      a(e);
-      ad(l);
-      return e;
-    })
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label, Double... initializer) {
-    IntStream.range(0, label.size())
-        .forEachOrdered(i -> {
-          String l = label.get(i);
-          NamedFunction<String, Double, Double> e = new RealFunction(l);
-          a(e);
-          ad(l, initializer[i]);
-        });
-    return new ArrayList<>(fns().values());
-  }
-
-  @Override
-  public List<NamedFunction<String, Double, Double>> a(List<String> label, List<Double> initializer) {
-    return a(label, initializer.toArray(Double[]::new));
-  }
-
-  @Override
   public void ad(String label, Double... data) {
     equationsLog.get(label).addAll(List.of(data));
     //equationMap.get(label).b(data[data.length-1]);
