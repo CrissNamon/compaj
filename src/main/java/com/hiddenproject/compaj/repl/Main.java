@@ -1,11 +1,14 @@
 package com.hiddenproject.compaj.repl;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Scanner;
-import com.hiddenproject.compaj.core.CompaJ;
-import com.hiddenproject.compaj.core.translator.Translator;
-import com.hiddenproject.compaj.core.translator.TranslatorUtils;
-import com.hiddenproject.compaj.core.translator.base.GroovyTranslator;
+import com.hiddenproject.compaj.core.data.NamedFunction;
+import com.hiddenproject.compaj.repl.utils.ReplTranslatorUtils;
+import com.hiddenproject.compaj.translator.Translator;
+import com.hiddenproject.compaj.translator.TranslatorUtils;
+import com.hiddenproject.compaj.translator.base.GroovyTranslator;
 import com.hiddenproject.compaj.framework.annotation.Simulation;
 
 @Simulation(epidemic = "Test")
@@ -15,7 +18,7 @@ public class Main {
     TranslatorUtils translatorUtils = new ReplTranslatorUtils();
     Translator translator = new GroovyTranslator(translatorUtils);
     CompaJ.getInstance().setTranslator(translator);
-    CompaJ.readFile("");
+    //CompaJ.readFile("");
     Scanner sc = new Scanner(System.in);
     do{
       System.out.print("> ");
@@ -32,5 +35,6 @@ public class Main {
         System.out.println(e.getMessage());
       }
     }while(true);
+
   }
 }

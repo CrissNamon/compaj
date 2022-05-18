@@ -1,12 +1,12 @@
 package com.hiddenproject.compaj.core.model.base;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import com.hiddenproject.compaj.core.data.Equation;
+import java.util.function.Consumer;
+import com.hiddenproject.compaj.core.data.NamedFunction;
 import com.hiddenproject.compaj.core.model.Model;
-import com.hiddenproject.compaj.core.model.VoidSupplier;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.linear.RealVector;
@@ -14,12 +14,13 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 
-public class FirstOrderDifferentialModel implements Model<String>, FirstOrderDifferentialEquations {
+public class FirstOrderDifferentialModel implements Model<String, String, Double, Double>, FirstOrderDifferentialEquations {
 
-  public static final FirstOrderIntegrator DEFAULT_INTEGRATOR = new DormandPrince853Integrator(1.0e-8, 100.0, 1.0e-10, 1.0e-10);
+  public static final FirstOrderIntegrator DEFAULT_INTEGRATOR = new DormandPrince853Integrator(1.0e-8, 0.01, 1.0e-10, 1.0e-10);
 
   private final BaseModel baseModel;
   private FirstOrderIntegrator integrator;
+  private boolean f;
 
   public FirstOrderDifferentialModel(String name) {
     this.baseModel = new BaseModel(name);
@@ -29,45 +30,45 @@ public class FirstOrderDifferentialModel implements Model<String>, FirstOrderDif
 
   @Override
   public int getDimension() {
-    return eqs().size();
+    return fns().size();
   }
 
   @Override
   public void computeDerivatives(double v, double[] y, double[] yDot) throws MaxCountExceededException, DimensionMismatchException {
     int i = 0;
-    for(Equation<String, Double> entry : eqs().values()) {
-      yDot[i] = entry.g();
+    for(NamedFunction<String, Double, Double> entry : fns().values()) {
+      yDot[i] = entry.value();
       i++;
     }
     i = 0;
-    for(Equation<String, Double> entry : eqs().values()) {
+    for(NamedFunction<String, Double, Double> entry : fns().values()) {
       ad(entry.getName(), y[i]);
       i++;
     }
   }
 
   @Override
-  public boolean a(Equation<String, Double> e, Double... data) {
+  public boolean a(NamedFunction<String, Double, Double> e, Double... data) {
     return baseModel.a(e, data);
   }
 
   @Override
-  public boolean a(Equation<String, Double> e, RealVector data) {
+  public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
     return baseModel.a(e, data);
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label) {
     return baseModel.a(label);
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label, Double... initializer) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label, Double... initializer) {
     return baseModel.a(label, initializer);
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label, List<Double> initializer) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label, List<Double> initializer) {
     return baseModel.a(label, initializer);
   }
 
@@ -77,38 +78,48 @@ public class FirstOrderDifferentialModel implements Model<String>, FirstOrderDif
   }
 
   @Override
-  public Map<String, Equation<String, Double>> eqs() {
-    return baseModel.eqs();
+  public Map<String, NamedFunction<String, Double, Double>> fns() {
+    return baseModel.fns();
   }
 
   @Override
-  public Map<String, List<Double>> eqslog() {
-    return baseModel.eqslog();
+  public Map<String, List<Double>> fnslog() {
+    return baseModel.fnslog();
   }
 
   @Override
-  public boolean isCase(Equation<String, Double> eq) {
-    return eqs().containsKey(eq.getName());
+  public boolean isCase(NamedFunction<String, Double, Double> eq) {
+    return fns().containsKey(eq.getName());
   }
 
   @Override
   public boolean isCase(String eq) {
-    return eqs().containsKey(eq);
+    return fns().containsKey(eq);
   }
 
   @Override
-  public Double v(String label) {
-    return baseModel.v(label);
+  public void putAt(String label, NamedFunction<String, Double, Double> e) {
+    a(e);
   }
 
   @Override
-  public Double v(String label, int position) {
-    return baseModel.v(label, position);
+  public Double getAt(String label) {
+    return baseModel.getAt(label);
   }
 
   @Override
-  public void compute() {
+  public Double getAt(String label, int position) {
+    return baseModel.getAt(label, position);
+  }
+
+  @Override
+  public void call(Map<String, Double[]> data) {
     compute(0d, 100d);
+  }
+
+  @Override
+  public void call() {
+    call(new HashMap<>());
   }
 
   @Override
@@ -117,10 +128,10 @@ public class FirstOrderDifferentialModel implements Model<String>, FirstOrderDif
   }
 
   public void compute(Double lowBound, Double highBound) {
-    double[] y = new double[eqs().size()];
+    double[] y = new double[fns().size()];
     int i = 0;
-    for(Equation<String, Double> entry : eqs().values()) {
-      y[i] = v(entry.getName());
+    for(NamedFunction<String, Double, Double> entry : fns().values()) {
+      y[i] = getAt(entry.getName());
       i++;
     }
     integrator.integrate(this, lowBound, y, highBound, y);
@@ -136,7 +147,17 @@ public class FirstOrderDifferentialModel implements Model<String>, FirstOrderDif
   }
 
   @Override
-  public void bu(VoidSupplier binder) {
+  public void clear() {
+    baseModel.clear();
+  }
+
+  @Override
+  public void clear(String f) {
+    baseModel.clear(f);
+  }
+
+  @Override
+  public void bu(Consumer<Map<String, Double[]>> binder) {
     baseModel.bu(binder);
   }
 }

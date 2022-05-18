@@ -1,23 +1,23 @@
 package com.hiddenproject.compaj.core.model.base;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import com.hiddenproject.compaj.core.data.Equation;
-import com.hiddenproject.compaj.core.data.base.BaseEquation;
+import com.hiddenproject.compaj.core.data.NamedFunction;
+import com.hiddenproject.compaj.core.data.base.RealFunction;
 import com.hiddenproject.compaj.core.model.Model;
-import com.hiddenproject.compaj.core.model.VoidSupplier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.linear.RealVector;
 
-public class BaseModel implements Model<String> {
+public class BaseModel implements Model<String, String, Double, Double> {
 
   private final String name;
 
-  protected Map<String, Equation<String, Double>> equationMap;
+  protected Map<String, NamedFunction<String, Double, Double>> equationMap;
   private Map<String, List<Double>> equationsLog;
 
-  private VoidSupplier updateBinder;
+  private Consumer<Map<String, Double[]>> updateBinder;
 
   public BaseModel(String name) {
     this.equationMap = new HashMap<>();
@@ -26,15 +26,15 @@ public class BaseModel implements Model<String> {
     this.updateBinder = this::defaultUpdater;
   }
 
-  public static BaseModel from(Model<String> startModel) {
+  public static BaseModel from(Model<String, String, Double, Double> startModel) {
     BaseModel model = new BaseModel(startModel.getName());
-    model.equationMap = new HashMap<>(startModel.eqs());
-    model.equationsLog = new HashMap<>(startModel.eqslog());
+    model.equationMap = new HashMap<>(startModel.fns());
+    model.equationsLog = new HashMap<>(startModel.fnslog());
     return model;
   }
 
   @Override
-  public boolean a(Equation<String, Double> e, Double... data) {
+  public boolean a(NamedFunction<String, Double, Double> e, Double... data) {
     if(equationMap.containsKey(e.getName())) {
       return false;
     }
@@ -44,14 +44,14 @@ public class BaseModel implements Model<String> {
   }
 
   @Override
-  public boolean a(Equation<String, Double> e, RealVector data) {
+  public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
     return a(e, ArrayUtils.toObject(data.toArray()));
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label) {
     return label.stream().map(l -> {
-      Equation<String, Double> e = new BaseEquation(l);
+      NamedFunction<String, Double, Double> e = new RealFunction(l);
       a(e);
       ad(l);
       return e;
@@ -60,19 +60,19 @@ public class BaseModel implements Model<String> {
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label, Double... initializer) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label, Double... initializer) {
     IntStream.range(0, label.size())
         .forEachOrdered(i -> {
           String l = label.get(i);
-          Equation<String, Double> e = new BaseEquation(l);
+          NamedFunction<String, Double, Double> e = new RealFunction(l);
           a(e);
           ad(l, initializer[i]);
         });
-    return new ArrayList<>(eqs().values());
+    return new ArrayList<>(fns().values());
   }
 
   @Override
-  public List<Equation<String, Double>> a(List<String> label, List<Double> initializer) {
+  public List<NamedFunction<String, Double, Double>> a(List<String> label, List<Double> initializer) {
     return a(label, initializer.toArray(Double[]::new));
   }
 
@@ -83,38 +83,48 @@ public class BaseModel implements Model<String> {
   }
 
   @Override
-  public Map<String, Equation<String, Double>> eqs() {
+  public Map<String, NamedFunction<String, Double, Double>> fns() {
     return Collections.unmodifiableMap(equationMap);
   }
 
   @Override
-  public Map<String, List<Double>> eqslog() {
+  public Map<String, List<Double>> fnslog() {
     return equationsLog;
   }
 
   @Override
-  public boolean isCase(Equation<String, Double> eq) {
-    return eqs().containsKey(eq.getName());
+  public boolean isCase(NamedFunction<String, Double, Double> eq) {
+    return fns().containsKey(eq.getName());
   }
 
   @Override
   public boolean isCase(String eq) {
-    return eqs().containsKey(eq);
+    return fns().containsKey(eq);
   }
 
   @Override
-  public Double v(String label) {
-    return v(label, 1);
+  public void putAt(String label, NamedFunction<String, Double, Double> e) {
+    a(e);
   }
 
   @Override
-  public Double v(String label, int position) {
+  public Double getAt(String label) {
+    return getAt(label, 1);
+  }
+
+  @Override
+  public Double getAt(String label, int position) {
     return equationsLog.get(label).get(equationsLog.get(label).size() - position);
   }
 
   @Override
-  public void compute() {
-    updateBinder.get();
+  public void call(Map<String, Double[]> data) {
+    updateBinder.accept(data);
+  }
+
+  @Override
+  public void call() {
+    call(new HashMap<>());
   }
 
   @Override
@@ -123,7 +133,17 @@ public class BaseModel implements Model<String> {
   }
 
   @Override
-  public void bu(VoidSupplier binder) {
+  public void clear() {
+    equationsLog.values().forEach(List::clear);
+  }
+
+  @Override
+  public void clear(String f) {
+    equationsLog.get(f).clear();
+  }
+
+  @Override
+  public void bu(Consumer<Map<String, Double[]>> binder) {
     updateBinder = binder;
   }
 
@@ -135,14 +155,10 @@ public class BaseModel implements Model<String> {
         '}';
   }
 
-  private void defaultUpdater() {
-    Map<String, Equation<String, Double>> tmp = new HashMap<>(eqs());
-    for (Map.Entry<String, Equation<String, Double>> entry : eqs().entrySet()) {
-      Equation<String, Double> val = new BaseEquation(entry.getKey(), entry.getValue().getBinder());
-      tmp.put(entry.getKey(), val);
-    }
-    for (Map.Entry<String, Equation<String, Double>> entry : tmp.entrySet()) {
-      equationsLog.get(entry.getKey()).add(entry.getValue().g());
+  private void defaultUpdater(Map<String, Double[]> data) {
+    Map<String, NamedFunction<String, Double, Double>> tmp = new HashMap<>(fns());
+    for (Map.Entry<String, NamedFunction<String, Double, Double>> entry : tmp.entrySet()) {
+      equationsLog.get(entry.getKey()).add(entry.getValue().value(data.get(entry.getKey())));
     }
     equationMap.putAll(tmp);
     tmp.clear();
