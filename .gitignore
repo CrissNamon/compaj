@@ -3,7 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/simpleAdventure/**/target/
-**/*.DS_Store
+.DS_Store
+
 out
 ### STS ###
 .apt_generated
