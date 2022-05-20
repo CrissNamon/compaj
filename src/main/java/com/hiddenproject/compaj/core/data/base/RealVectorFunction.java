@@ -1,43 +1,36 @@
 package com.hiddenproject.compaj.core.data.base;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
-import com.hiddenproject.compaj.core.data.NamedVectorFunction;
+import java.util.List;
+import com.hiddenproject.compaj.core.data.NamedFunction;
 import com.hiddenproject.compaj.core.model.DynamicFunction;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 
-public class RealVectorFunction implements NamedVectorFunction<String, Number, Double> {
+public class RealVectorFunction implements NamedFunction<String, Double, Double[]>, MultivariateVectorFunction {
 
-  private final String name;
-  private DynamicFunction<Number, Double[]> formula;
+  protected final String name;
+  protected DynamicFunction<Double, Double[]> formula;
 
   public RealVectorFunction(String name, Double[] initial) {
     this(name, (x) -> initial);
   }
 
   public RealVectorFunction(String name) {
-    this(name, (d) -> new Double[]{});
+    this(name, (d) -> new Double[0]);
   }
 
-  public RealVectorFunction(String name, DynamicFunction<Number, Double[]> formula) {
+  public RealVectorFunction(String name, DynamicFunction<Double, Double[]> f) {
     this.name = name;
-    this.formula = formula;
+    this.formula = f;
   }
 
   @Override
-  public double[] value(double[] doubles) throws IllegalArgumentException {
-    return ArrayUtils.toPrimitive(formula.apply(ArrayUtils.toObject(doubles)));
-  }
-
-  @Override
-  public DynamicFunction<Number, Double[]> getBinder() {
+  public DynamicFunction<Double, Double[]> getBinder() {
     return formula;
   }
 
   @Override
-  public void b(DynamicFunction<Number, Double[]> formula) {
+  public void b(DynamicFunction<Double, Double[]> formula) {
     this.formula = formula;
   }
 
@@ -47,20 +40,22 @@ public class RealVectorFunction implements NamedVectorFunction<String, Number, D
   }
 
   @Override
-  public Double[] value(Number... data) {
+  public Double[] value(Double... data) {
     return formula.apply(data);
   }
 
   @Override
-  public RealVector value(RealVector data) {
-    return new ArrayRealVector(value(data.toArray()));
+  public Double[] value(List<Double> data) {
+    return value(data.toArray(new Double[]{}));
   }
 
   @Override
-  public void b(Number[] data) {
-    Double[] d = new Double[data.length];
-    IntStream.range(0, data.length)
-        .forEachOrdered(i -> d[i] = data[i].doubleValue());
-    this.formula = (x) -> d;
+  public void b(Double[] data) {
+    b(x -> data);
+  }
+
+  @Override
+  public double[] value(double[] doubles) throws IllegalArgumentException {
+    return ArrayUtils.toPrimitive(value(ArrayUtils.toObject(doubles)));
   }
 }

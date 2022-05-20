@@ -1,6 +1,6 @@
 package com.hiddenproject.compaj.repl.utils;
 
-import com.hiddenproject.compaj.translator.base.GroovyTranslatorUtils;
+import com.hiddenproject.compaj.translator.groovy.GroovyTranslatorUtils;
 
 public class ReplTranslatorUtils extends GroovyTranslatorUtils {
 

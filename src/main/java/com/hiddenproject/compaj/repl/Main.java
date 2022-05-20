@@ -1,24 +1,21 @@
 package com.hiddenproject.compaj.repl;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Scanner;
 import com.hiddenproject.compaj.core.data.NamedFunction;
+import com.hiddenproject.compaj.framework.annotation.Simulation;
 import com.hiddenproject.compaj.repl.utils.ReplTranslatorUtils;
 import com.hiddenproject.compaj.translator.Translator;
 import com.hiddenproject.compaj.translator.TranslatorUtils;
-import com.hiddenproject.compaj.translator.base.GroovyTranslator;
-import com.hiddenproject.compaj.framework.annotation.Simulation;
+import com.hiddenproject.compaj.translator.groovy.GroovyTranslator;
 
 @Simulation(epidemic = "Test")
 public class Main {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     TranslatorUtils translatorUtils = new ReplTranslatorUtils();
     Translator translator = new GroovyTranslator(translatorUtils);
     CompaJ.getInstance().setTranslator(translator);
-    //CompaJ.readFile("");
     Scanner sc = new Scanner(System.in);
     do{
       System.out.print("> ");
@@ -26,7 +23,11 @@ public class Main {
       try {
         Object result = translator.evaluate(input);
         if(result != null) {
-          System.out.println(result);
+          if(result.getClass().isArray()) {
+            System.out.println(Arrays.toString((Object[]) result));
+          }else {
+            System.out.println(result);
+          }
         } else {
           System.out.print("");
           System.out.println();

@@ -25,9 +25,12 @@ public class BaseSIRModel {
     S = new RealFunction("S");
     I = new RealFunction("I");
     R = new RealFunction("R");
+    /*
     model.a(S, sInit);
     model.a(I, iInit);
     model.a(R, rInit);
+
+     */
     S.b(NamedFunction.from(this::susceptible));
     I.b(NamedFunction.from(this::infected));
     R.b(NamedFunction.from(this::recovered));

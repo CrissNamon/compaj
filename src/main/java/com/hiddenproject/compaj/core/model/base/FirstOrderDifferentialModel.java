@@ -37,7 +37,7 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
   public void computeDerivatives(double v, double[] y, double[] yDot) throws MaxCountExceededException, DimensionMismatchException {
     int i = 0;
     for(NamedFunction<String, Double, Double> entry : fns().values()) {
-      yDot[i] = entry.value();
+      yDot[i] = entry.value(new Double[]{});
       i++;
     }
     i = 0;
@@ -48,14 +48,16 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
   }
 
   @Override
-  public boolean a(NamedFunction<String, Double, Double> e, Double... data) {
-    return baseModel.a(e, data);
+  public boolean a(NamedFunction<String, Double, Double> e) {
+    return baseModel.a(e);
   }
-
+/*
   @Override
   public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
     return baseModel.a(e, data);
   }
+
+ */
 
   @Override
   public void ad(String variable, Double... data) {
@@ -83,11 +85,6 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
   }
 
   @Override
-  public void putAt(String label, NamedFunction<String, Double, Double> e) {
-    a(e);
-  }
-
-  @Override
   public Double getAt(String label) {
     return baseModel.getAt(label);
   }
@@ -98,13 +95,13 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
   }
 
   @Override
-  public void call(Map<String, Double[]> data) {
+  public void compute(Map<String, Double[]> data) {
     compute(0d, 100d);
   }
 
   @Override
-  public void call() {
-    call(new HashMap<>());
+  public void compute() {
+    compute(new HashMap<>());
   }
 
   @Override

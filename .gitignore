@@ -1,1 +1,37 @@
-target
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/simpleAdventure/**/target/
+**/*.DS_Store
+out
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/simpleAdventure/**/build/
+
+### VS Code ###
+.vscode/
+
+### Firebase ###
+**/src/main/resources/firebase-service-account.json

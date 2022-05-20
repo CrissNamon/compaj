@@ -3,9 +3,7 @@ package com.hiddenproject.compaj.core.model.base;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import com.hiddenproject.compaj.core.data.NamedFunction;
-import com.hiddenproject.compaj.core.data.base.RealFunction;
 import com.hiddenproject.compaj.core.model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.linear.RealVector;
@@ -14,8 +12,8 @@ public class BaseModel implements Model<String, String, Double, Double> {
 
   private final String name;
 
-  protected Map<String, NamedFunction<String, Double, Double>> equationMap;
-  private Map<String, List<Double>> equationsLog;
+  protected Map<Object, NamedFunction> equationMap;
+  private Map<Object, List<Object>> equationsLog;
 
   private Consumer<Map<String, Double[]>> updateBinder;
 
@@ -25,7 +23,7 @@ public class BaseModel implements Model<String, String, Double, Double> {
     this.name = name;
     this.updateBinder = this::defaultUpdater;
   }
-
+/*
   public static BaseModel from(Model<String, String, Double, Double> startModel) {
     BaseModel model = new BaseModel(startModel.getName());
     model.equationMap = new HashMap<>(startModel.fns());
@@ -33,20 +31,26 @@ public class BaseModel implements Model<String, String, Double, Double> {
     return model;
   }
 
+ */
+
   @Override
-  public boolean a(NamedFunction<String, Double, Double> e, Double... data) {
+  public boolean a(NamedFunction e) {
     if(equationMap.containsKey(e.getName())) {
       return false;
     }
     equationMap.put(e.getName(), e);
-    equationsLog.put(e.getName(), Arrays.stream(data).collect(Collectors.toList()));
+    equationsLog.put(e.getName(), new ArrayList<>());
+    //equationsLog.put(e.getName(), Arrays.stream(data).collect(Collectors.toList()));
     return true;
   }
 
+  /*
   @Override
   public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
     return a(e, ArrayUtils.toObject(data.toArray()));
   }
+
+   */
 
   @Override
   public void ad(String label, Double... data) {
@@ -55,12 +59,12 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   @Override
-  public Map<String, NamedFunction<String, Double, Double>> fns() {
+  public Map fns() {
     return Collections.unmodifiableMap(equationMap);
   }
 
   @Override
-  public Map<String, List<Double>> fnslog() {
+  public Map fnslog() {
     return equationsLog;
   }
 
@@ -75,28 +79,27 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   @Override
-  public void putAt(String label, NamedFunction<String, Double, Double> e) {
-    a(e);
-  }
-
-  @Override
   public Double getAt(String label) {
     return getAt(label, 1);
   }
 
   @Override
   public Double getAt(String label, int position) {
-    return equationsLog.get(label).get(equationsLog.get(label).size() - position);
+    return (Double)equationsLog.get(label).get(equationsLog.get(label).size() - position);
   }
 
   @Override
-  public void call(Map<String, Double[]> data) {
-    updateBinder.accept(data);
+  public void compute(Map<String, Double[]> data) {
+    try {
+      updateBinder.accept(data);
+    }catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
-  public void call() {
-    call(new HashMap<>());
+  public void compute() {
+    compute(new HashMap<>());
   }
 
   @Override
@@ -128,9 +131,20 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   private void defaultUpdater(Map<String, Double[]> data) {
-    Map<String, NamedFunction<String, Double, Double>> tmp = new HashMap<>(fns());
-    for (Map.Entry<String, NamedFunction<String, Double, Double>> entry : tmp.entrySet()) {
-      equationsLog.get(entry.getKey()).add(entry.getValue().value(data.get(entry.getKey())));
+    Map<String, NamedFunction> tmp = new HashMap<>(fns());
+    for (Map.Entry<String, NamedFunction> entry : tmp.entrySet()) {
+      equationsLog
+          .get(
+              entry
+                  .getKey()
+          )
+          .add(
+              entry.getValue()
+                  .value(data
+                      .get(entry
+                          .getKey())
+          )
+      );
     }
     equationMap.putAll(tmp);
     tmp.clear();
