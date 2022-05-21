@@ -14,25 +14,25 @@ public class Main {
     Translator translator = new GroovyTranslator(translatorUtils);
     CompaJ.getInstance().setTranslator(translator);
     Scanner sc = new Scanner(System.in);
-    do{
+    do {
       System.out.print("> ");
       String input = sc.nextLine();
       try {
         Object result = translator.evaluate(input);
-        if(result != null) {
-          if(result.getClass().isArray()) {
+        if (result != null) {
+          if (result.getClass().isArray()) {
             System.out.println(Arrays.toString((Object[]) result));
-          }else {
+          } else {
             System.out.println(result);
           }
         } else {
           System.out.print("");
           System.out.println();
         }
-      }catch (Exception e) {
+      } catch (Exception e) {
         System.out.println(e.getMessage());
       }
-    }while(true);
+    } while (true);
 
   }
 }

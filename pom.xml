@@ -9,16 +9,46 @@
     <packaging>pom</packaging>
     <version>${revision}</version>
     <properties>
-        <revision>0.0.1</revision>
+        <revision>0.0.2</revision>
         <core.version>0.0.1</core.version>
         <applied.version>0.0.1</applied.version>
-        <lang.version>0.0.1</lang.version>
+        <lang.version>0.0.2</lang.version>
         <repl.version>0.0.1</repl.version>
+        <gui.version>0.0.1</gui.version>
     </properties>
     <modules>
         <module>core</module>
+        <module>applied</module>
         <module>lang</module>
         <module>repl</module>
-        <module>applied</module>
+        <module>gui</module>
     </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.7</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,14 +1,19 @@
 package com.hiddenproject.compaj.translator.groovy
 
 import com.hiddenproject.compaj.translator.extension.Extension
+import org.apache.commons.math3.complex.ComplexFormat
+
+import java.text.NumberFormat
 
 abstract class CompaJScriptBase extends Script {
 
     private static Set<Extension> extensions
 
-    @Delegate Math math
+    static ComplexFormat COMPLEX_FORMAT
 
     static {
+        NumberFormat _nf = NumberFormat.getInstance(Locale.US)
+        COMPLEX_FORMAT = new ComplexFormat(_nf, _nf)
         extensions = new HashSet<>()
     }
 

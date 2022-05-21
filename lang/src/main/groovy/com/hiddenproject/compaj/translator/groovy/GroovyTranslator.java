@@ -26,7 +26,7 @@ public class GroovyTranslator implements Translator {
       "java.lang.reflect.Array",
       "java.lang.reflect.ParameterizedType",
       "java.lang.reflect.Type",
-      "com.hiddenproject.compaj.core.model.DynamicFunction"
+      "com.hiddenproject.compaj.core.model.DynamicFunction",
   };
 
   private final static String[] starImports = new String[] {
@@ -69,6 +69,7 @@ public class GroovyTranslator implements Translator {
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
     CompaJScriptBase.addExtension(new ModelExtension());
     CompaJScriptBase.addExtension(new NamedFunctionExtension());
+    CompaJScriptBase.addExtension(new ComplexExtension());
   }
 
   public GroovyTranslator(TranslatorUtils translatorUtils, CompilationCustomizer... compilationCustomizer) {
