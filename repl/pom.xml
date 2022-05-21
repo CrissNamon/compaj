@@ -27,7 +27,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>com.hiddenproject.compaj.repl.Main</mainClass>
+                    <mainClass>com.hiddenproject.compaj.gui.repl.Main</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -61,7 +61,7 @@
                         <index>true</index>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.hiddenproject.compaj.repl.Main</mainClass>
+                            <mainClass>com.hiddenproject.compaj.gui.repl.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
