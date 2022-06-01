@@ -1,24 +1,19 @@
 package com.hiddenproject.compaj.core.model;
 
-import com.hiddenproject.compaj.core.data.*;
-
 import java.util.*;
 import java.util.function.*;
+import com.hiddenproject.compaj.core.data.*;
 
-public interface Model<N, F, I, O> {
+public interface Model<F, I, O> {
   O getAt(F label);
 
-  boolean a(NamedFunction<F, I, O> e);
+  void a(NamedFunction<F, I, O>... e);
 
-  void ad(N variable, Double... data);
+  void ad(F variable, O... data);
 
-  Map<N, NamedFunction<F, I, O>> fns();
+  Map<F, NamedFunction<F, I, O>> fns();
 
-  Map<N, List<O>> fnslog();
-
-  boolean isCase(NamedFunction<F, I, O> eq);
-
-  boolean isCase(N eq);
+  Map<F, List<O>> fnslog();
 
   O getAt(F label, int position);
 

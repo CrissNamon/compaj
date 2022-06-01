@@ -1,11 +1,10 @@
 package com.hiddenproject.compaj.core.data.base;
 
+import java.util.*;
 import com.hiddenproject.compaj.core.data.*;
 import com.hiddenproject.compaj.core.model.*;
 import org.apache.commons.lang3.*;
 import org.apache.commons.math3.analysis.*;
-
-import java.util.*;
 
 public class RealFunction implements NamedFunction<String, Double, Double>, MultivariateFunction {
 
@@ -16,13 +15,37 @@ public class RealFunction implements NamedFunction<String, Double, Double>, Mult
     this(name, (x) -> initial);
   }
 
+  public RealFunction(String name, DynamicFunction<Double, Double> f) {
+    this.name = name;
+    b(f);
+  }
+
   public RealFunction(String name) {
     this(name, (d) -> 0d);
   }
 
-  public RealFunction(String name, DynamicFunction<Double, Double> f) {
-    this.name = name;
-    b(f);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RealFunction that = (RealFunction) o;
+    return name.equals(that.name);
+  }
+
+  @Override
+  public String toString() {
+    return "RealFunction{" +
+        "name='" + name + '\'' +
+        '}';
+  }
+
+  @Override
+  public double value(double[] doubles) {
+    return value(ArrayUtils.toObject(doubles));
   }
 
   @Override
@@ -31,13 +54,13 @@ public class RealFunction implements NamedFunction<String, Double, Double>, Mult
   }
 
   @Override
-  public String getName() {
-    return name;
+  public void b(DynamicFunction<Double, Double> formula) {
+    this.formula = formula;
   }
 
   @Override
-  public void b(DynamicFunction<Double, Double> formula) {
-    this.formula = formula;
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -55,23 +78,5 @@ public class RealFunction implements NamedFunction<String, Double, Double>, Mult
     this.formula = (x) -> data;
   }
 
-  @Override
-  public String toString() {
-    return "RealFunction{" +
-            "name='" + name + '\'' +
-            '}';
-  }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    RealFunction that = (RealFunction) o;
-    return name.equals(that.name);
-  }
-
-  @Override
-  public double value(double[] doubles) {
-    return value(ArrayUtils.toObject(doubles));
-  }
 }

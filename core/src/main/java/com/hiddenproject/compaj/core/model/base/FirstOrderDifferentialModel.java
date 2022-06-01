@@ -1,21 +1,18 @@
 package com.hiddenproject.compaj.core.model.base;
 
+import java.util.*;
 import com.hiddenproject.compaj.core.data.*;
-import com.hiddenproject.compaj.core.model.*;
 import org.apache.commons.math3.exception.*;
 import org.apache.commons.math3.ode.*;
 import org.apache.commons.math3.ode.nonstiff.*;
 
-import java.util.*;
-import java.util.function.*;
-
-public class FirstOrderDifferentialModel implements Model<String, String, Double, Double>, FirstOrderDifferentialEquations {
+public class FirstOrderDifferentialModel implements FirstOrderDifferentialEquations {
 
   public static final FirstOrderIntegrator DEFAULT_INTEGRATOR = new DormandPrince853Integrator(1.0e-8, 0.01, 1.0e-10, 1.0e-10);
 
   private final BaseModel baseModel;
   private FirstOrderIntegrator integrator;
-  private boolean f;
+  private long iterator;
 
   public FirstOrderDifferentialModel(String name) {
     this.baseModel = new BaseModel(name);
@@ -35,68 +32,22 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
       yDot[i] = entry.value(new Double[]{});
       i++;
     }
-    i = 0;
-    for (NamedFunction<String, Double, Double> entry : fns().values()) {
-      ad(entry.getName(), y[i]);
-      i++;
+    if (iterator > 0) {
+      i = 0;
+      for (NamedFunction<String, Double, Double> entry : fns().values()) {
+        ad(entry.getName(), y[i]);
+        i++;
+      }
     }
+    iterator++;
   }
 
-  @Override
-  public boolean a(NamedFunction<String, Double, Double> e) {
-    return baseModel.a(e);
-  }
-/*
-  @Override
-  public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
-    return baseModel.a(e, data);
-  }
-
- */
-
-  @Override
   public void ad(String variable, Double... data) {
     baseModel.ad(variable, data);
   }
 
-  @Override
   public Map<String, NamedFunction<String, Double, Double>> fns() {
     return baseModel.fns();
-  }
-
-  @Override
-  public Map<String, List<Double>> fnslog() {
-    return baseModel.fnslog();
-  }
-
-  @Override
-  public boolean isCase(NamedFunction<String, Double, Double> eq) {
-    return fns().containsKey(eq.getName());
-  }
-
-  @Override
-  public boolean isCase(String eq) {
-    return fns().containsKey(eq);
-  }
-
-  @Override
-  public Double getAt(String label) {
-    return baseModel.getAt(label);
-  }
-
-  @Override
-  public Double getAt(String label, int position) {
-    return baseModel.getAt(label, position);
-  }
-
-  @Override
-  public void compute(Map<String, Double[]> data) {
-    compute(0d, 100d);
-  }
-
-  @Override
-  public void compute() {
-    compute(new HashMap<>());
   }
 
   @Override
@@ -104,7 +55,24 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
     return baseModel.toString();
   }
 
+  public void a(NamedFunction<String, Double, Double>... e) {
+    baseModel.a(e);
+  }
+
+  public void i(FirstOrderIntegrator firstOrderIntegrator) {
+    integrator = firstOrderIntegrator;
+  }
+
+  public Map<String, List<Double>> fnslog() {
+    return baseModel.fnslog();
+  }
+
+  public Double getAt(String label, int position) {
+    return (Double) baseModel.getAt(label, position);
+  }
+
   public void compute(Double lowBound, Double highBound) {
+    iterator = 0;
     double[] y = new double[fns().size()];
     int i = 0;
     for (NamedFunction<String, Double, Double> entry : fns().values()) {
@@ -114,27 +82,20 @@ public class FirstOrderDifferentialModel implements Model<String, String, Double
     integrator.integrate(this, lowBound, y, highBound, y);
   }
 
-  public void i(FirstOrderIntegrator firstOrderIntegrator) {
-    integrator = firstOrderIntegrator;
+  public Double getAt(String label) {
+    return (Double) baseModel.getAt(label);
   }
 
-  @Override
   public String getName() {
     return baseModel.getName();
   }
 
-  @Override
   public void clear() {
     baseModel.clear();
   }
 
-  @Override
   public void clear(String f) {
     baseModel.clear(f);
   }
 
-  @Override
-  public void bu(Consumer<Map<String, Double[]>> binder) {
-    baseModel.bu(binder);
-  }
 }

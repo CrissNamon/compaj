@@ -1,9 +1,8 @@
 package com.hiddenproject.compaj.repl;
 
-import com.hiddenproject.compaj.translator.*;
-
 import java.io.*;
 import java.nio.file.*;
+import com.hiddenproject.compaj.lang.*;
 
 public class CompaJ {
 
@@ -18,13 +17,6 @@ public class CompaJ {
     System.out.println("Version 0.0.1");
   }
 
-  public static CompaJ getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new CompaJ();
-    }
-    return INSTANCE;
-  }
-
   public static void readFile(String url) {
     try {
       Path path = Paths.get(url);
@@ -33,19 +25,25 @@ public class CompaJ {
     } catch (IOException e) {
       System.out.println("Error: " + e.getLocalizedMessage());
     }
-    //System.out.println("READING: " + getInstance().getTranslator().evaluate(script));
-  }
-
-  public static void exit() {
-    exitManager.reset();
-    System.exit(0);
   }
 
   public Translator getTranslator() {
     return translator;
   }
 
+  public static CompaJ getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new CompaJ();
+    }
+    return INSTANCE;
+  }
+
   public void setTranslator(Translator translator) {
     this.translator = translator;
+  }
+
+  public static void exit() {
+    exitManager.reset();
+    System.exit(0);
   }
 }

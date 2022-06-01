@@ -1,11 +1,10 @@
 package com.hiddenproject.compaj.core.data.base;
 
+import java.util.*;
 import com.hiddenproject.compaj.core.data.*;
 import com.hiddenproject.compaj.core.model.*;
 import org.apache.commons.lang3.*;
 import org.apache.commons.math3.analysis.*;
-
-import java.util.*;
 
 public class RealVectorFunction implements NamedFunction<String, Double, Double[]>, MultivariateVectorFunction {
 
@@ -16,13 +15,13 @@ public class RealVectorFunction implements NamedFunction<String, Double, Double[
     this(name, (x) -> initial);
   }
 
-  public RealVectorFunction(String name) {
-    this(name, (d) -> new Double[0]);
-  }
-
   public RealVectorFunction(String name, DynamicFunction<Double, Double[]> f) {
     this.name = name;
     this.formula = f;
+  }
+
+  public RealVectorFunction(String name) {
+    this(name, (d) -> new Double[0]);
   }
 
   @Override

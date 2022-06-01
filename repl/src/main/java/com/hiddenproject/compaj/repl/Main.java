@@ -1,10 +1,9 @@
 package com.hiddenproject.compaj.repl;
 
-import com.hiddenproject.compaj.repl.utils.*;
-import com.hiddenproject.compaj.translator.*;
-import com.hiddenproject.compaj.translator.groovy.*;
-
 import java.util.*;
+import com.hiddenproject.compaj.lang.*;
+import com.hiddenproject.compaj.lang.groovy.*;
+import com.hiddenproject.compaj.repl.utils.*;
 
 public class Main {
 
@@ -32,6 +31,6 @@ public class Main {
         System.out.println(e.getMessage());
       }
     } while (true);
-
   }
+
 }

@@ -1,19 +1,18 @@
 package com.hiddenproject.compaj.core.model.base;
 
+import java.util.*;
+import java.util.function.*;
 import com.hiddenproject.compaj.core.data.*;
 import com.hiddenproject.compaj.core.model.*;
 
-import java.util.*;
-import java.util.function.*;
-
-public class BaseModel implements Model<String, String, Double, Double> {
+public class BaseModel implements Model<String, Object, Object> {
 
   private final String name;
 
   protected Map<Object, NamedFunction> equationMap;
   private Map<Object, List<Object>> equationsLog;
 
-  private Consumer<Map<String, Double[]>> updateBinder;
+  private Consumer<Map<String, Object[]>> updateBinder;
 
   public BaseModel(String name) {
     this.equationMap = new HashMap<>();
@@ -21,39 +20,42 @@ public class BaseModel implements Model<String, String, Double, Double> {
     this.name = name;
     this.updateBinder = this::defaultUpdater;
   }
-/*
-  public static BaseModel from(Model<String, String, Double, Double> startModel) {
-    BaseModel model = new BaseModel(startModel.getName());
-    model.equationMap = new HashMap<>(startModel.fns());
-    model.equationsLog = new HashMap<>(startModel.fnslog());
-    return model;
-  }
 
- */
-
-  @Override
-  public boolean a(NamedFunction e) {
-    if (equationMap.containsKey(e.getName())) {
-      return false;
+  private void defaultUpdater(Map<String, Object[]> data) {
+    Map<String, NamedFunction> tmp = new HashMap<>(fns());
+    for (Map.Entry<String, NamedFunction> entry : tmp.entrySet()) {
+      equationsLog
+          .get(entry.getKey())
+          .add(
+              entry.getValue()
+                  .value(
+                      data.get(entry.getKey()
+                      )
+                  )
+          );
     }
-    equationMap.put(e.getName(), e);
-    equationsLog.put(e.getName(), new ArrayList<>());
-    //equationsLog.put(e.getName(), Arrays.stream(data).collect(Collectors.toList()));
-    return true;
+    equationMap.putAll(tmp);
+    tmp.clear();
   }
 
-  /*
   @Override
-  public boolean a(NamedFunction<String, Double, Double> e, RealVector data) {
-    return a(e, ArrayUtils.toObject(data.toArray()));
+  public Object getAt(String label) {
+    return getAt(label, 1);
   }
 
-   */
+  @Override
+  public void a(NamedFunction... fns) {
+    for (NamedFunction e : fns) {
+      equationMap.putIfAbsent(e.getName(), e);
+      equationsLog.putIfAbsent(e.getName(), new ArrayList<>());
+    }
+  }
 
   @Override
-  public void ad(String label, Double... data) {
-    equationsLog.get(label).addAll(List.of(data));
-    //equationMap.get(label).b(data[data.length-1]);
+  public void ad(String label, Object... data) {
+    for (Object d : data) {
+      equationsLog.get(label).add(d);
+    }
   }
 
   @Override
@@ -67,32 +69,15 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   @Override
-  public boolean isCase(NamedFunction<String, Double, Double> eq) {
-    return fns().containsKey(eq.getName());
+  public Object getAt(String label, int position) {
+    return equationsLog
+        .get(label)
+        .get(equationsLog.get(label).size() - position);
   }
 
   @Override
-  public boolean isCase(String eq) {
-    return fns().containsKey(eq);
-  }
-
-  @Override
-  public Double getAt(String label) {
-    return getAt(label, 1);
-  }
-
-  @Override
-  public Double getAt(String label, int position) {
-    return (Double) equationsLog.get(label).get(equationsLog.get(label).size() - position);
-  }
-
-  @Override
-  public void compute(Map<String, Double[]> data) {
-    try {
-      updateBinder.accept(data);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public void compute(Map<String, Object[]> data) {
+    updateBinder.accept(data);
   }
 
   @Override
@@ -116,35 +101,15 @@ public class BaseModel implements Model<String, String, Double, Double> {
   }
 
   @Override
-  public void bu(Consumer<Map<String, Double[]>> binder) {
+  public void bu(Consumer<Map<String, Object[]>> binder) {
     updateBinder = binder;
   }
 
   @Override
   public String toString() {
     return "BaseModel{" +
-            "name='" + name + '\'' +
-            ", equationMap=" + equationMap +
-            '}';
-  }
-
-  private void defaultUpdater(Map<String, Double[]> data) {
-    Map<String, NamedFunction> tmp = new HashMap<>(fns());
-    for (Map.Entry<String, NamedFunction> entry : tmp.entrySet()) {
-      equationsLog
-              .get(
-                      entry
-                              .getKey()
-              )
-              .add(
-                      entry.getValue()
-                              .value(data
-                                      .get(entry
-                                              .getKey())
-                              )
-              );
-    }
-    equationMap.putAll(tmp);
-    tmp.clear();
+        "name='" + name + '\'' +
+        ", equationMap=" + equationMap +
+        '}';
   }
 }

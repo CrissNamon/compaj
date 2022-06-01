@@ -1,0 +1,9 @@
+package com.hiddenproject.compaj.lang;
+
+public interface TranslatorUtils {
+  String translate(String script);
+
+  void useRawLanguage(boolean f);
+
+  void addCodeTranslation(CodeTranslation translation);
+}

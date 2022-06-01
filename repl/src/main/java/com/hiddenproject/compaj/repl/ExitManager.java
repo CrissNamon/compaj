@@ -16,16 +16,16 @@ public class ExitManager extends SecurityManager {
   }
 
   /**
-   * Deny permission to exit the VM.
-   */
-  public void checkExit(int status) {
-    throw (new SecurityException());
-  }
-
-  /**
    * Allow this security manager to be replaced,
    * if fact, allow pretty much everything.
    */
   public void checkPermission(Permission perm) {
+  }
+
+  /**
+   * Deny permission to exit the VM.
+   */
+  public void checkExit(int status) {
+    throw (new SecurityException());
   }
 }
