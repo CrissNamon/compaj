@@ -18,9 +18,9 @@ public class Compaj extends Application {
 
   private static final GroovyTranslator translator;
 
-  private static final TabPane content;
-  private static final TerminalTab terminalTab;
-  private static final WorkSpaceTab workSpaceTab;
+  private static TabPane content;
+  private static TerminalTab terminalTab;
+  private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
   static {
@@ -35,12 +35,6 @@ public class Compaj extends Application {
   static {
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
     translator = new GroovyTranslator(translatorUtils);
-  }
-
-  static {
-    content = new TabPane();
-    terminalTab = new TerminalTab();
-    workSpaceTab = new WorkSpaceTab();
   }
 
   public static void main(String[] args) {
@@ -80,6 +74,9 @@ public class Compaj extends Application {
   @Override
   public void start(Stage stage) {
     mainStage = stage;
+    content = new TabPane();
+    terminalTab = new TerminalTab();
+    workSpaceTab = new WorkSpaceTab();
     stage.setTitle("CompaJ");
     BorderPane rootNode = new BorderPane();
     MenuBar menuBar = new MenuBar();
