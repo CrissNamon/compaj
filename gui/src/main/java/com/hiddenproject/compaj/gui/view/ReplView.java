@@ -10,14 +10,14 @@ import javafx.scene.layout.*;
 
 public class ReplView extends ScrollPane {
 
-  private static VBox root;
+  private static final VBox root;
 
   static {
     root = new VBox();
     root.setPadding(new Insets(10, 20, 10, 10));
   }
 
-  private VBox historyContainer;
+  private final VBox historyContainer;
   private Consumer<Object> event = (x) -> {
   };
 
@@ -57,8 +57,7 @@ public class ReplView extends ScrollPane {
 
   private Object evaluate(String text) {
     try {
-      Object result = Compaj.getTranslator().evaluate(text);
-      return result;
+      return Compaj.getTranslator().evaluate(text);
     } catch (Exception e) {
       return e.getLocalizedMessage();
     }

@@ -13,7 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 
-public class AgentModelWidget implements WorkSpaceWidget {
+public class SIRABModelWidget implements WorkSpaceWidget {
 
   private VBox root;
   private Canvas canvas;
@@ -25,7 +25,7 @@ public class AgentModelWidget implements WorkSpaceWidget {
   private ScheduledExecutorService scheduledExecutorService;
   private ScheduledFuture scheduledFuture;
 
-  public AgentModelWidget(SIRABModel sirabModel) {
+  public SIRABModelWidget(SIRABModel sirabModel) {
     root = new VBox();
     canvas = new Canvas();
     canvas.setHeight(600);
@@ -49,26 +49,6 @@ public class AgentModelWidget implements WorkSpaceWidget {
     root.getChildren().addAll(button, canvas);
   }
 
-  @Override
-  public void onChildAdded(Consumer<WorkSpaceWidget> event) {
-
-  }
-
-  @Override
-  public Node getNode() {
-    return root;
-  }
-
-  @Override
-  public void close() {
-    scheduledExecutorService.shutdownNow();
-  }
-
-  @Override
-  public String toString() {
-    return "SIRAB Симуляция";
-  }
-
   private void animate(int step) {
     Platform.runLater(() -> {
       sirabModel.model().step();
@@ -79,7 +59,7 @@ public class AgentModelWidget implements WorkSpaceWidget {
       for (EnvironmentObject<GridLocation> object : sirabModel.model().environmentObjects()) {
         double[] x = new double[object.getPoints().size()];
         double[] y = new double[object.getPoints().size()];
-        for (int i = 0; i < object.getPoints().size(); ++i) {
+        for (int i = 0; i < object.getPoints().size(); ++ i) {
           x[i] = Math.abs(object.getPoints().get(i).getX() + canvasCenter.getX());
           y[i] = Math.abs(object.getPoints().get(i).getY() - canvasCenter.getY());
         }
@@ -101,6 +81,26 @@ public class AgentModelWidget implements WorkSpaceWidget {
             6, 6);
       }
     });
+  }
+
+  @Override
+  public void onChildAdded(Consumer<WorkSpaceWidget> event) {
+
+  }
+
+  @Override
+  public Node getNode() {
+    return root;
+  }
+
+  @Override
+  public void close() {
+    scheduledExecutorService.shutdownNow();
+  }
+
+  @Override
+  public String toString() {
+    return "SIRAB Симуляция";
   }
 
 }

@@ -80,7 +80,7 @@ public class SISModelWidget implements WorkSpaceWidget {
   }
 
   private void calculateEvent(ActionEvent actionEvent) {
-    List<Number> timeSeries = IntStream.range((int) t0.get(), ((int) t1.get()) + 1)
+    List<Number> timeSeries = IntStream.range((int) t0.get(), ((int) t1.get()))
         .asDoubleStream().boxed().collect(Collectors.toList());
     SISModel sisModel = new SISModel(s0.get(), i0.get());
     sisModel.withAlpha(alphaC.get());

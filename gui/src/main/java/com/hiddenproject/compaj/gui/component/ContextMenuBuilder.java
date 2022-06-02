@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 
 public class ContextMenuBuilder {
 
-  private ContextMenu contextMenu;
+  private final ContextMenu contextMenu;
 
   public ContextMenuBuilder() {
     contextMenu = new ContextMenu();

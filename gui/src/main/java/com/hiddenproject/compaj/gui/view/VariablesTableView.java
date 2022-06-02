@@ -3,6 +3,7 @@ package com.hiddenproject.compaj.gui.view;
 import java.util.*;
 import com.hiddenproject.compaj.gui.*;
 import com.hiddenproject.compaj.gui.data.*;
+import com.hiddenproject.compaj.gui.util.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import javafx.scene.layout.*;
@@ -17,9 +18,13 @@ public class VariablesTableView extends VBox {
     root = new TableView<>();
     root.prefHeightProperty().bind(heightProperty());
     root.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    TableColumn<Variable, String> nameColumn = new TableColumn<>("Переменная");
+    TableColumn<Variable, String> nameColumn = new TableColumn<>(
+        I18nUtils.get("tab.terminal.variables.variable")
+    );
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    TableColumn<Variable, Object> dataColumn = new TableColumn<>("Значение");
+    TableColumn<Variable, Object> dataColumn = new TableColumn<>(
+        I18nUtils.get("tab.terminal.variables.value")
+    );
     dataColumn.setCellValueFactory(new PropertyValueFactory<>("data"));
     root.getColumns().addAll(nameColumn, dataColumn);
     root.getItems().addAll(data);

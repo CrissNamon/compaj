@@ -45,6 +45,13 @@ public class Compaj extends Application {
     addWorkSpaceWidget(new BaseWidget(node, name));
   }
 
+  public static void addWorkSpaceWidget(WorkSpaceWidget workSpaceWidget) {
+    workSpaceTab.addItem(workSpaceWidget);
+    if (! content.getTabs().contains(workSpaceTab)) {
+      content.getTabs().add(workSpaceTab);
+    }
+  }
+
   public static void addWorkSpaceWidget(Node node) {
     addWorkSpaceWidget(new BaseWidget(node));
   }
@@ -61,7 +68,7 @@ public class Compaj extends Application {
   }
 
   public static Object exec() {
-    File f = FileUtils.openFileWindow();
+    File f = FileUtils.openNoteWindow();
     return getTranslator().evaluate(
         FileUtils.readFile(f)
     );
@@ -78,16 +85,7 @@ public class Compaj extends Application {
     terminalTab = new TerminalTab();
     workSpaceTab = new WorkSpaceTab();
     stage.setTitle("CompaJ");
-    BorderPane rootNode = new BorderPane();
-    MenuBar menuBar = new MenuBar();
-    final String os = System.getProperty("os.name");
-    if (os != null && os.startsWith("Mac")) {
-      menuBar.useSystemMenuBarProperty().set(true);
-    }
-    Menu mainMenu = new Menu("Вид");
-    Menu helpMenu = new Menu("Помощь");
-    Menu modelsMenu = new Menu("Простые модели");
-    Menu infectModels = new Menu("Эпидемиология");
+
     MenuItem sirModel = new MenuItem("SIR");
     sirModel.setOnAction(actionEvent -> {
       addWorkSpaceWidget(new SIRModelWidget());
@@ -99,19 +97,35 @@ public class Compaj extends Application {
       content.getSelectionModel().select(workSpaceTab);
     });
     MenuItem seirModel = new MenuItem("SEIR");
+    Menu infectModels = new Menu(I18nUtils.get("menu.simple_models.epidemic"));
     infectModels.getItems().addAll(sirModel, sisModel, seirModel);
+    Menu modelsMenu = new Menu(I18nUtils.get("menu.simple_models"));
     modelsMenu.getItems().add(infectModels);
-    MenuItem terminalItem = new MenuItem("Терминал");
-    MenuItem workSpaceItem = new MenuItem("Рабочее пространство");
-    MenuItem editorItem = new MenuItem("Редактор");
-    mainMenu.getItems().addAll(terminalItem, editorItem, workSpaceItem);
-    menuBar.getMenus().addAll(mainMenu, modelsMenu, helpMenu);
+
+    MenuItem terminalItem = new MenuItem(I18nUtils.get("tab.terminal.title"));
     terminalItem.setOnAction(actionEvent -> content.getTabs().add(terminalTab));
+    MenuItem workSpaceItem = new MenuItem(I18nUtils.get("tab.workspace.title"));
     workSpaceItem.setOnAction(actionEvent -> content.getTabs().add(workSpaceTab));
+    MenuItem editorItem = new MenuItem(I18nUtils.get("tab.editor.title"));
     editorItem.setOnAction(actionEvent -> content.getTabs().add(new EditorTab()));
+    Menu mainMenu = new Menu(I18nUtils.get("menu.view"));
+    mainMenu.getItems().addAll(terminalItem, editorItem, workSpaceItem);
+
+    Menu helpMenu = new Menu(I18nUtils.get("menu.help"));
+
+    MenuBar menuBar = new MenuBar();
+    final String os = System.getProperty("os.name");
+    if (os != null && os.startsWith("Mac")) {
+      menuBar.useSystemMenuBarProperty().set(true);
+    }
+    menuBar.getMenus().addAll(mainMenu, modelsMenu, helpMenu);
+
     content.getTabs().add(terminalTab);
+
+    BorderPane rootNode = new BorderPane();
     rootNode.setTop(menuBar);
     rootNode.setCenter(content);
+
     Scene scene = new Scene(rootNode, 1280, 720);
     scene.getStylesheets().add(getClass().getResource("/java-keywords.css").toExternalForm());
     new JMetro(Style.LIGHT).setScene(scene);
@@ -129,13 +143,6 @@ public class Compaj extends Application {
       }
     });
     content.getTabs().clear();
-  }
-
-  public static void addWorkSpaceWidget(WorkSpaceWidget workSpaceWidget) {
-    workSpaceTab.addItem(workSpaceWidget);
-    if (! content.getTabs().contains(workSpaceTab)) {
-      content.getTabs().add(workSpaceTab);
-    }
   }
 
 }

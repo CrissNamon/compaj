@@ -22,22 +22,39 @@ public class FileUtils {
     return INSTANCE;
   }
 
-  public static File saveFileWindow() {
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setInitialDirectory(AppSettings.getInstance().getAppDirectory());
-    FileChooser.ExtensionFilter extFilter =
-        new FileChooser.ExtensionFilter("CompaJ notes (*.cjn)", COMPAJ_SCRIPT_EXT);
-    fileChooser.getExtensionFilters().add(extFilter);
-    return fileChooser.showSaveDialog(Compaj.getMainStage());
+  public static File saveFileWindow(String fileType, String fileExt) {
+    return saveFileWindow(fileType, new String[]{fileExt});
   }
 
-  public static File openFileWindow() {
+  public static File saveFileWindow(String fileType, String[] fileExt) {
+    return createChooser(AppSettings.getInstance().getAppDirectory(), fileType, fileExt)
+        .showSaveDialog(Compaj.getMainStage());
+  }
+
+  private static FileChooser createChooser(File init, String fileType, String[] fileExt) {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.setInitialDirectory(AppSettings.getInstance().getAppDirectory());
+    fileChooser.setInitialDirectory(init);
     FileChooser.ExtensionFilter extFilter =
-        new FileChooser.ExtensionFilter("CompaJ notes (*.cjn)", COMPAJ_SCRIPT_EXT);
+        new FileChooser.ExtensionFilter(fileType, fileExt);
     fileChooser.getExtensionFilters().add(extFilter);
-    return fileChooser.showOpenDialog(Compaj.getMainStage());
+    return fileChooser;
+  }
+
+  public static File openFileWindow(String fileType, String fileExt) {
+    return openFileWindow(fileType, new String[]{fileExt});
+  }
+
+  public static File openFileWindow(String fileType, String[] fileExt) {
+    return createChooser(AppSettings.getInstance().getAppDirectory(), fileType, fileExt)
+        .showOpenDialog(Compaj.getMainStage());
+  }
+
+  public static File openNoteWindow() {
+    return openFileWindow("CompaJ Note", COMPAJ_SCRIPT_EXT);
+  }
+
+  public static File saveNoteWindow() {
+    return saveFileWindow("CompaJ Note", COMPAJ_SCRIPT_EXT);
   }
 
   public static void saveFile(File file, String data) {

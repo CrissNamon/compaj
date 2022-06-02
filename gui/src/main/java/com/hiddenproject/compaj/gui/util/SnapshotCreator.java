@@ -7,6 +7,7 @@ import javafx.scene.image.*;
 import javafx.scene.paint.*;
 
 public class SnapshotCreator {
+
   public static void exportPngSnapshot(
       Node node,
       Path path,
@@ -19,4 +20,5 @@ public class SnapshotCreator {
     byte[] bytes = encoder.pngEncode();
     Files.write(path, bytes);
   }
+
 }
