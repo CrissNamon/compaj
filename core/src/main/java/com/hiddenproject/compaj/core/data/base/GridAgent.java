@@ -52,62 +52,35 @@ public class GridAgent implements Agent<GridLocation, String> {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }  @Override
-  public void setLocation(GridLocation location) {
-    this.location = location;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    GridAgent gridAgent = (GridAgent) o;
-    return id.equals(gridAgent.id);
-  }  public void setLocation(Supplier<GridLocation> func) {
-    locationSupplier = func;
-  }
-
-  @Override
-  public GridAgent clone() {
-    GridAgent newAgent = new GridAgent(getGroup());
-    newAgent.setId(getId());
-    if (locationSupplier == null) {
-      newAgent.setLocation(new GridLocation(getLocation().getX(), getLocation().getY()));
-    } else {
-      newAgent.setLocation(locationSupplier.get());
-    }
-    newAgent.interactsAs(interactFunction);
-    newAgent.connectsIf(connectFunction);
-    newAgent.nearIf(nearFunction);
-    newAgent.stepAs(stepFunction);
-    newAgent.moveAs(moveFunction);
-    newAgent.collidesAs(collideFunction);
-    for (Map.Entry<String, Double> entry : numericProperties.entrySet()) {
-      newAgent.setProperty(entry.getKey(), new Double(entry.getValue()));
-    }
-    for (Map.Entry<String, String> entry : stringProperties.entrySet()) {
-      newAgent.setProperty(entry.getKey(), new String(entry.getValue()));
-    }
-    return newAgent;
-  }  @Override
   public GridLocation getLocation() {
     return location;
   }
 
   @Override
-  public String toString() {
-    return "GridAgent{" +
-        "id=" + id +
-        ", location=" + location +
-        ", group='" + group + '\'' +
-        '}';
-  }  @Override
+  public void setLocation(GridLocation location) {
+    this.location = location;
+  }
+
+  public void setLocation(Supplier<GridLocation> func) {
+    locationSupplier = func;
+  }
+
+  @Override
+  public boolean isNear(Agent<GridLocation, ?> a) {
+    return nearFunction.apply(this, a);
+  }
+
+  @Override
+  public boolean connects(Agent<GridLocation, String> a) {
+    return connectFunction.apply(this, a);
+  }
+
+  @Override
+  public void interacts(Agent<GridLocation, String> a) {
+    interactFunction.accept(this, a);
+  }
+
+  @Override
   public String getGroup() {
     return group;
   }
@@ -132,16 +105,14 @@ public class GridAgent implements Agent<GridLocation, String> {
     return collideFunction.apply(with, at);
   }
 
-
+  @Override
+  public Object getId() {
+    return id;
+  }
 
   @Override
   public void setId(Object id) {
     this.id = id;
-  }
-
-  @Override
-  public Object getId() {
-    return id;
   }
 
   @Override
@@ -195,23 +166,54 @@ public class GridAgent implements Agent<GridLocation, String> {
   }
 
   @Override
-  public boolean isNear(Agent<GridLocation, ?> a) {
-    return nearFunction.apply(this, a);
+  public int hashCode() {
+    return Objects.hash(id);
   }
 
   @Override
-  public boolean connects(Agent<GridLocation, String> a) {
-    return connectFunction.apply(this, a);
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    GridAgent gridAgent = (GridAgent) o;
+    return id.equals(gridAgent.id);
   }
 
   @Override
-  public void interacts(Agent<GridLocation, String> a) {
-    interactFunction.accept(this, a);
+  public GridAgent clone() {
+    GridAgent newAgent = new GridAgent(getGroup());
+    newAgent.setId(getId());
+    if (locationSupplier == null) {
+      newAgent.setLocation(new GridLocation(getLocation().getX(), getLocation().getY()));
+    } else {
+      newAgent.setLocation(locationSupplier.get());
+    }
+    newAgent.interactsAs(interactFunction);
+    newAgent.connectsIf(connectFunction);
+    newAgent.nearIf(nearFunction);
+    newAgent.stepAs(stepFunction);
+    newAgent.moveAs(moveFunction);
+    newAgent.collidesAs(collideFunction);
+    for (Map.Entry<String, Double> entry : numericProperties.entrySet()) {
+      newAgent.setProperty(entry.getKey(), new Double(entry.getValue()));
+    }
+    for (Map.Entry<String, String> entry : stringProperties.entrySet()) {
+      newAgent.setProperty(entry.getKey(), new String(entry.getValue()));
+    }
+    return newAgent;
   }
 
-
-
-
+  @Override
+  public String toString() {
+    return "GridAgent{" +
+        "id=" + id +
+        ", location=" + location +
+        ", group='" + group + '\'' +
+        '}';
+  }
 
 
 }

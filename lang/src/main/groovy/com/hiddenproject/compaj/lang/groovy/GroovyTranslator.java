@@ -2,7 +2,6 @@ package com.hiddenproject.compaj.lang.groovy;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.*;
 import com.hiddenproject.compaj.lang.*;
 import com.hiddenproject.compaj.lang.extension.*;
 import groovy.lang.*;
@@ -70,12 +69,11 @@ public class GroovyTranslator implements Translator {
     CompaJScriptBase.addExtension(new AgentExtension());
   }
 
-  public GroovyTranslator(TranslatorUtils translatorUtils, CompilationCustomizer... compilationCustomizer) {
-    this("CompaJScriptBase", translatorUtils, compilationCustomizer);
+  public GroovyTranslator(TranslatorUtils translatorUtils) {
+    this("CompaJScriptBase", translatorUtils);
   }
 
-  public GroovyTranslator(String base, TranslatorUtils translatorUtils, CompilationCustomizer... compilationCustomizer) {
-    customizerList.addAll(Arrays.stream(compilationCustomizer).collect(Collectors.toList()));
+  public GroovyTranslator(String base, TranslatorUtils translatorUtils) {
     CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
     compilerConfiguration.addCompilationCustomizers(customizerList.toArray(new CompilationCustomizer[]{}));
     compilerConfiguration.setScriptBaseClass(base);
