@@ -1,6 +1,14 @@
 # CompaJ Project
 This is the home of the CompaJ Project - open source, cross-platform programming and numeric computing platform for math modelling.
 
+<details> 
+  <summary>Screenshots</summary>
+  
+   ![Terminal](https://user-images.githubusercontent.com/22001123/172052428-5663f5e4-e667-4280-8099-9c0e2f482f1e.png)
+   ![CodeEditor](https://user-images.githubusercontent.com/22001123/172052540-0b28d24e-54f3-4bee-b6a7-996c4bf87538.png)
+   ![WorkSpace](https://user-images.githubusercontent.com/22001123/172052591-0a536b12-2d52-4dde-8a73-af29c178d775.png)
+</details>
+
 ### Status
 ___
 Project is under active development. CompaJ supports only basic functions and models now, which are not intended to use in real projects.

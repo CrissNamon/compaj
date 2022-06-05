@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>compaj</artifactId>
-        <groupId>com.hiddenproject</groupId>
+        <groupId>tech.hiddenproject</groupId>
         <version>${revision}</version>
     </parent>
-    <groupId>com.hiddenproject.compaj</groupId>
+    <groupId>tech.hiddenproject.compaj</groupId>
     <artifactId>gui</artifactId>
     <version>${gui.version}</version>
     <properties>
@@ -56,7 +56,7 @@
             <version>17.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.hiddenproject.compaj</groupId>
+            <groupId>tech.hiddenproject.compaj</groupId>
             <artifactId>lang</artifactId>
             <version>${lang.version}</version>
         </dependency>
@@ -126,6 +126,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.workday</groupId>
+            <artifactId>timeseries-forecast</artifactId>
+            <version>1.1.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -152,7 +157,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.hiddenproject.compaj.gui.Compaj</mainClass>
+                    <mainClass>tech.hiddenproject.compaj.gui.Compaj</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -220,13 +225,13 @@
                                 <argument>--input</argument>
                                 <argument>${project.build.directory}/libs</argument>
                                 <argument>--class</argument>
-                                <argument>com.hiddenproject.compaj.gui.Main</argument>
+                                <argument>tech.hiddenproject.compaj.gui.Main</argument>
                                 <argument>--main-jar</argument>
                                 <argument>./gui-0.0.1.jar</argument>
                                 <argument>--output</argument>
                                 <argument>package</argument>
                                 <argument>--identifier</argument>
-                                <argument>com.hiddenproject.compaj.gui</argument>
+                                <argument>tech.hiddenproject.compaj.gui</argument>
                                 <argument>--name</argument>
                                 <argument>CompaJ</argument>
 

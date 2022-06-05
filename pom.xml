@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.hiddenproject</groupId>
+    <groupId>tech.hiddenproject</groupId>
     <artifactId>compaj</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
     <properties>
         <revision>0.0.2</revision>
-        <core.version>0.0.1</core.version>
-        <applied.version>0.0.1</applied.version>
+        <core.version>0.0.2</core.version>
+        <applied.version>0.0.2</applied.version>
         <lang.version>0.0.2</lang.version>
-        <repl.version>0.0.1</repl.version>
-        <gui.version>0.0.1</gui.version>
+        <repl.version>0.0.2</repl.version>
+        <gui.version>0.0.2</gui.version>
     </properties>
     <modules>
         <module>core</module>

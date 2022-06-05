@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>compaj</artifactId>
-        <groupId>com.hiddenproject</groupId>
+        <groupId>tech.hiddenproject</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.hiddenproject.compaj</groupId>
+    <groupId>tech.hiddenproject.compaj</groupId>
     <artifactId>repl</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
-            <groupId>com.hiddenproject.compaj</groupId>
+            <groupId>tech.hiddenproject.compaj</groupId>
             <artifactId>lang</artifactId>
             <version>${lang.version}</version>
             <scope>compile</scope>
@@ -27,7 +27,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>com.hiddenproject.compaj.repl.Main</mainClass>
+                    <mainClass>tech.hiddenproject.compaj.repl.Main</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -61,7 +61,7 @@
                         <index>true</index>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.hiddenproject.compaj.repl.Main</mainClass>
+                            <mainClass>tech.hiddenproject.compaj.repl.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
