@@ -1,4 +1,4 @@
-package tech.hiddenproject.compaj.lang.extension
+package tech.hiddenproject.compaj.extension
 
 import org.apache.commons.math3.complex.Complex
 

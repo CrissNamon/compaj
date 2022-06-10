@@ -19,6 +19,12 @@
             <version>${lang.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>tech.hiddenproject.compaj</groupId>
+            <artifactId>lang-extensions</artifactId>
+            <version>${lang-extensions.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -6,4 +6,6 @@ public interface TranslatorUtils {
   void useRawLanguage(boolean f);
 
   void addCodeTranslation(CodeTranslation translation);
+
+  boolean isLexemeInString(int start, int end);
 }

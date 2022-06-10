@@ -1,8 +1,9 @@
-package tech.hiddenproject.compaj.lang.extension
+package tech.hiddenproject.compaj.extension
 
 
 import tech.hiddenproject.compaj.core.data.NamedFunction
 import tech.hiddenproject.compaj.core.model.DynamicFunction
+import tech.hiddenproject.compaj.lang.extension.Extension
 
 import java.lang.reflect.Array
 

@@ -12,13 +12,6 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
-import tech.hiddenproject.compaj.lang.extension.AgentExtension;
-import tech.hiddenproject.compaj.lang.extension.ArrayRealVectorExtension;
-import tech.hiddenproject.compaj.lang.extension.ComplexExtension;
-import tech.hiddenproject.compaj.lang.extension.MathExtension;
-import tech.hiddenproject.compaj.lang.extension.ModelExtension;
-import tech.hiddenproject.compaj.lang.extension.NamedFunctionExtension;
-import tech.hiddenproject.compaj.lang.extension.StarterExtension;
 
 public class GroovyTranslator implements Translator {
 
@@ -28,13 +21,11 @@ public class GroovyTranslator implements Translator {
   private static final String[] normalImports =
       new String[] {
         "tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
-        "tech.hiddenproject.compaj.lang.extension.MathExtension",
         "org.apache.commons.math3.analysis.MultivariateFunction",
         "java.lang.reflect.Array",
         "java.lang.reflect.ParameterizedType",
         "java.lang.reflect.Type",
         "tech.hiddenproject.compaj.core.model.DynamicFunction",
-        "tech.hiddenproject.compaj.lang.extension.CompaJComplex"
       };
 
   private static final String[] starImports =
@@ -64,16 +55,6 @@ public class GroovyTranslator implements Translator {
   private final TranslatorUtils translatorUtils;
   private final Map<String, Object> variables;
   private final ByteArrayOutputStream output;
-
-  {
-    CompaJScriptBase.addExtension(new StarterExtension());
-    CompaJScriptBase.addExtension(new MathExtension());
-    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
-    CompaJScriptBase.addExtension(new ModelExtension());
-    CompaJScriptBase.addExtension(new NamedFunctionExtension());
-    CompaJScriptBase.addExtension(new ComplexExtension());
-    CompaJScriptBase.addExtension(new AgentExtension());
-  }
 
   public GroovyTranslator(TranslatorUtils translatorUtils) {
     this("CompaJScriptBase", translatorUtils);

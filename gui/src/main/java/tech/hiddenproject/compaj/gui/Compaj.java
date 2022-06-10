@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.Locale;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -14,6 +15,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import org.apache.commons.math3.complex.ComplexFormat;
+import tech.hiddenproject.compaj.extension.AgentExtension;
+import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
+import tech.hiddenproject.compaj.extension.ComplexExtension;
+import tech.hiddenproject.compaj.extension.MathExtension;
+import tech.hiddenproject.compaj.extension.ModelExtension;
+import tech.hiddenproject.compaj.extension.NamedFunctionExtension;
+import tech.hiddenproject.compaj.extension.StarterExtension;
 import tech.hiddenproject.compaj.gui.tab.EditorTab;
 import tech.hiddenproject.compaj.gui.tab.TerminalTab;
 import tech.hiddenproject.compaj.gui.tab.WorkSpaceTab;
@@ -24,10 +33,19 @@ import tech.hiddenproject.compaj.gui.widget.SIRModelWidget;
 import tech.hiddenproject.compaj.gui.widget.SISModelWidget;
 import tech.hiddenproject.compaj.gui.widget.WorkSpaceWidget;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
+import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
+import tech.hiddenproject.compaj.translation.MathTranslations;
 
 public class Compaj extends Application {
+
+  public static final ComplexFormat COMPLEX_FORMAT;
+
+  static {
+    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+    COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat);
+  }
 
   private static final GroovyTranslator translator;
 
@@ -36,17 +54,41 @@ public class Compaj extends Application {
   private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
+  private static final String[] normalImports =
+      new String[] {
+          "tech.hiddenproject.compaj.extension.MathExtension",
+          "tech.hiddenproject.compaj.extension.CompaJComplex"
+      };
+
+  private static final String[] starImports =
+      new String[] {
+          "tech.hiddenproject.compaj.gui",
+          "tech.hiddenproject.compaj.gui.widget",
+          "tech.hiddenproject.compaj.gui.component"
+      };
+
   static {
     GroovyTranslator.getImportCustomizer()
-        .addStarImports(
-            "tech.hiddenproject.compaj.gui",
-            "tech.hiddenproject.compaj.gui.widget",
-            "tech.hiddenproject.compaj.gui.component");
+        .addStarImports(starImports)
+        .addImports(normalImports)
+        .addStaticImport("tech.hiddenproject.compaj.gui.Compaj", "COMPLEX_FORMAT");
   }
 
   static {
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
+    translatorUtils.addCodeTranslation(MathTranslations::translateComplexNumbers);
+    translatorUtils.addCodeTranslation(MathTranslations::translateMagicNumbers);
     translator = new GroovyTranslator(translatorUtils);
+  }
+
+  {
+    CompaJScriptBase.addExtension(new StarterExtension());
+    CompaJScriptBase.addExtension(new MathExtension());
+    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
+    CompaJScriptBase.addExtension(new ModelExtension());
+    CompaJScriptBase.addExtension(new NamedFunctionExtension());
+    CompaJScriptBase.addExtension(new ComplexExtension());
+    CompaJScriptBase.addExtension(new AgentExtension());
   }
 
   public static void main(String[] args) {

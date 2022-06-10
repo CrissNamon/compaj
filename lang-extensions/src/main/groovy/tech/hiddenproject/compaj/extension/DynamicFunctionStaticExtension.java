@@ -1,4 +1,4 @@
-package tech.hiddenproject.compaj.lang.extension;
+package tech.hiddenproject.compaj.extension;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

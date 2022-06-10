@@ -1,6 +1,7 @@
-package tech.hiddenproject.compaj.lang.extension
+package tech.hiddenproject.compaj.extension
 
 import org.apache.commons.math3.complex.Complex
+import tech.hiddenproject.compaj.lang.extension.Extension
 
 class ComplexExtension implements Extension {
     @Override

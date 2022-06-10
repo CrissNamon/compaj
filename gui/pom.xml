@@ -20,7 +20,7 @@
         <carbonicons.version>12.3.1</carbonicons.version>
         <timeseries.version>1.1.1</timeseries.version>
         <default.classifier>mac</default.classifier>
-        <jpackager.path>tools/jdk.packager-osx/jpackager</jpackager.path>
+        <jpackager.path>${project.basedir}/tools/jdk.packager-osx/jpackager</jpackager.path>
     </properties>
     <profiles>
         <profile>
@@ -45,6 +45,12 @@
         </profile>
     </profiles>
     <dependencies>
+        <dependency>
+            <groupId>tech.hiddenproject.compaj</groupId>
+            <artifactId>lang-extensions</artifactId>
+            <version>${lang-extensions.version}</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
