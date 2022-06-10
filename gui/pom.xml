@@ -11,8 +11,9 @@
     <version>${gui.version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>17.0.2</javafx.version>
+        <javafx.version>17.0.1</javafx.version>
         <jpackager.path>/Users/kpekepsalt/Downloads/jdk.packager-osx/jpackager</jpackager.path>
+        <default.classifier>mac</default.classifier>
     </properties>
     <profiles>
         <profile>
@@ -28,6 +29,9 @@
         </profile>
         <profile>
             <id>Win</id>
+            <properties>
+                <default.classifier>win</default.classifier>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.openjfx</groupId>
@@ -39,6 +43,9 @@
         </profile>
         <profile>
             <id>Linux</id>
+            <properties>
+                <default.classifier>linux</default.classifier>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.openjfx</groupId>
@@ -53,7 +60,8 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.1</version>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
         </dependency>
         <dependency>
             <groupId>tech.hiddenproject.compaj</groupId>
@@ -193,6 +201,7 @@
                             <outputDirectory>${project.build.directory}/mods</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <includeGroupIds>org.openjfx</includeGroupIds>
+                            <classifier>${default.classifier}</classifier>
                         </configuration>
                     </execution>
                 </executions>
@@ -227,7 +236,7 @@
                                 <argument>--class</argument>
                                 <argument>tech.hiddenproject.compaj.gui.Main</argument>
                                 <argument>--main-jar</argument>
-                                <argument>./gui-0.0.1.jar</argument>
+                                <argument>./gui-${gui.version}.jar</argument>
                                 <argument>--output</argument>
                                 <argument>package</argument>
                                 <argument>--identifier</argument>
