@@ -9,6 +9,7 @@
     <groupId>tech.hiddenproject.compaj</groupId>
     <artifactId>gui</artifactId>
     <version>${gui.version}</version>
+    <name>CompaJ</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>17.0.1</javafx.version>
@@ -19,12 +20,14 @@
         <richtextfx.version>0.10.9</richtextfx.version>
         <carbonicons.version>12.3.1</carbonicons.version>
         <timeseries.version>1.1.1</timeseries.version>
-        <default.classifier>mac</default.classifier>
         <jpackager.path>${project.basedir}/tools/jdk.packager-osx/jpackager</jpackager.path>
     </properties>
     <profiles>
         <profile>
             <id>Mac</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <default.classifier>mac</default.classifier>
             </properties>
@@ -42,6 +45,134 @@
                 <default.classifier>linux</default.classifier>
                 <jpackager.path>tools/jdk.packager-linux/jpackager</jpackager.path>
             </properties>
+        </profile>
+        <profile>
+            <id>Universal Jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <outputFile>target\${project.name}.jar</outputFile>
+                                    <transformers>
+                                        <transformer implementation=
+                                                             "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>tech.hiddenproject.compaj.gui.Main</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>Native image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-libs</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                    <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-modules</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/mods</outputDirectory>
+                                    <includeScope>runtime</includeScope>
+                                    <includeGroupIds>org.openjfx</includeGroupIds>
+                                    <classifier>${default.classifier}</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- jpackage -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${jpackager.path}</executable>
+                                    <workingDirectory>${project.build.directory}</workingDirectory>
+                                    <longModulepath>false
+                                    </longModulepath> <!-- fix for https://github.com/mojohaus/exec-maven-plugin/issues/75 -->
+                                    <environmentVariables>
+                                        <JAVA_HOME>${java.home}</JAVA_HOME>
+                                    </environmentVariables>
+                                    <arguments>
+                                        <!-- packager arguments -->
+                                        <argument>create-image</argument>
+                                        <argument>--verbose</argument>
+                                        <argument>--echo-mode</argument>
+                                        <argument>--input</argument>
+                                        <argument>${project.build.directory}/libs</argument>
+                                        <argument>--class</argument>
+                                        <argument>tech.hiddenproject.compaj.gui.Main</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>./gui-${gui.version}.jar</argument>
+                                        <argument>--output</argument>
+                                        <argument>package</argument>
+                                        <argument>--identifier</argument>
+                                        <argument>tech.hiddenproject.compaj.gui</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+
+                                        <!-- jlink arguments -->
+                                        <argument>--module-path</argument>
+                                        <argument>${java.home}/jmods:${project.build.directory}/mods</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>
+                                            java.base,java.sql,java.scripting,java.logging,java.desktop,java.xml,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls
+                                        </argument>
+                                        <argument>--strip-native-commands</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
     <dependencies>
@@ -161,95 +292,6 @@
                 <configuration>
                     <mainClass>tech.hiddenproject.compaj.gui.Compaj</mainClass>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/libs</outputDirectory>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-libs</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
-                            <includeScope>runtime</includeScope>
-                            <excludeGroupIds>org.openjfx</excludeGroupIds>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-modules</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/mods</outputDirectory>
-                            <includeScope>runtime</includeScope>
-                            <includeGroupIds>org.openjfx</includeGroupIds>
-                            <classifier>${default.classifier}</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- jpackage -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>create-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${jpackager.path}</executable>
-                            <workingDirectory>${project.build.directory}</workingDirectory>
-                            <longModulepath>false
-                            </longModulepath> <!-- fix for https://github.com/mojohaus/exec-maven-plugin/issues/75 -->
-                            <environmentVariables>
-                                <JAVA_HOME>${java.home}</JAVA_HOME>
-                            </environmentVariables>
-                            <arguments>
-                                <!-- packager arguments -->
-                                <argument>create-image</argument>
-                                <argument>--verbose</argument>
-                                <argument>--echo-mode</argument>
-                                <argument>--input</argument>
-                                <argument>${project.build.directory}/libs</argument>
-                                <argument>--class</argument>
-                                <argument>tech.hiddenproject.compaj.gui.Main</argument>
-                                <argument>--main-jar</argument>
-                                <argument>./gui-${gui.version}.jar</argument>
-                                <argument>--output</argument>
-                                <argument>package</argument>
-                                <argument>--identifier</argument>
-                                <argument>tech.hiddenproject.compaj.gui</argument>
-                                <argument>--name</argument>
-                                <argument>CompaJ</argument>
-
-                                <!-- jlink arguments -->
-                                <argument>--module-path</argument>
-                                <argument>${java.home}/jmods:${project.build.directory}/mods</argument>
-                                <argument>--add-modules</argument>
-                                <argument>
-                                    java.base,java.sql,java.scripting,java.logging,java.desktop,java.xml,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls
-                                </argument>
-                                <argument>--strip-native-commands</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
