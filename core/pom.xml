@@ -9,10 +9,13 @@
     </parent>
     <version>${core.version}</version>
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>tech.hiddenproject.compaj</groupId>
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
+    <properties>
+        <commons-math.version>3.6.1</commons-math.version>
+        <commons-lang.version>3.12.0</commons-lang.version>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -29,12 +32,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
+            <version>${commons-math.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>${commons-lang.version}</version>
         </dependency>
     </dependencies>
 </project>

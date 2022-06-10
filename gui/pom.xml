@@ -12,48 +12,36 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>17.0.1</javafx.version>
-        <jpackager.path>/Users/kpekepsalt/Downloads/jdk.packager-osx/jpackager</jpackager.path>
+        <fxribbon.version>1.2.2</fxribbon.version>
+        <jmetro.version>11.6.14</jmetro.version>
+        <formsfx.version>11.3.2</formsfx.version>
+        <ikonli.version>12.3.1</ikonli.version>
+        <richtextfx.version>0.10.9</richtextfx.version>
+        <carbonicons.version>12.3.1</carbonicons.version>
+        <timeseries.version>1.1.1</timeseries.version>
         <default.classifier>mac</default.classifier>
+        <jpackager.path>tools/jdk.packager-osx/jpackager</jpackager.path>
     </properties>
     <profiles>
         <profile>
             <id>Mac</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-graphics</artifactId>
-                    <version>${javafx.version}</version>
-                    <classifier>mac</classifier>
-                </dependency>
-            </dependencies>
+            <properties>
+                <default.classifier>mac</default.classifier>
+            </properties>
         </profile>
         <profile>
             <id>Win</id>
             <properties>
                 <default.classifier>win</default.classifier>
+                <jpackager.path>tools/jdk.packager-windows/jpackager.exe</jpackager.path>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-graphics</artifactId>
-                    <version>${javafx.version}</version>
-                    <classifier>win</classifier>
-                </dependency>
-            </dependencies>
         </profile>
         <profile>
             <id>Linux</id>
             <properties>
                 <default.classifier>linux</default.classifier>
+                <jpackager.path>tools/jdk.packager-linux/jpackager</jpackager.path>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-graphics</artifactId>
-                    <version>${javafx.version}</version>
-                    <classifier>linux</classifier>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
     <dependencies>
@@ -61,7 +49,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
-            <classifier>win</classifier>
+            <classifier>${default.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>tech.hiddenproject.compaj</groupId>
@@ -71,7 +59,7 @@
         <dependency>
             <groupId>com.pixelduke</groupId>
             <artifactId>fxribbon</artifactId>
-            <version>1.2.2</version>
+            <version>${fxribbon.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -82,7 +70,7 @@
         <dependency>
             <groupId>org.jfxtras</groupId>
             <artifactId>jmetro</artifactId>
-            <version>11.6.14</version>
+            <version>${jmetro.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -93,7 +81,7 @@
         <dependency>
             <groupId>com.dlsc.formsfx</groupId>
             <artifactId>formsfx-core</artifactId>
-            <version>11.3.2</version>
+            <version>${formsfx.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -104,7 +92,7 @@
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
-            <version>12.3.1</version>
+            <version>${ikonli.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -115,7 +103,7 @@
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
-            <version>0.10.9</version>
+            <version>${richtextfx.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -126,7 +114,7 @@
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-carbonicons-pack</artifactId>
-            <version>12.3.1</version>
+            <version>${carbonicons.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -137,7 +125,7 @@
         <dependency>
             <groupId>com.workday</groupId>
             <artifactId>timeseries-forecast</artifactId>
-            <version>1.1.1</version>
+            <version>${timeseries.version}</version>
         </dependency>
     </dependencies>
     <build>
