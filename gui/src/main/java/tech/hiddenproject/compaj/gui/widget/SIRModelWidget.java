@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -93,7 +92,7 @@ public class SIRModelWidget implements WorkSpaceWidget {
         .with("S", timeSeries, sirModel.fnslog().get("S"))
         .with("I", timeSeries, sirModel.fnslog().get("I"))
         .with("R", timeSeries, sirModel.fnslog().get("R"));
-    LineChart lineChart = lineChartBuilder.build();
+    javafx.scene.chart.LineChart lineChart = lineChartBuilder.build();
     lineChart.setAnimated(false);
     BaseWidget lineChartWidget = new BaseWidget(lineChart, "Линейная диаграмма");
 

@@ -36,7 +36,6 @@ import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
-import tech.hiddenproject.compaj.translation.MathTranslations;
 
 public class Compaj extends Application {
 
@@ -76,8 +75,6 @@ public class Compaj extends Application {
 
   static {
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
-    translatorUtils.addCodeTranslation(MathTranslations::translateComplexNumbers);
-    translatorUtils.addCodeTranslation(MathTranslations::translateMagicNumbers);
     translator = new GroovyTranslator(translatorUtils);
   }
 

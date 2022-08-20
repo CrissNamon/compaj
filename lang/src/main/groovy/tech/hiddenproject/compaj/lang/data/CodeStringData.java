@@ -35,4 +35,12 @@ public class CodeStringData {
     CodeStringData that = (CodeStringData) o;
     return start == that.start && end == that.end;
   }
+
+  @Override
+  public String toString() {
+    return "CodeStringData{" +
+        "start=" + start +
+        ", end=" + end +
+        '}';
+  }
 }

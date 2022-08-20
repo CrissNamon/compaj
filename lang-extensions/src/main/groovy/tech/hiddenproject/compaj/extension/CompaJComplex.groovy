@@ -19,4 +19,8 @@ class CompaJComplex extends Complex {
     String toString() {
         "Complex" + super.toString()
     }
+
+    Complex negative() {
+        return this.negate()
+    }
 }

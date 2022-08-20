@@ -12,7 +12,7 @@ class ComplexExtension implements Extension {
         Number.metaClass.plus << { CompaJComplex c -> c.add(delegate.doubleValue()) }
         CompaJComplex.metaClass.minus = { Number m -> delegate.subtract(new CompaJComplex(m.doubleValue(), 0)) }
         CompaJComplex.metaClass.minus = { CompaJComplex c -> delegate.subtract(c) }
-        Number.metaClass.minus << { CompaJComplex c -> c.subtract(delegate.doubleValue()) }
+        Number.metaClass.minus << { CompaJComplex c -> new CompaJComplex(delegate.doubleValue(), 0).subtract(c) }
         CompaJComplex.metaClass.multiply = { Number m -> delegate.multiply(new CompaJComplex(m.doubleValue(), 0)) }
         Number.metaClass.multiply << { CompaJComplex c -> c.multiply(delegate.doubleValue()) }
         CompaJComplex.metaClass.div = { Number m -> delegate.divide(new CompaJComplex(m.doubleValue(), 0)) }

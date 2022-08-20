@@ -14,6 +14,10 @@ public class SIRABModel {
     gridABM = new GridABM(300, 300);
   }
 
+  public SIRABModel(int width, int height) {
+    gridABM = new GridABM(width, height);
+  }
+
   public GridABM model() {
     return gridABM;
   }

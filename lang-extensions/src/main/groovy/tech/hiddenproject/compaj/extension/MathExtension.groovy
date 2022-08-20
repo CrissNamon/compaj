@@ -1,5 +1,6 @@
 package tech.hiddenproject.compaj.extension
 
+
 import tech.hiddenproject.compaj.lang.extension.Extension
 
 import java.lang.reflect.Method
@@ -20,6 +21,13 @@ class MathExtension implements Extension {
             Math.metaClass.static."${method}" << fromArray(method)
             instance.metaClass."${method}" << fromArray(method)
         }
+        addMathConstants(instance)
+    }
+
+    private void addMathConstants(Script instance) {
+        instance.metaClass.'$pi' = Math.PI
+        instance.metaClass.'$i' = new CompaJComplex(0, 1)
+        instance.metaClass.'$e' = Math.E
     }
 
     private static Closure fromList(String method) {

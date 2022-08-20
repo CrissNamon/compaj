@@ -94,6 +94,14 @@ public class GridABM implements AgentModel<GridAgent, GridLocation> {
     return history;
   }
 
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
   private void interactStep(GridAgent a) {
     for (GridAgent b : agents) {
       if (a.getId() == b.getId()) {

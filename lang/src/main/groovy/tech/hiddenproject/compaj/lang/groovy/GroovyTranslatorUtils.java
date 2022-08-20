@@ -65,6 +65,7 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
   }
 
   private String applyTranslations(String script) {
+    extractAllStrings(script);
     for (CodeTranslation codeTranslation : codeTranslations) {
       script = codeTranslation.translate(script);
       extractAllStrings(script);
@@ -110,7 +111,7 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
   }
 
   private String translateNewObjects(String script) {
-    Pattern p = Pattern.compile("(?<![:\\[])(:)(\\w++)(\\(.*\\))?(?![ ]*[{\\]])");
+    Pattern p = Pattern.compile("(?<![:\\[])(:)(\\w++)(\\([^)]*\\))?(?![ ]*[{\\]])");
     Matcher m = p.matcher(script);
     StringBuilder sb = new StringBuilder();
     while (m.find()) {
