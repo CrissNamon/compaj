@@ -5,13 +5,13 @@ import java.util.Scanner;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
-import tech.hiddenproject.compaj.repl.utils.ReplTranslatorUtils;
+import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
   public static void main(String[] args) {
     TranslatorUtils translatorUtils =
-        new ReplTranslatorUtils();
+        new GroovyTranslatorUtils();
     GroovyTranslator.getImportCustomizer()
         .addImports("tech.hiddenproject.compaj.repl.Compaj")
         .addStaticImport("tech.hiddenproject.compaj.repl.Compaj", "exit");
@@ -38,4 +38,5 @@ public class Main {
       }
     } while (true);
   }
+
 }

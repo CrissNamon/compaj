@@ -1,5 +1,6 @@
 package tech.hiddenproject.compaj.gui.view;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -61,7 +62,7 @@ public class ReplView extends ScrollPane {
 
   private Object evaluate(String text) {
     try {
-      return Compaj.getTranslator().evaluate(text);
+      return Compaj.getTranslator().evaluate(text, Set.of(this::translateEraseTypes));
     } catch (Exception e) {
       return e.getLocalizedMessage();
     }
@@ -91,5 +92,9 @@ public class ReplView extends ScrollPane {
 
   public void clearHistory() {
     historyContainer.getChildren().clear();
+  }
+
+  private String translateEraseTypes(String script) {
+    return script.replaceAll("[ ]*(\\w++)[ ]*(\\w++)[ ]*=", "$2 =");
   }
 }

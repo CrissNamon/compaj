@@ -50,6 +50,15 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
     return script;
   }
 
+  @Override
+  public String translate(String script, Set<CodeTranslation> codeTranslations) {
+    String defaultTranslations = translate(script);
+    for (CodeTranslation codeTranslation : codeTranslations) {
+      defaultTranslations = codeTranslation.translate(defaultTranslations);
+    }
+    return defaultTranslations;
+  }
+
   public void useRawLanguage(boolean f) {
     useRawGroovy = f;
   }

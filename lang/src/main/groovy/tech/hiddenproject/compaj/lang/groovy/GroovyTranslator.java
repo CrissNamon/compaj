@@ -5,11 +5,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import tech.hiddenproject.compaj.lang.CodeTranslation;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 
@@ -78,8 +80,13 @@ public class GroovyTranslator implements Translator {
   }
 
   public Object evaluate(String script) {
+    return evaluate(script, Set.of());
+  }
+
+  @Override
+  public Object evaluate(String script, Set<CodeTranslation> codeTranslations) {
     output.reset();
-    Object result = groovyShell.evaluate(translatorUtils.translate(script));
+    Object result = groovyShell.evaluate(translatorUtils.translate(script, codeTranslations));
     updateVariables();
     if (result != null) {
       getBinding().setVariable("trn", result);
@@ -88,6 +95,11 @@ public class GroovyTranslator implements Translator {
       return result;
     }
     return output.toString();
+  }
+
+  @Override
+  public TranslatorUtils getTranslatorUtils() {
+    return translatorUtils;
   }
 
   private void updateVariables() {

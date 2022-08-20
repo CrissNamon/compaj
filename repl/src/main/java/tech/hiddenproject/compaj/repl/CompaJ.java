@@ -12,10 +12,8 @@ import tech.hiddenproject.compaj.extension.ModelExtension;
 import tech.hiddenproject.compaj.extension.NamedFunctionExtension;
 import tech.hiddenproject.compaj.extension.StarterExtension;
 import tech.hiddenproject.compaj.lang.Translator;
-import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
-import tech.hiddenproject.compaj.translation.MathTranslations;
 
 public class CompaJ {
 
@@ -28,7 +26,6 @@ public class CompaJ {
   private static CompaJ INSTANCE;
   private static ExitManager exitManager;
 
-  private TranslatorUtils translatorUtils;
   private Translator translator;
 
   {
@@ -44,11 +41,6 @@ public class CompaJ {
   {
     GroovyTranslator.getImportCustomizer()
         .addImports(normalImports);
-  }
-
-  {
-    translatorUtils.addCodeTranslation(MathTranslations::translateComplexNumbers);
-    translatorUtils.addCodeTranslation(MathTranslations::translateMagicNumbers);
   }
 
   private CompaJ() {
@@ -80,10 +72,11 @@ public class CompaJ {
 
   public void setTranslator(Translator translator) {
     this.translator = translator;
+    this.translator.getTranslatorUtils().addCodeTranslation(this::translateEraseTypes);
   }
 
-  public void setTranslatorUtils(TranslatorUtils translatorUtils) {
-    this.translatorUtils = translatorUtils;
+  private String translateEraseTypes(String script) {
+    return script.replaceAll("[ ]*(\\w++)[ ]*(\\w++)[ ]*=", "$2 =");
   }
 
   public static void exit() {
