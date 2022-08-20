@@ -13,8 +13,8 @@ public class Main {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
     GroovyTranslator.getImportCustomizer()
-        .addImports("tech.hiddenproject.compaj.repl.Compaj")
-        .addStaticImport("tech.hiddenproject.compaj.repl.Compaj", "exit");
+        .addImports("tech.hiddenproject.compaj.repl.CompaJ")
+        .addStaticImport("tech.hiddenproject.compaj.repl.CompaJ", "exit");
     Translator translator = new GroovyTranslator(translatorUtils);
     CompaJ.getInstance().setTranslator(translator);
     Scanner sc = new Scanner(System.in);
