@@ -39,7 +39,7 @@ public class VariablesTableView extends VBox {
   public void update() {
     Map<String, Object> variables = Compaj.getTranslator().getVariables();
     for (Map.Entry<String, Object> entry : variables.entrySet()) {
-      if (entry.getKey().equals("out")) {
+      if (Compaj.getTranslator().getHiddenVariables().contains(entry.getKey())) {
         continue;
       }
       Variable v = new Variable(entry.getKey(), entry.getValue().toString());

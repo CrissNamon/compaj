@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -19,6 +20,12 @@ public class GroovyTranslator implements Translator {
 
   private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
   private static final ImportCustomizer importCustomizer;
+
+  public static final Set<String> HIDDEN_VARIABLES = Set.of(
+      "out",
+      "$compajOut",
+      "$compajOutputStream"
+  );
 
   private static final String[] normalImports =
       new String[] {
@@ -86,7 +93,8 @@ public class GroovyTranslator implements Translator {
   @Override
   public Object evaluate(String script, Set<CodeTranslation> codeTranslations) {
     output.reset();
-    Object result = groovyShell.evaluate(translatorUtils.translate(script, codeTranslations));
+    Script res = groovyShell.parse(translatorUtils.translate(script, codeTranslations));
+    Object result = res.run();
     updateVariables();
     if (result != null) {
       getBinding().setVariable("trn", result);
@@ -100,6 +108,11 @@ public class GroovyTranslator implements Translator {
   @Override
   public TranslatorUtils getTranslatorUtils() {
     return translatorUtils;
+  }
+
+  @Override
+  public Set<String> getHiddenVariables() {
+    return HIDDEN_VARIABLES;
   }
 
   private void updateVariables() {

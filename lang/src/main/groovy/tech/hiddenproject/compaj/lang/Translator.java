@@ -7,4 +7,5 @@ public interface Translator {
   Object evaluate(String script);
   Object evaluate(String script, Set<CodeTranslation> codeTranslations);
   TranslatorUtils getTranslatorUtils();
+  Set<String> getHiddenVariables();
 }
