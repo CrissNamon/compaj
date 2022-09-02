@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
 import tech.hiddenproject.compaj.extension.ComplexExtension;
@@ -24,7 +29,6 @@ public class CompaJ {
       };
 
   private static CompaJ INSTANCE;
-  private static ExitManager exitManager;
 
   private Translator translator;
 
@@ -44,9 +48,6 @@ public class CompaJ {
   }
 
   private CompaJ() {
-    exitManager = new ExitManager();
-    System.out.println("Welcome to CompaJ REPL!");
-    System.out.println("Version 0.0.1");
   }
 
   public static void readFile(String url) {
@@ -56,6 +57,24 @@ public class CompaJ {
       getInstance().getTranslator().evaluate(script);
     } catch (IOException e) {
       System.out.println("Error: " + e.getLocalizedMessage());
+    }
+  }
+
+  public static void readInput(String input) {
+    try {
+      Object result = getInstance().getTranslator().evaluate(input);
+      if (result != null) {
+        if (result.getClass().isArray()) {
+          System.out.println(Arrays.toString((Object[]) result));
+        } else {
+          System.out.println(result);
+        }
+      } else {
+        System.out.print("");
+        System.out.println();
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
   }
 
@@ -72,15 +91,26 @@ public class CompaJ {
 
   public void setTranslator(Translator translator) {
     this.translator = translator;
-    this.translator.getTranslatorUtils().addCodeTranslation(this::translateEraseTypes);
-  }
-
-  private String translateEraseTypes(String script) {
-    return script.replaceAll("[ ]*(\\w++)[ ]*(\\w++)[ ]*=", "$2 =");
   }
 
   public static void exit() {
-    exitManager.reset();
     System.exit(0);
+  }
+
+  public static Map<String, List<String>> getCLIParams(String[] args) {
+    final Map<String, List<String>> params = new HashMap<>();
+    List<String> options = null;
+    for (final String a : args) {
+      if (a.charAt(0) == '-') {
+        if (a.length() < 2) {
+          continue;
+        }
+        options = new ArrayList<>();
+        params.put(a.substring(1), options);
+      } else if (options != null) {
+        options.add(a);
+      }
+    }
+    return params;
   }
 }

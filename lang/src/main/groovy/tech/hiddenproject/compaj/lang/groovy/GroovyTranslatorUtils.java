@@ -21,12 +21,14 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
   private final List<CodeCheck> syntaxCheckers;
   private final List<CodeTranslation> codeTranslations;
   private final Set<CodeStringData> strings;
+  private final Set<CodeStringData> blocks;
   private boolean useRawGroovy;
 
   {
     syntaxCheckers = new ArrayList<>();
     codeTranslations = new ArrayList<>();
     strings = new HashSet<>();
+    blocks = new HashSet<>();
   }
 
   {
@@ -40,6 +42,7 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
     codeTranslations.add(this::translateLocalMetaClassMethod);
     codeTranslations.add(this::translateDoubleSuffix);
     codeTranslations.add(this::translateOverrideMethods);
+    codeTranslations.add(this::translateEraseTypes);
   }
 
   public String translate(String script) {
@@ -75,9 +78,11 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
 
   private String applyTranslations(String script) {
     extractAllStrings(script);
+    extractAllCodeBlocks(script);
     for (CodeTranslation codeTranslation : codeTranslations) {
       script = codeTranslation.translate(script);
       extractAllStrings(script);
+      extractAllCodeBlocks(script);
     }
     return script;
   }
@@ -87,6 +92,15 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
     Matcher m = p.matcher(script);
     while (m.find()) {
       strings.add(new CodeStringData(m.start(), m.end() + 1));
+    }
+  }
+
+  private void extractAllCodeBlocks(String script) {
+    Pattern p = Pattern.compile("\\{");
+    Matcher m = p.matcher(script);
+    while (m.find()) {
+      int end = findCodeBlockEnd(m.start() + 1, script);
+      blocks.add(new CodeStringData(m.start(), end + 1));
     }
   }
 
@@ -102,6 +116,15 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
   private boolean isLexemeInString(
       int start, int end, Set<CodeStringData> strings) {
     return strings.stream().anyMatch(s -> start >= s.getStart() && end <= s.getEnd());
+  }
+
+  public boolean isLexemeInCodeBlock(int start, int end) {
+    return isLexemeInCodeBlock(start, end, blocks);
+  }
+
+  private boolean isLexemeInCodeBlock(
+      int start, int end, Set<CodeStringData> codeBlocks) {
+    return codeBlocks.stream().anyMatch(s -> start >= s.getStart() && end <= s.getEnd());
   }
 
   private String translateDoubleSuffix(String script) {
@@ -278,7 +301,24 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
         extenders.entrySet()) {
       overriders.append(entry.getValue().constructClass());
     }
-    script = overriders.toString() + script.replaceAll("(?m)^[ \\t]*\\r?\\n", "");
+    script = overriders + script.replaceAll("(?m)^[ \\t]*\\r?\\n", "");
     return script;
   }
+
+  private String translateEraseTypes(String script) {
+    Pattern p =
+        Pattern.compile(
+            "[ ]*(\\w++)[ ]*(\\w++)[ ]*=");
+    Matcher m = p.matcher(script);
+    StringBuilder sb = new StringBuilder();
+    while (m.find()) {
+      if (isLexemeInString(m.start(), m.end()) || isLexemeInCodeBlock(m.start(), m.end())) {
+        continue;
+      }
+      m.appendReplacement(sb, m.group(2) + " =");
+    }
+    m.appendTail(sb);
+    return sb.toString();
+  }
+
 }
