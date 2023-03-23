@@ -10,20 +10,22 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
-  private static Translator translator;
+  public static void main(String... args) {
+    init();
+    processArgs(args);
+    System.out.println("Welcome to CompaJ REPL!");
+    System.out.println("Version 0.0.3");
+    processInput();
+  }
 
-  public static void main(String[] args) {
+  protected static void init() {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
     GroovyTranslator.getImportCustomizer()
         .addImports("tech.hiddenproject.compaj.repl.CompaJ")
         .addStaticImport("tech.hiddenproject.compaj.repl.CompaJ", "exit");
-    translator = new GroovyTranslator(translatorUtils);
+    Translator translator = new GroovyTranslator(translatorUtils);
     CompaJ.getInstance().setTranslator(translator);
-    processArgs(args);
-    System.out.println("Welcome to CompaJ REPL!");
-    System.out.println("Version 0.0.3");
-    processInput();
   }
 
   private static void processArgs(String... args) {
