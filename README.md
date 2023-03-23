@@ -1,4 +1,6 @@
 # CompaJ Project
+[![Build](https://github.com/CrissNamon/compaj/actions/workflows/maven.yml/badge.svg)](https://github.com/CrissNamon/compaj/actions/workflows/maven.yml)
+
 This is the home of the CompaJ Project - open source, cross-platform programming and numeric computing platform for math modelling.
 
 <details> 
