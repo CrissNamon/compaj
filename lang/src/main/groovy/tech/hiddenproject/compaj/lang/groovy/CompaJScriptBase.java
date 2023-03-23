@@ -8,7 +8,7 @@ import tech.hiddenproject.compaj.lang.extension.Extension;
 
 public abstract class CompaJScriptBase extends Script {
 
-  private static Set<Extension> extensions;
+  private static final Set<Extension> extensions;
 
   static {
     extensions = new HashSet<>();

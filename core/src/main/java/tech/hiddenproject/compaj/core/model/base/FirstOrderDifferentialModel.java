@@ -35,7 +35,7 @@ public class FirstOrderDifferentialModel implements FirstOrderDifferentialEquati
       throws MaxCountExceededException, DimensionMismatchException {
     int i = 0;
     for (NamedFunction<String, Double, Double> entry : fns().values()) {
-      yDot[i] = entry.value(new Double[] {});
+      yDot[i] = entry.value();
       i++;
     }
     if (iterator > 0) {
@@ -61,7 +61,8 @@ public class FirstOrderDifferentialModel implements FirstOrderDifferentialEquati
     return baseModel.toString();
   }
 
-  public void a(NamedFunction<String, Double, Double>... e) {
+  @SafeVarargs
+  public final void a(NamedFunction<String, Double, Double>... e) {
     baseModel.a(e);
   }
 
