@@ -32,7 +32,7 @@ public class CompaJ {
 
   private Translator translator;
 
-  {
+  static {
     CompaJScriptBase.addExtension(new StarterExtension());
     CompaJScriptBase.addExtension(new MathExtension());
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
@@ -42,7 +42,7 @@ public class CompaJ {
     CompaJScriptBase.addExtension(new AgentExtension());
   }
 
-  {
+  static {
     GroovyTranslator.getImportCustomizer()
         .addImports(normalImports);
   }
@@ -54,7 +54,7 @@ public class CompaJ {
     try {
       Path path = Paths.get(url);
       String script = new String(Files.readAllBytes(path));
-      getInstance().getTranslator().evaluate(script);
+      readInput(script);
     } catch (IOException e) {
       System.out.println("Error: " + e.getLocalizedMessage());
     }

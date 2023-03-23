@@ -42,7 +42,7 @@ public class RealFunction implements NamedFunction<String, Double, Double>, Mult
   }
 
   @Override
-  public double value(double[] doubles) {
+  public double value(double... doubles) {
     return value(ArrayUtils.toObject(doubles));
   }
 

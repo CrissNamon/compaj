@@ -1,4 +1,6 @@
 # CompaJ Project
+[![Build](https://github.com/CrissNamon/compaj/actions/workflows/maven.yml/badge.svg)](https://github.com/CrissNamon/compaj/actions/workflows/maven.yml)
+
 This is the home of the CompaJ Project - open source, cross-platform programming and numeric computing platform for math modelling.
 
 <details> 
@@ -31,13 +33,13 @@ CompaJ has modular structure based on Maven modules.
 ___
 #### Lang
 CompaJ uses Groovy under the hood with some tweaks. You can learn Groovy on its official [site](https://groovy-lang.org/documentation.html).
-Documentation about CompaJ syntax will be released soon.
+Documentation about CompaJ syntax available in [Wiki](https://github.com/CrissNamon/compaj/wiki/CompaJ-Lang).
 
 #### Math
-CompaJ uses [Apache Commons Math](https://commons.apache.org/proper/commons-math/userguide/index.html) library for math operations.
+CompaJ uses [Apache Commons Math](https://commons.apache.org/proper/commons-math/userguide/index.html) library for math operations. Learn about CompaJ math features in [Wiki](https://github.com/CrissNamon/compaj/wiki/CompaJ-Math).
 
 #### Visualization
-CompaJ uses widgets system for visualization in _WorkSpace_. Documentation will be released soon.
+CompaJ uses widgets system for visualization in _WorkSpace_. Documentation available in [Wiki](https://github.com/CrissNamon/compaj/wiki/CompaJ-WorkSpace)
 
 #### Other
 All documentation and necessary information with tutorials will be released soon. 
