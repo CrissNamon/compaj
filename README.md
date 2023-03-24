@@ -1,6 +1,7 @@
 # CompaJ Project
 
 [![Build](https://github.com/CrissNamon/compaj/actions/workflows/main.yml/badge.svg)](https://github.com/CrissNamon/compaj/actions/workflows/main.yml)
+[![Trello](https://img.shields.io/badge/Trello-Follow%20progress-blueviolet)](https://trello.com/b/4c7FvMFI/compaj-desktop)
 
 This is the home of the CompaJ Project - open source, cross-platform programming and numeric
 computing platform for math modelling.
@@ -18,6 +19,7 @@ computing platform for math modelling.
 ___
 Project is under active development. CompaJ supports only basic functions and models now, which are
 not intended to use in real projects.
+See project progress and feature on public [Trello board](https://trello.com/b/4c7FvMFI/compaj-desktop).
 
 ### Structure
 
