@@ -5,11 +5,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+
 import tech.hiddenproject.compaj.core.data.EnvironmentObject;
 import tech.hiddenproject.compaj.core.data.base.GridAgent;
 import tech.hiddenproject.compaj.core.data.base.GridLocation;
 import tech.hiddenproject.compaj.core.model.AgentModel;
 
+/**
+ * Basic agent based model to simulate agents on 2D grid.
+ */
 public class GridABM implements AgentModel<GridAgent, GridLocation> {
 
   private final int width;
@@ -37,6 +41,9 @@ public class GridABM implements AgentModel<GridAgent, GridLocation> {
     saveHistory = true;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addAgent(GridAgent agent, int count) {
     while (count-- > 0) {
@@ -46,16 +53,25 @@ public class GridABM implements AgentModel<GridAgent, GridLocation> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEnvironmentObject(EnvironmentObject<GridLocation> environmentObject) {
     environmentObjects.add(environmentObject);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<EnvironmentObject<GridLocation>> environmentObjects() {
     return environmentObjects;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void start(Function<Long, Boolean> endCondition) {
     Collections.shuffle(agents);
@@ -64,6 +80,9 @@ public class GridABM implements AgentModel<GridAgent, GridLocation> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void step() {
     for (GridAgent a : agents) {
@@ -84,20 +103,32 @@ public class GridABM implements AgentModel<GridAgent, GridLocation> {
     iterator++;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long iterator() {
     return iterator;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<List<GridAgent>> getHistory() {
     return history;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public int getWidth() {
     return width;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public int getHeight() {
     return height;
   }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import groovy.lang.GroovyRuntimeException;
 import tech.hiddenproject.compaj.lang.CodeCheck;
 import tech.hiddenproject.compaj.lang.CodeTranslation;
@@ -16,7 +17,10 @@ import tech.hiddenproject.compaj.lang.data.ClassOverrider;
 import tech.hiddenproject.compaj.lang.data.CodeStringData;
 import tech.hiddenproject.compaj.lang.data.MethodOverrider;
 
-public class GroovyTranslatorUtils implements TranslatorUtils {
+/**
+ * Implementation of {@link TranslatorUtils} for Groovy.
+ */
+public final class GroovyTranslatorUtils implements TranslatorUtils {
 
   private final List<CodeCheck> syntaxCheckers;
   private final List<CodeTranslation> codeTranslations;
@@ -62,12 +66,9 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
     return defaultTranslations;
   }
 
-  public void useRawLanguage(boolean f) {
-    useRawGroovy = f;
-  }
-
-  public void addCodeTranslation(CodeTranslation codeTranslation) {
-    codeTranslations.add(codeTranslation);
+  @Override
+  public boolean isLexemeInString(int start, int end) {
+    return isLexemeInString(start, end, strings);
   }
 
   private void applySyntaxCheck(String script) {
@@ -106,11 +107,6 @@ public class GroovyTranslatorUtils implements TranslatorUtils {
 
   public void addSyntaxCheck(CodeCheck codeCheck) {
     syntaxCheckers.add(codeCheck);
-  }
-
-  @Override
-  public boolean isLexemeInString(int start, int end) {
-    return isLexemeInString(start, end, strings);
   }
 
   private boolean isLexemeInString(

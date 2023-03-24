@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;

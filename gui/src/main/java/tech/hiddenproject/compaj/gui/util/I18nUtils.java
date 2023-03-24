@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.util;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import javafx.scene.control.Alert;
 import tech.hiddenproject.compaj.gui.AppPreference;
 import tech.hiddenproject.compaj.gui.AppSettings;

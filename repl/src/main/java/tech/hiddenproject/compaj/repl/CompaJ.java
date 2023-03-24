@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
 import tech.hiddenproject.compaj.extension.ComplexExtension;
@@ -20,17 +21,18 @@ import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 
+/**
+ * Base class for REPL.
+ */
 public class CompaJ {
 
   private static final String[] normalImports =
-      new String[] {
+      new String[]{
           "tech.hiddenproject.compaj.extension.MathExtension",
           "tech.hiddenproject.compaj.extension.CompaJComplex"
       };
 
   private static CompaJ INSTANCE;
-
-  private Translator translator;
 
   static {
     CompaJScriptBase.addExtension(new StarterExtension());
@@ -47,9 +49,16 @@ public class CompaJ {
         .addImports(normalImports);
   }
 
+  private Translator translator;
+
   private CompaJ() {
   }
 
+  /**
+   * Reads file content from url and evaluates it.
+   *
+   * @param url File url
+   */
   public static void readFile(String url) {
     try {
       Path path = Paths.get(url);
@@ -60,6 +69,11 @@ public class CompaJ {
     }
   }
 
+  /**
+   * Reads input source code and evaluates it.
+   *
+   * @param input Source code
+   */
   public static void readInput(String input) {
     try {
       Object result = getInstance().getTranslator().evaluate(input);
@@ -78,10 +92,6 @@ public class CompaJ {
     }
   }
 
-  public Translator getTranslator() {
-    return translator;
-  }
-
   public static CompaJ getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new CompaJ();
@@ -89,14 +99,19 @@ public class CompaJ {
     return INSTANCE;
   }
 
-  public void setTranslator(Translator translator) {
-    this.translator = translator;
-  }
-
+  /**
+   * Exits from REPL.
+   */
   public static void exit() {
     System.exit(0);
   }
 
+  /**
+   * Maps CLI parameters to {@link Map}.
+   *
+   * @param args CLI arguments
+   * @return {@link Map} of arguments
+   */
   public static Map<String, List<String>> getCLIParams(String[] args) {
     final Map<String, List<String>> params = new HashMap<>();
     List<String> options = null;
@@ -112,5 +127,13 @@ public class CompaJ {
       }
     }
     return params;
+  }
+
+  public Translator getTranslator() {
+    return translator;
+  }
+
+  public void setTranslator(Translator translator) {
+    this.translator = translator;
   }
 }

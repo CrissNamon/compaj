@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.Form;
 import com.dlsc.formsfx.model.structure.Group;
 import com.dlsc.formsfx.model.util.BindingMode;
 import com.dlsc.formsfx.view.renderer.FormRenderer;
-import tech.hiddenproject.compaj.applied.epidemic.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
@@ -18,13 +18,15 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import tech.hiddenproject.compaj.applied.epidemic.SIRModel;
 import tech.hiddenproject.compaj.gui.component.LineChartBuilder;
 import tech.hiddenproject.compaj.gui.component.TableBuilder;
 
 public class SIRModelWidget implements WorkSpaceWidget {
 
   private final VBox root;
-  private Consumer<WorkSpaceWidget> childAddedEvent = x -> {};
+  private Consumer<WorkSpaceWidget> childAddedEvent = x -> {
+  };
   private DoubleProperty alphaC;
   private DoubleProperty bettaC;
   private DoubleProperty s0;

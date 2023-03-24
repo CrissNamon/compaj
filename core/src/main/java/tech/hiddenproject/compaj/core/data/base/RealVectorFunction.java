@@ -1,11 +1,16 @@
 package tech.hiddenproject.compaj.core.data.base;
 
 import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import tech.hiddenproject.compaj.core.data.NamedFunction;
 import tech.hiddenproject.compaj.core.model.DynamicFunction;
 
+/**
+ * Implementation of {@link NamedFunction} and {@link MultivariateVectorFunction} to represent
+ * function which returns {@link Double} array.
+ */
 public class RealVectorFunction
     implements NamedFunction<String, Double, Double[]>, MultivariateVectorFunction {
 
@@ -47,7 +52,7 @@ public class RealVectorFunction
 
   @Override
   public Double[] value(List<Double> data) {
-    return value(data.toArray(new Double[] {}));
+    return value(data.toArray(new Double[]{}));
   }
 
   @Override

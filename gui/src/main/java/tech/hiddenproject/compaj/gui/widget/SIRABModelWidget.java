@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -107,18 +108,18 @@ public class SIRABModelWidget implements WorkSpaceWidget {
           sirabModel.model().step();
           graphicsContext2D.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
           graphicsContext2D.setFill(Color.valueOf("#eb9b34"));
-          graphicsContext2D.fillOval(canvas.getWidth()-45, 20, 6, 6);
+          graphicsContext2D.fillOval(canvas.getWidth() - 45, 20, 6, 6);
           graphicsContext2D.setFill(Color.valueOf("#eb4034"));
-          graphicsContext2D.fillOval(canvas.getWidth()-45, 40, 6, 6);
+          graphicsContext2D.fillOval(canvas.getWidth() - 45, 40, 6, 6);
           graphicsContext2D.setFill(Color.valueOf("#34eb40"));
-          graphicsContext2D.fillOval(canvas.getWidth()-45, 60, 6, 6);
+          graphicsContext2D.fillOval(canvas.getWidth() - 45, 60, 6, 6);
           graphicsContext2D.setFill(Color.BLACK);
           graphicsContext2D.fillText("S", canvas.getWidth() - 20, 25);
-          graphicsContext2D.fillText("I", canvas.getWidth()-20, 45);
-          graphicsContext2D.fillText("R", canvas.getWidth()-20, 65);
+          graphicsContext2D.fillText("I", canvas.getWidth() - 20, 45);
+          graphicsContext2D.fillText("R", canvas.getWidth() - 20, 65);
           graphicsContext2D.setStroke(Color.valueOf("#4334eb"));
           graphicsContext2D.setLineWidth(5);
-          graphicsContext2D.strokeRect(0, 0, canvas.getWidth()-52, canvas.getHeight());
+          graphicsContext2D.strokeRect(0, 0, canvas.getWidth() - 52, canvas.getHeight());
           for (EnvironmentObject<GridLocation> object : sirabModel.model().environmentObjects()) {
             double[] x = new double[object.getPoints().size()];
             double[] y = new double[object.getPoints().size()];
@@ -148,7 +149,8 @@ public class SIRABModelWidget implements WorkSpaceWidget {
   }
 
   @Override
-  public void onChildAdded(Consumer<WorkSpaceWidget> event) {}
+  public void onChildAdded(Consumer<WorkSpaceWidget> event) {
+  }
 
   @Override
   public Node getNode() {

@@ -2,12 +2,16 @@ package tech.hiddenproject.compaj.applied.epidemic;
 
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
-import tech.hiddenproject.compaj.core.data.NamedFunction;
 import tech.hiddenproject.compaj.core.data.base.RealFunction;
+import tech.hiddenproject.compaj.core.model.DynamicFunction;
 import tech.hiddenproject.compaj.core.model.base.FirstOrderDifferentialModel;
 
+/**
+ * Epidemic SIS model.
+ */
 public class SISModel {
 
   private final FirstOrderDifferentialModel model;
@@ -32,8 +36,8 @@ public class SISModel {
     model.a(S, I);
     model.ad("S", sInit);
     model.ad("I", iInit);
-    S.b(NamedFunction.from(this::susceptible));
-    I.b(NamedFunction.from(this::infected));
+    S.b(DynamicFunction.from(this::susceptible));
+    I.b(DynamicFunction.from(this::infected));
   }
 
   private Double susceptible() {

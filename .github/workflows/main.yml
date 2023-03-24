@@ -1,0 +1,29 @@
+name: Javadoc
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Generate Javadoc
+        run: |
+          mvn -B test javadoc:aggregate --file pom.xml
+          mkdir javadoc
+          cd javadoc
+          git checkout -b apidocs
+          cp -r ../target/site/apidocs/. ./
+          git add .
+          git -c user.name='travis' -c user.email='travis' commit -am 'Update docs'
+          git push -u origin apidocs &>/dev/null

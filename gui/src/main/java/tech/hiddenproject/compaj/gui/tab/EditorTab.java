@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.tab;
 import java.io.File;
 import java.util.Optional;
 import java.util.Set;
+
 import javafx.beans.Observable;
 import javafx.event.Event;
 import javafx.scene.control.Alert;
@@ -115,7 +116,8 @@ public class EditorTab extends Tab {
     console.setExpanded(true);
     logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
     try {
-      Object result = Compaj.getTranslator().evaluate(codeArea.getText(), Set.of(this::translateCatchOutput));
+      Object result = Compaj.getTranslator()
+          .evaluate(codeArea.getText(), Set.of(this::translateCatchOutput));
       log(result.toString());
       logInfo(I18nUtils.get("tab.editor.console.compilation.ok"));
     } catch (Exception e) {
