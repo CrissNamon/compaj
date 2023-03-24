@@ -19,8 +19,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn -B test --file pom.xml
       - name: Generate Javadoc
         run: |
           mvn -B test javadoc:aggregate --file pom.xml
@@ -35,4 +33,4 @@ jobs:
           git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
           git remote add origin https://github.com/CrissNamon/compaj.git
           git remote -v
-          git push -q -u origin apidocs &>/dev/null
+          git push apidocs
