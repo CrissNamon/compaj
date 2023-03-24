@@ -2,7 +2,7 @@ name: Javadoc
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
           cd docs
           cp -r ../target/site/apidocs/. ./javadoc/
           git fetch origin apidocs:apidocs
-          git checkout apidocs
           git add .
+          git checkout apidocs
           git -c user.name='HiddenProject' -c user.email='danilarassokhin@gmail.com' commit -m 'Update docs'
           git push --set-upstream origin apidocs
