@@ -21,14 +21,15 @@ jobs:
         run: mvn -B test --file pom.xml
       - name: Generate Javadoc
         run: |
-          mvn -B javadoc:aggregate --file pom.xml
-          rm -rf compaj-docs
-          mkdir docs
-          mkdir docs/javadoc
-          cd docs
-          cp -r ../target/site/apidocs/. ./javadoc/
-          git fetch origin apidocs:apidocs
-          git checkout apidocs
+          mvn -B -DskipTests javadoc:aggregate --file pom.xml
+          mkdir apidocs
+          mkdir apidocs/docs
+          mkdir apidocs/docs/javadoc
+          cp -r ./target/site/apidocs/. ./apidocs/docs/javadoc/
+          cp -r .git ./apidocs/
+          cp -r .gitignore ./apidocs/.gitignore
+          cd apidocs
+          git branch -M apidocs
           git add .
           git -c user.name='HiddenProject' -c user.email='danilarassokhin@gmail.com' commit -m 'Update docs'
-          git push --set-upstream origin apidocs
+          git push -u origin apidocs --force
