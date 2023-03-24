@@ -2,7 +2,7 @@ name: Javadoc
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -22,14 +22,14 @@ jobs:
       - name: Generate Javadoc
         run: |
           mvn -B -DskipTests javadoc:aggregate --file pom.xml
-          mkdir docs
-          mkdir docs/javadoc
-          cp -r ./target/site/apidocs/. ./docs/javadoc/
+          mkdir apidocs
+          mkdir apidocs/docs
+          mkdir apidocs/docs/javadoc
+          cp -r ./target/site/apidocs/. ./apidocs/docs/javadoc/
+          cp -r .git ./apidocs/
+          cp -r .gitignore ./apidocs/.gitignore
+          cd apidocs
+          git branch -M apidocs
           git add .
-          git stash push
-          git fetch origin apidocs
-          git checkout apidocs
-          rm -rf docs
-          git stash pop
           git -c user.name='HiddenProject' -c user.email='danilarassokhin@gmail.com' commit -m 'Update docs'
-          git push -u origin apidocs
+          git push -u origin apidocs --force
