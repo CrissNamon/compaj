@@ -25,11 +25,14 @@ jobs:
         run: |
           mvn -B test javadoc:aggregate --file pom.xml
           mkdir compaj-docs
+          mkdir compaj-docs/javadoc
           cd compaj-docs
           git init
-          git pull https://github.com/CrissNamon/compaj.git apidocs
           git checkout -b apidocs
-          cp -r ../target/site/apidocs/. ./
+          git pull https://github.com/CrissNamon/compaj.git apidocs
+          cp -r ../target/site/apidocs/. ./javadoc/
           git add .
-          git -c user.name='CrissNamon' -c user.email='danilarassokhin@gmail.com' commit -am 'Update docs'
-          git push -u origin apidocs &>/dev/null
+          git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
+          git remote add origin https://github.com/CrissNamon/compaj.git
+          git remote -v
+          git push -q -u origin apidocs &>/dev/null
