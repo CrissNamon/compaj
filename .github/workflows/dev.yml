@@ -31,6 +31,5 @@ jobs:
           cp -r ../target/site/apidocs/. ./javadoc/
           git add .
           git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
-          git remote add origin https://github.com/CrissNamon/compaj.git
           git remote -v
           git push -u origin apidocs
