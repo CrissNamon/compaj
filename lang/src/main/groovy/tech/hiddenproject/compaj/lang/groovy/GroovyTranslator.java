@@ -90,7 +90,7 @@ public class GroovyTranslator implements Translator {
   public GroovyTranslator(String base, TranslatorUtils translatorUtils, List<String> libraries) {
     CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
     List<String> cp = compilerConfiguration.getClasspath();
-    cp.add(libraries.get(0));
+    cp.addAll(libraries);
     compilerConfiguration.setClasspathList(cp);
     compilerConfiguration.addCompilationCustomizers(
         customizerList.toArray(new CompilationCustomizer[]{})
@@ -144,9 +144,7 @@ public class GroovyTranslator implements Translator {
 
   private void updateVariables() {
     Map<String, Object> tmp = getBinding().getVariables();
-    for (Map.Entry<String, Object> entry : tmp.entrySet()) {
-      variables.put(entry.getKey(), entry.getValue());
-    }
+    variables.putAll(tmp);
   }
 
   private Binding getBinding() {
