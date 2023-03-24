@@ -19,17 +19,16 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+      - name: Test
+        run: mvn -B test
       - name: Generate Javadoc
         run: |
-          mvn -B test javadoc:aggregate --file pom.xml
-          mkdir compaj-docs
+          git fetch origin apidocs:apidocs
+          git checkout -b apidocs
           mkdir compaj-docs/javadoc
           cd compaj-docs
-          git init
-          git checkout -b apidocs
-          git pull https://github.com/CrissNamon/compaj.git apidocs
+          mvn -B javadoc:aggregate --file pom.xml
           cp -r ../target/site/apidocs/. ./javadoc/
           git add .
           git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
-          git remote -v
           git push -u origin apidocs
