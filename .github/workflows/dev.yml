@@ -31,5 +31,5 @@ jobs:
           git fetch origin apidocs:apidocs
           git checkout apidocs
           git add .
-          git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
-          git push
+          git -c user.name='HiddenProject' -c user.email='danilarassokhin@gmail.com' commit -m 'Update docs'
+          git push --set-upstream origin apidocs
