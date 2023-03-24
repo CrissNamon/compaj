@@ -27,8 +27,9 @@ jobs:
           mkdir javadoc
           cd javadoc
           git init
+          git pull https://github.com/CrissNamon/compaj.git apidocs
           git checkout -b apidocs
           cp -r ../target/site/apidocs/. ./
           git add .
           git -c user.name='CrissNamon' -c user.email='danilarassokhin@gmail.com' commit -am 'Update docs'
-          git push -u origin apidocs --force &>/dev/null
+          git push -u origin apidocs &>/dev/null
