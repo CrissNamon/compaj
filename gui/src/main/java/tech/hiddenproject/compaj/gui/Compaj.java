@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.Locale;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -40,31 +41,27 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 public class Compaj extends Application {
 
   public static final ComplexFormat COMPLEX_FORMAT;
-
-  static {
-    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-    COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat);
-  }
-
   private static final GroovyTranslator translator;
-
+  private static final String[] normalImports =
+      new String[]{
+          "tech.hiddenproject.compaj.extension.MathExtension",
+          "tech.hiddenproject.compaj.extension.CompaJComplex"
+      };
+  private static final String[] starImports =
+      new String[]{
+          "tech.hiddenproject.compaj.gui",
+          "tech.hiddenproject.compaj.gui.widget",
+          "tech.hiddenproject.compaj.gui.component"
+      };
   private static TabPane content;
   private static TerminalTab terminalTab;
   private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
-  private static final String[] normalImports =
-      new String[] {
-          "tech.hiddenproject.compaj.extension.MathExtension",
-          "tech.hiddenproject.compaj.extension.CompaJComplex"
-      };
-
-  private static final String[] starImports =
-      new String[] {
-          "tech.hiddenproject.compaj.gui",
-          "tech.hiddenproject.compaj.gui.widget",
-          "tech.hiddenproject.compaj.gui.component"
-      };
+  static {
+    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+    COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat);
+  }
 
   static {
     GroovyTranslator.getImportCustomizer()

@@ -2,10 +2,14 @@ package tech.hiddenproject.compaj.lang.groovy;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.Script;
 import tech.hiddenproject.compaj.lang.extension.Extension;
 
+/**
+ * Custom script base for {@link groovy.lang.GroovyShell}.
+ */
 public abstract class CompaJScriptBase extends Script {
 
   private static final Set<Extension> extensions;

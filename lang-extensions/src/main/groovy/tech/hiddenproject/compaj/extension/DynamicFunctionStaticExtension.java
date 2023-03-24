@@ -3,11 +3,15 @@ package tech.hiddenproject.compaj.extension;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
+
 import groovy.lang.Closure;
-import tech.hiddenproject.compaj.core.data.NamedFunction;
 import tech.hiddenproject.compaj.core.model.DynamicFunction;
 
+/**
+ * Extension to convert Closures to DynamicFunctions.
+ */
 public abstract class DynamicFunctionStaticExtension {
+
   public static DynamicFunction fromClosure(DynamicFunction self, Closure s) {
     return x -> s.call(x);
   }
@@ -22,7 +26,7 @@ public abstract class DynamicFunctionStaticExtension {
         IntStream.range(0, arr.length).forEachOrdered(i -> arr[i] = r.get(i));
         result = arr;
       }
-      return NamedFunction.cast(outputType, result);
+      return result;
     };
   }
 

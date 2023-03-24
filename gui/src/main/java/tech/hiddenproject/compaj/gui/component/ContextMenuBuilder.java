@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.gui.component;
 
 import java.util.function.Consumer;
+
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 

@@ -1,11 +1,13 @@
 package tech.hiddenproject.compaj.extension
 
-
 import tech.hiddenproject.compaj.lang.extension.Extension
 
 import java.lang.reflect.Method
 import java.util.stream.Collectors
 
+/**
+ * Extension for Math to make functions accept list of parameters.
+ */
 class MathExtension implements Extension {
 
     @Override

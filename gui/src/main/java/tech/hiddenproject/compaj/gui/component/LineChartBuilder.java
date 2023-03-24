@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.gui.component;
 
 import java.util.List;
+
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;

@@ -1,11 +1,17 @@
 package tech.hiddenproject.compaj.core.data.base;
 
 import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.analysis.MultivariateFunction;
+import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import tech.hiddenproject.compaj.core.data.NamedFunction;
 import tech.hiddenproject.compaj.core.model.DynamicFunction;
 
+/**
+ * Implementation of {@link NamedFunction} and {@link MultivariateVectorFunction} to represent
+ * function which returns {@link Double}.
+ */
 public class RealFunction implements NamedFunction<String, Double, Double>, MultivariateFunction {
 
   protected final String name;

@@ -5,6 +5,9 @@ import tech.hiddenproject.compaj.core.data.NamedFunction
 import tech.hiddenproject.compaj.core.model.Model
 import tech.hiddenproject.compaj.lang.extension.Extension
 
+/**
+ * Extension for Model to support Groovy features.
+ */
 class ModelExtension implements Extension {
     @Override
     void extend(Script instance) {

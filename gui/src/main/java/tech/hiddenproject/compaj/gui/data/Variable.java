@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.data;
 import java.util.Objects;
 
 public class Variable {
+
   private String name;
   private Object data;
 

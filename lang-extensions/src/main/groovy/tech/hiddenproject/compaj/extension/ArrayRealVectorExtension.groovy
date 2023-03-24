@@ -3,6 +3,9 @@ package tech.hiddenproject.compaj.extension
 import org.apache.commons.math3.linear.ArrayRealVector
 import tech.hiddenproject.compaj.lang.extension.Extension
 
+/**
+ * Extension for ArrayRealVector to support List of arguments.
+ */
 class ArrayRealVectorExtension implements Extension {
     @Override
     void extend(Script instance) {

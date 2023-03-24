@@ -1,14 +1,17 @@
 package tech.hiddenproject.compaj.gui.widget;
 
 import java.util.function.Consumer;
+
 import javafx.scene.Node;
 
 public class BaseWidget implements WorkSpaceWidget {
 
   private Node root;
   private String title;
-  private Consumer<WorkSpaceWidget> onChildAddedEvent = c -> {};
-  private Consumer<WorkSpaceWidget> onShow = c -> {};
+  private Consumer<WorkSpaceWidget> onChildAddedEvent = c -> {
+  };
+  private Consumer<WorkSpaceWidget> onShow = c -> {
+  };
 
   public BaseWidget(Node root) {
     this.root = root;

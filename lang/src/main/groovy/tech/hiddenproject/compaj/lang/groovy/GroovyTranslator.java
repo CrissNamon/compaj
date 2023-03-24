@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
@@ -16,40 +17,41 @@ import tech.hiddenproject.compaj.lang.CodeTranslation;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 
+/**
+ * Implementation of {@link Translator} for Groovy.
+ */
 public class GroovyTranslator implements Translator {
-
-  private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
-  private static final ImportCustomizer importCustomizer;
 
   public static final Set<String> HIDDEN_VARIABLES = Set.of(
       "out",
       "$compajOut",
       "$compajOutputStream"
-  );
-
+                                                           );
+  private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
+  private static final ImportCustomizer importCustomizer;
   private static final String[] normalImports =
-      new String[] {
-        "tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
-        "org.apache.commons.math3.analysis.MultivariateFunction",
-        "java.lang.reflect.Array",
-        "java.lang.reflect.ParameterizedType",
-        "java.lang.reflect.Type",
-        "tech.hiddenproject.compaj.core.model.DynamicFunction",
-      };
+      new String[]{
+          "tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
+          "org.apache.commons.math3.analysis.MultivariateFunction",
+          "java.lang.reflect.Array",
+          "java.lang.reflect.ParameterizedType",
+          "java.lang.reflect.Type",
+          "tech.hiddenproject.compaj.core.model.DynamicFunction",
+          };
 
   private static final String[] starImports =
-      new String[] {
-        "tech.hiddenproject.compaj.core.data",
-        "tech.hiddenproject.compaj.core.data.base",
-        "tech.hiddenproject.compaj.core.model.base",
-        "tech.hiddenproject.compaj.core.model",
-        "tech.hiddenproject.compaj.applied.epidemic",
-        "org.apache.commons.math3.ode.nonstiff",
-        "org.apache.commons.math3.linear",
-        "java.util.stream"
+      new String[]{
+          "tech.hiddenproject.compaj.core.data",
+          "tech.hiddenproject.compaj.core.data.base",
+          "tech.hiddenproject.compaj.core.model.base",
+          "tech.hiddenproject.compaj.core.model",
+          "tech.hiddenproject.compaj.applied.epidemic",
+          "org.apache.commons.math3.ode.nonstiff",
+          "org.apache.commons.math3.linear",
+          "java.util.stream"
       };
 
-  private static final String[] staticStarsImports = new String[] {"java.lang.Math"};
+  private static final String[] staticStarsImports = new String[]{"java.lang.Math"};
 
   static {
     importCustomizer = new ImportCustomizer();
@@ -72,7 +74,7 @@ public class GroovyTranslator implements Translator {
   public GroovyTranslator(String base, TranslatorUtils translatorUtils) {
     CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
     compilerConfiguration.addCompilationCustomizers(
-        customizerList.toArray(new CompilationCustomizer[] {}));
+        customizerList.toArray(new CompilationCustomizer[]{}));
     compilerConfiguration.setScriptBaseClass(base);
     this.binding = new Binding();
     output = new ByteArrayOutputStream();

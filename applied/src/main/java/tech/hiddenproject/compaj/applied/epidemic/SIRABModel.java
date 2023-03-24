@@ -1,11 +1,15 @@
 package tech.hiddenproject.compaj.applied.epidemic;
 
 import java.util.function.Supplier;
+
 import tech.hiddenproject.compaj.core.data.EnvironmentObject;
 import tech.hiddenproject.compaj.core.data.base.GridAgent;
 import tech.hiddenproject.compaj.core.data.base.GridLocation;
 import tech.hiddenproject.compaj.core.model.base.GridABM;
 
+/**
+ * Epidemic agent based SIR model.
+ */
 public class SIRABModel {
 
   private final GridABM gridABM;

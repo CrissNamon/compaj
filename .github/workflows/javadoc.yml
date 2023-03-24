@@ -1,0 +1,34 @@
+name: Javadoc
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Test
+        run: mvn -B test --file pom.xml
+      - name: Generate Javadoc
+        run: |
+          mvn -B javadoc:aggregate --file pom.xml
+          rm -rf compaj-docs
+          mkdir docs
+          mkdir docs/javadoc
+          cd docs
+          cp -r ../target/site/apidocs/. ./javadoc/
+          git fetch origin apidocs:apidocs
+          git checkout apidocs
+          git add .
+          git -c user.name='HiddenProject' -c user.email='danilarassokhin@gmail.com' commit -m 'Update docs'
+          git push --set-upstream origin apidocs

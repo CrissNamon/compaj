@@ -2,6 +2,9 @@ package tech.hiddenproject.compaj.core.data.base;
 
 import tech.hiddenproject.compaj.core.data.Distance;
 
+/**
+ * Represent location on 2D grid.
+ */
 public class GridLocation implements Distance<GridLocation> {
 
   private double x;

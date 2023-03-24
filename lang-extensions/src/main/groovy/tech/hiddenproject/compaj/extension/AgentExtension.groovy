@@ -3,6 +3,9 @@ package tech.hiddenproject.compaj.extension
 import tech.hiddenproject.compaj.core.data.Agent
 import tech.hiddenproject.compaj.lang.extension.Extension
 
+/**
+ * Extension for Agent to support Closures.
+ */
 class AgentExtension implements Extension {
     @Override
     void extend(Script thisBase) {

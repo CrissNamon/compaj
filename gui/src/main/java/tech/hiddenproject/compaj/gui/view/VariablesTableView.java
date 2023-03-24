@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.view;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;

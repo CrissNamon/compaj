@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.repl;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
@@ -18,6 +19,9 @@ public class Main {
     processInput();
   }
 
+  /**
+   * Initializes {@link GroovyTranslator}.
+   */
   protected static void init() {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
@@ -28,6 +32,17 @@ public class Main {
     CompaJ.getInstance().setTranslator(translator);
   }
 
+  /**
+   * Processes REPL arguments.
+   * <br>
+   * Supported arguments:
+   * <ul>
+   *   <li>-f [fileUrl] Read from file</li>
+   *   <li>-s [sourceCode] Evaluate string</li>
+   * </ul>
+   *
+   * @param args REPL arguments
+   */
   private static void processArgs(String... args) {
     Map<String, List<String>> mappedData = CompaJ.getCLIParams(args);
     if (mappedData.containsKey("f")) {
@@ -52,6 +67,9 @@ public class Main {
     }
   }
 
+  /**
+   * Processes user input.
+   */
   private static void processInput() {
     Scanner sc = new Scanner(System.in);
     do {

@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.gui.data;
 
 import java.util.function.Consumer;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
