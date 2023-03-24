@@ -23,13 +23,12 @@ jobs:
         run: mvn -B test --file pom.xml
       - name: Generate Javadoc
         run: |
-          git init
-          git pull apidocs
           mvn -B test javadoc:aggregate --file pom.xml
           mkdir javadoc
           cd javadoc
+          git init
           git checkout -b apidocs
           cp -r ../target/site/apidocs/. ./
           git add .
-          git -c user.name='travis' -c user.email='travis' commit -am 'Update docs'
-          git push -u origin apidocs &>/dev/null
+          git -c user.name='CrissNamon' -c user.email='danilarassokhin@gmail.com' commit -am 'Update docs'
+          git push -u origin apidocs --force &>/dev/null
