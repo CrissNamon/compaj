@@ -24,8 +24,8 @@ jobs:
       - name: Generate Javadoc
         run: |
           mvn -B test javadoc:aggregate --file pom.xml
-          mkdir javadoc
-          cd javadoc
+          mkdir compaj-docs
+          cd compaj-docs
           git init
           git pull https://github.com/CrissNamon/compaj.git apidocs
           git checkout -b apidocs
