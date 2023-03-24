@@ -1,5 +1,7 @@
 package tech.hiddenproject.compaj.repl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -11,9 +13,16 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
+  private static final List<String> LIBRARIES = new ArrayList<>();
+
+  private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
+
   public static void main(String... args) {
-    init();
     processArgs(args);
+    processLibrariesArg();
+    init();
+    processFileInputArg();
+    processInputStringArg();
     System.out.println("Welcome to CompaJ REPL!");
     System.out.println("Version 0.0.3");
     processInput();
@@ -28,7 +37,7 @@ public class Main {
     GroovyTranslator.getImportCustomizer()
         .addImports("tech.hiddenproject.compaj.repl.CompaJ")
         .addStaticImport("tech.hiddenproject.compaj.repl.CompaJ", "exit");
-    Translator translator = new GroovyTranslator(translatorUtils);
+    Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);
     CompaJ.getInstance().setTranslator(translator);
   }
 
@@ -45,23 +54,38 @@ public class Main {
    */
   private static void processArgs(String... args) {
     Map<String, List<String>> mappedData = CompaJ.getCLIParams(args);
-    if (mappedData.containsKey("f")) {
-      List<String> files = mappedData.get("f");
-      if (files.size() == 0) {
-        throw new RuntimeException("Flag -f found, but no files provided!");
-      }
-      for (String file : files) {
-        CompaJ.readFile(file);
-      }
-      CompaJ.exit();
+    ARGUMENTS.putAll(mappedData);
+  }
+
+  private static void processLibrariesArg() {
+    if (ARGUMENTS.containsKey("l")) {
+      List<String> libsPaths = ARGUMENTS.get("l");
+      System.out.println("Loading libs: " + libsPaths);
+      LIBRARIES.addAll(libsPaths);
     }
-    if (mappedData.containsKey("s")) {
-      List<String> sources = mappedData.get("s");
+  }
+
+  private static void processInputStringArg() {
+    if (ARGUMENTS.containsKey("s")) {
+      List<String> sources = ARGUMENTS.get("s");
       if (sources.size() == 0) {
         throw new RuntimeException("Flag -s found, but no scripts provided!");
       }
       for (String source : sources) {
         CompaJ.readInput(source);
+      }
+      CompaJ.exit();
+    }
+  }
+
+  private static void processFileInputArg() {
+    if (ARGUMENTS.containsKey("f")) {
+      List<String> files = ARGUMENTS.get("f");
+      if (files.size() == 0) {
+        throw new RuntimeException("Flag -f found, but no files provided!");
+      }
+      for (String file : files) {
+        CompaJ.readFile(file);
       }
       CompaJ.exit();
     }

@@ -5,7 +5,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.ServiceLoader.Provider;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -16,17 +19,23 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import tech.hiddenproject.compaj.lang.CodeTranslation;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
+import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent;
+import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent.GLOBAL;
+import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
+import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 
 /**
  * Implementation of {@link Translator} for Groovy.
  */
 public class GroovyTranslator implements Translator {
 
+  private static final String SCRIPT_BASE = "CompaJScriptBase";
+
   public static final Set<String> HIDDEN_VARIABLES = Set.of(
       "out",
       "$compajOut",
       "$compajOutputStream"
-                                                           );
+  );
   private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
   private static final ImportCustomizer importCustomizer;
   private static final String[] normalImports =
@@ -48,7 +57,8 @@ public class GroovyTranslator implements Translator {
           "tech.hiddenproject.compaj.applied.epidemic",
           "org.apache.commons.math3.ode.nonstiff",
           "org.apache.commons.math3.linear",
-          "java.util.stream"
+          "java.util.stream",
+          "tech.hiddenproject.aide.optional"
       };
 
   private static final String[] staticStarsImports = new String[]{"java.lang.Math"};
@@ -67,18 +77,29 @@ public class GroovyTranslator implements Translator {
   private final Map<String, Object> variables;
   private final ByteArrayOutputStream output;
 
+  private final CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+
   public GroovyTranslator(TranslatorUtils translatorUtils) {
-    this("CompaJScriptBase", translatorUtils);
+    this(SCRIPT_BASE, translatorUtils, new ArrayList<>());
   }
 
-  public GroovyTranslator(String base, TranslatorUtils translatorUtils) {
+  public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries) {
+    this(SCRIPT_BASE, translatorUtils, libraries);
+  }
+
+  public GroovyTranslator(String base, TranslatorUtils translatorUtils, List<String> libraries) {
     CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+    List<String> cp = compilerConfiguration.getClasspath();
+    cp.add(libraries.get(0));
+    compilerConfiguration.setClasspathList(cp);
     compilerConfiguration.addCompilationCustomizers(
-        customizerList.toArray(new CompilationCustomizer[]{}));
+        customizerList.toArray(new CompilationCustomizer[]{})
+    );
     compilerConfiguration.setScriptBaseClass(base);
+    importPluginClasses(getPluginImports(loadPluginsClasses()));
     this.binding = new Binding();
-    output = new ByteArrayOutputStream();
-    binding.setVariable("out", new PrintStream(output));
+    this.output = new ByteArrayOutputStream();
+    this.binding.setVariable("out", new PrintStream(output));
     this.variables = binding.getVariables();
     this.groovyShell = new GroovyShell(binding, compilerConfiguration);
     this.translatorUtils = translatorUtils;
@@ -90,6 +111,10 @@ public class GroovyTranslator implements Translator {
 
   public Object evaluate(String script) {
     return evaluate(script, Set.of());
+  }
+
+  public CompilerConfiguration getConfig() {
+    return compilerConfiguration;
   }
 
   @Override
@@ -138,5 +163,21 @@ public class GroovyTranslator implements Translator {
 
   private GroovyShell getGroovyShell() {
     return groovyShell;
+  }
+
+  private void importPluginClasses(List<String> pluginClassesNames) {
+    pluginClassesNames.forEach(importCustomizer::addImports);
+  }
+
+  private List<Class<?>> loadPluginsClasses() {
+    return ServiceLoader.load(CompaJPlugin.class).stream()
+        .map(Provider::get)
+        .peek(compaJPlugin -> EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null)))
+        .flatMap(plugin -> plugin.getClasses().stream())
+        .collect(Collectors.toList());
+  }
+
+  private List<String> getPluginImports(List<Class<?>> classes) {
+    return classes.stream().map(Class::getCanonicalName).collect(Collectors.toList());
   }
 }

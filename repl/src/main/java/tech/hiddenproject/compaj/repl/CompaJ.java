@@ -52,6 +52,7 @@ public class CompaJ {
   private Translator translator;
 
   private CompaJ() {
+
   }
 
   /**
@@ -88,6 +89,7 @@ public class CompaJ {
         System.out.println();
       }
     } catch (Exception e) {
+      System.out.println("ERROR: " + e.getClass());
       System.out.println(e.getMessage());
     }
   }
