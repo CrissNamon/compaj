@@ -23,12 +23,13 @@ jobs:
         run: mvn -B test
       - name: Generate Javadoc
         run: |
-          git fetch origin apidocs:apidocs
-          git checkout apidocs
+          mkdir compaj-docs
           mkdir compaj-docs/javadoc
           cd compaj-docs
           mvn -B javadoc:aggregate --file pom.xml
           cp -r ../target/site/apidocs/. ./javadoc/
+          git fetch origin apidocs:apidocs
+          git checkout apidocs
           git add .
           git -c user.name='travis' -c user.email='travis' commit -m 'Update docs'
           git push
