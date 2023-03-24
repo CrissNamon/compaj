@@ -17,15 +17,5 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Generate Javadoc
-        run: |
-          git init
-          git pull apidocs
-          mvn -B test javadoc:aggregate --file pom.xml
-          mkdir javadoc
-          cd javadoc
-          git checkout -b apidocs
-          cp -r ../target/site/apidocs/. ./
-          git add .
-          git -c user.name='travis' -c user.email='travis' commit -am 'Update docs'
-          git push -u origin apidocs &>/dev/null
+      - name: Test
+        run: mvn -B test --file pom.xml
