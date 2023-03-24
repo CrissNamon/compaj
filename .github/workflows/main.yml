@@ -19,6 +19,8 @@ jobs:
           cache: maven
       - name: Generate Javadoc
         run: |
+          git init
+          git pull apidocs
           mvn -B test javadoc:aggregate --file pom.xml
           mkdir javadoc
           cd javadoc
