@@ -20,13 +20,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Test
-        run: mvn -B test
+        run: mvn -B test --file pom.xml
       - name: Generate Javadoc
         run: |
+          mvn -B javadoc:aggregate --file pom.xml
           mkdir compaj-docs
           mkdir compaj-docs/javadoc
           cd compaj-docs
-          mvn -B javadoc:aggregate --file pom.xml
           cp -r ../target/site/apidocs/. ./javadoc/
           git fetch origin apidocs:apidocs
           git checkout apidocs
