@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.gui.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;

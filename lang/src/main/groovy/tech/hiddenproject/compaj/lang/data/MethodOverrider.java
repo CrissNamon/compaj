@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.lang.data;
 
 public class MethodOverrider {
+
   private final String name;
   private final String returnType;
   private final String body;

@@ -2,13 +2,18 @@ package tech.hiddenproject.compaj.core.data.base;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
 import tech.hiddenproject.compaj.core.data.Agent;
 import tech.hiddenproject.compaj.core.data.EnvironmentObject;
 
+/**
+ * Simple implementation of {@link Agent} represents agent on 2D grid.
+ */
 public class GridAgent implements Agent<GridLocation, String> {
 
   private Object id;
@@ -22,8 +27,8 @@ public class GridAgent implements Agent<GridLocation, String> {
   private BiFunction<Long, Agent<GridLocation, ?>, GridLocation> moveFunction;
   private BiFunction<EnvironmentObject<GridLocation>, GridLocation, GridLocation> collideFunction;
   private BiConsumer<Long, Agent<GridLocation, String>> stepFunction;
-  private Map<String, Double> numericProperties;
-  private Map<String, String> stringProperties;
+  private final Map<String, Double> numericProperties;
+  private final Map<String, String> stringProperties;
 
   public GridAgent(String group) {
     this.id = 1;
@@ -31,7 +36,8 @@ public class GridAgent implements Agent<GridLocation, String> {
     this.numericProperties = new HashMap<>();
     this.stringProperties = new HashMap<>();
     connectsIf((a, b) -> true);
-    interactsAs((a, b) -> {});
+    interactsAs((a, b) -> {
+    });
     nearIf((a, b) -> getLocation().dist(b.getLocation()) <= 2);
     moveAs(
         (i, a) -> {
@@ -55,7 +61,8 @@ public class GridAgent implements Agent<GridLocation, String> {
           }
           return with.getPoints().get(pointNum);
         });
-    stepAs((i, a) -> {});
+    stepAs((i, a) -> {
+    });
     setLocation(new GridLocation(0, 0));
   }
 
@@ -208,10 +215,10 @@ public class GridAgent implements Agent<GridLocation, String> {
     newAgent.stepAs(stepFunction);
     newAgent.moveAs(moveFunction);
     newAgent.collidesAs(collideFunction);
-    for (Map.Entry<String, Double> entry : numericProperties.entrySet()) {
+    for (Entry<String, Double> entry : numericProperties.entrySet()) {
       newAgent.setProperty(entry.getKey(), new Double(entry.getValue()));
     }
-    for (Map.Entry<String, String> entry : stringProperties.entrySet()) {
+    for (Entry<String, String> entry : stringProperties.entrySet()) {
       newAgent.setProperty(entry.getKey(), new String(entry.getValue()));
     }
     return newAgent;

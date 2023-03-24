@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.core.model.base;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
@@ -10,6 +11,9 @@ import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 import tech.hiddenproject.compaj.core.data.NamedFunction;
 
+/**
+ * Model to compute models with First Order Differential.
+ */
 public class FirstOrderDifferentialModel implements FirstOrderDifferentialEquations {
 
   public static final FirstOrderIntegrator DEFAULT_INTEGRATOR =

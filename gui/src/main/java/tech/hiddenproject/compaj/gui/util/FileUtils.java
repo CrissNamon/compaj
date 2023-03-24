@@ -6,16 +6,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
 import javafx.stage.FileChooser;
 import tech.hiddenproject.compaj.gui.AppSettings;
 import tech.hiddenproject.compaj.gui.Compaj;
 
 public class FileUtils {
 
-  public static final String[] COMPAJ_SCRIPT_EXT = new String[] {"*.cjn"};
+  public static final String[] COMPAJ_SCRIPT_EXT = new String[]{"*.cjn"};
   private static FileUtils INSTANCE;
 
-  private FileUtils() {}
+  private FileUtils() {
+  }
 
   public static FileUtils getInstance() {
     if (INSTANCE == null) {
@@ -25,7 +27,7 @@ public class FileUtils {
   }
 
   public static File saveFileWindow(String fileType, String fileExt) {
-    return saveFileWindow(fileType, new String[] {fileExt});
+    return saveFileWindow(fileType, new String[]{fileExt});
   }
 
   public static File saveFileWindow(String fileType, String[] fileExt) {
@@ -42,7 +44,7 @@ public class FileUtils {
   }
 
   public static File openFileWindow(String fileType, String fileExt) {
-    return openFileWindow(fileType, new String[] {fileExt});
+    return openFileWindow(fileType, new String[]{fileExt});
   }
 
   public static File openFileWindow(String fileType, String[] fileExt) {
@@ -73,7 +75,7 @@ public class FileUtils {
     try {
       StringBuilder resultStringBuilder = new StringBuilder();
       try (BufferedReader br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+               new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
         String line;
         while ((line = br.readLine()) != null) {
           resultStringBuilder.append(line).append("\n");

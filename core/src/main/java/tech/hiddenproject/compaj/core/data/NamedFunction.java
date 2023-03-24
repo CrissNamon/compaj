@@ -1,63 +1,71 @@
 package tech.hiddenproject.compaj.core.data;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.function.Supplier;
+
+import tech.hiddenproject.compaj.core.ReflectionUtil;
 import tech.hiddenproject.compaj.core.model.DynamicFunction;
 
+/**
+ * Represents named function
+ *
+ * @param <N> Name type
+ * @param <I> Input variables type
+ * @param <O> Output variables type
+ */
 public interface NamedFunction<N, I, O> {
-  static <T> Object cast(Class<T> c, Object o) {
-    return (T) o;
-  }
 
-  static <T> Object[] castToArray(Class<T> c, Object o) {
-    return (T[]) o;
-  }
-
-  static <I, O> DynamicFunction<I, O> from(Supplier<O> s) {
-    return x -> s.get();
-  }
-
+  /**
+   * @return {@link DynamicFunction} binder of this function
+   */
   DynamicFunction<I, O> getBinder();
 
+  /**
+   * Binds this function to {@link DynamicFunction}.
+   *
+   * @param formula {@link DynamicFunction}
+   */
   void b(DynamicFunction<I, O> formula);
 
+  /**
+   * @return Name of this function
+   */
   N getName();
 
+  /**
+   * Computes function for given values.
+   *
+   * @param data Input values
+   * @return Output value
+   */
   O value(I... data);
 
+  /**
+   * Computes function for given values.
+   *
+   * @param data Input values
+   * @return Output value
+   */
   O value(List<I> data);
 
+  /**
+   * Returns generic type as array type.
+   *
+   * @param c    {@link Class} to get generic from
+   * @param name Full name of type to search
+   * @param i    Generic position
+   * @return Generic type
+   */
   default Class getGenericAsArray(Class c, String name, Integer i) {
-    Class generic = getGeneric(c, name, i);
+    Class generic = ReflectionUtil.getGeneric(c, name, i);
     I[] args = (I[]) Array.newInstance(generic, 0);
     return args.getClass();
   }
 
-  static Class getGeneric(Class c, String name, Integer i) {
-    try {
-      Type[] genericInterfaces = c.getGenericInterfaces();
-      for (Type genericInterface : genericInterfaces) {
-        if (!genericInterface.getTypeName().contains(name)) {
-          continue;
-        }
-        if (genericInterface instanceof ParameterizedType) {
-          Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-          if (genericTypes[i].getTypeName().endsWith("[]")) {
-            Class s = Class.forName(genericTypes[i].getTypeName().replace("[]", ""));
-            return Array.newInstance(s, 0).getClass();
-          }
-          return Class.forName(genericTypes[i].getTypeName());
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-    return Object.class;
-  }
-
+  /**
+   * Binds this function to static value
+   *
+   * @param data Output value
+   */
   void b(O data);
 }

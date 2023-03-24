@@ -3,6 +3,7 @@ package tech.hiddenproject.compaj.lang.data;
 import java.util.Objects;
 
 public class CodeStringData {
+
   private final int start;
   private final int end;
 

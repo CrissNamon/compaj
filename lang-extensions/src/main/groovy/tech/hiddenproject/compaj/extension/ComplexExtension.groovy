@@ -3,6 +3,9 @@ package tech.hiddenproject.compaj.extension
 import org.apache.commons.math3.complex.Complex
 import tech.hiddenproject.compaj.lang.extension.Extension
 
+/**
+ * Extension to add math operators to Complex.
+ */
 class ComplexExtension implements Extension {
     @Override
     void extend(Script thisBase) {

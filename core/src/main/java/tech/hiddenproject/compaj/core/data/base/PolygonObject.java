@@ -2,8 +2,12 @@ package tech.hiddenproject.compaj.core.data.base;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import tech.hiddenproject.compaj.core.data.EnvironmentObject;
 
+/**
+ * Simple {@link EnvironmentObject} represents polygon.
+ */
 public class PolygonObject implements EnvironmentObject<GridLocation> {
 
   private List<GridLocation> points;
@@ -25,12 +29,12 @@ public class PolygonObject implements EnvironmentObject<GridLocation> {
       GridLocation pointI = points.get(i);
       GridLocation pointJ = points.get(j);
       if ((pointI.getY() < location.getY() && pointJ.getY() >= location.getY()
-              || pointJ.getY() < location.getY() && pointI.getY() >= location.getY())
+          || pointJ.getY() < location.getY() && pointI.getY() >= location.getY())
           && (pointI.getX()
-                  + (location.getY() - pointI.getY())
-                      / (pointJ.getY() - pointI.getY())
-                      * (pointJ.getX() - pointI.getX())
-              < location.getX())) {
+          + (location.getY() - pointI.getY())
+          / (pointJ.getY() - pointI.getY())
+          * (pointJ.getX() - pointI.getX())
+          < location.getX())) {
         result = !result;
       }
       j = i;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassOverrider {
+
   private final String name;
   private final String base;
   private final String constructor;

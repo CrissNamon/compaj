@@ -2,12 +2,16 @@ package tech.hiddenproject.compaj.applied.epidemic;
 
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
-import tech.hiddenproject.compaj.core.data.NamedFunction;
 import tech.hiddenproject.compaj.core.data.base.RealFunction;
+import tech.hiddenproject.compaj.core.model.DynamicFunction;
 import tech.hiddenproject.compaj.core.model.base.FirstOrderDifferentialModel;
 
+/**
+ * Epidemic SEIR model.
+ */
 public class SEIRModel {
 
   private final FirstOrderDifferentialModel model;
@@ -45,10 +49,10 @@ public class SEIRModel {
     model.ad("E", eInit);
     model.ad("I", iInit);
     model.ad("R", rInit);
-    S.b(NamedFunction.from(this::susceptible));
-    E.b(NamedFunction.from(this::exposed));
-    I.b(NamedFunction.from(this::infected));
-    R.b(NamedFunction.from(this::recovered));
+    S.b(DynamicFunction.from(this::susceptible));
+    E.b(DynamicFunction.from(this::exposed));
+    I.b(DynamicFunction.from(this::infected));
+    R.b(DynamicFunction.from(this::recovered));
   }
 
   private Double susceptible() {

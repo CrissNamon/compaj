@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
@@ -13,14 +14,16 @@ import javafx.scene.image.PixelReader;
  * PngEncoder takes a Java Image object and creates a byte string which can be saved as a PNG file.
  * The Image is presumed to use the DirectColorModel.
  *
- * <p>Thanks to Jay Denny at KeyPoint Software http://www.keypoint.com/ who let me develop this code
+ * <p>Thanks to Jay Denny at KeyPoint Software http://www.keypoint.com/ who let me develop this
+ * code
  * on company time.
  *
  * <p>You may contact me with (probably very-much-needed) improvements, comments, and bug fixes at:
  *
  * <p><code>david@catcode.com</code>
  *
- * <p>This library is free software; you can redistribute it and/or modify it under the terms of the
+ * <p>This library is free software; you can redistribute it and/or modify it under the terms of
+ * the
  * GNU Lesser General Public License as published by the Free Software Foundation; either version
  * 2.1 of the License, or (at your option) any later version.
  *
@@ -35,78 +38,122 @@ import javafx.scene.image.PixelReader;
  *
  * @author J. David Eisenberg
  * @version 1.5, 19 Oct 2003
- *     <p>CHANGES: -------- 30-Jav-2015 : Hacked source to work with JavaFX images instead of AWT
- *     images (by Jewelsea for StackOverflow). 19-Nov-2002 : CODING STYLE CHANGES ONLY (by David
- *     Gilbert for Object Refinery Limited); 19-Sep-2003 : Fix for platforms using EBCDIC
- *     (contributed by Paulo Soares); 19-Oct-2003 : Change private fields to protected fields so
- *     that PngEncoderB can inherit them (JDE) Fixed bug with calculation of nRows
+ * <p>CHANGES: -------- 30-Jav-2015 : Hacked source to work with JavaFX images instead of AWT
+ * images (by Jewelsea for StackOverflow). 19-Nov-2002 : CODING STYLE CHANGES ONLY (by David Gilbert
+ * for Object Refinery Limited); 19-Sep-2003 : Fix for platforms using EBCDIC (contributed by Paulo
+ * Soares); 19-Oct-2003 : Change private fields to protected fields so that PngEncoderB can inherit
+ * them (JDE) Fixed bug with calculation of nRows
  */
 public class PngEncoderFX extends Object {
 
-  /** Constant specifying that alpha channel should be encoded. */
+  /**
+   * Constant specifying that alpha channel should be encoded.
+   */
   public static final boolean ENCODE_ALPHA = true;
 
-  /** Constant specifying that alpha channel should not be encoded. */
+  /**
+   * Constant specifying that alpha channel should not be encoded.
+   */
   public static final boolean NO_ALPHA = false;
 
-  /** Constants for filter (NONE) */
+  /**
+   * Constants for filter (NONE)
+   */
   public static final int FILTER_NONE = 0;
 
-  /** Constants for filter (SUB) */
+  /**
+   * Constants for filter (SUB)
+   */
   public static final int FILTER_SUB = 1;
 
-  /** Constants for filter (UP) */
+  /**
+   * Constants for filter (UP)
+   */
   public static final int FILTER_UP = 2;
 
-  /** Constants for filter (LAST) */
+  /**
+   * Constants for filter (LAST)
+   */
   public static final int FILTER_LAST = 2;
 
-  /** IHDR tag. */
+  /**
+   * IHDR tag.
+   */
   protected static final byte IHDR[] = {73, 72, 68, 82};
 
-  /** IDAT tag. */
+  /**
+   * IDAT tag.
+   */
   protected static final byte IDAT[] = {73, 68, 65, 84};
 
-  /** IEND tag. */
+  /**
+   * IEND tag.
+   */
   protected static final byte IEND[] = {73, 69, 78, 68};
 
-  /** The png bytes. */
+  /**
+   * The png bytes.
+   */
   protected byte[] pngBytes;
 
-  /** The prior row. */
+  /**
+   * The prior row.
+   */
   protected byte[] priorRow;
 
-  /** The left bytes. */
+  /**
+   * The left bytes.
+   */
   protected byte[] leftBytes;
 
-  /** The image. */
+  /**
+   * The image.
+   */
   protected Image image;
 
-  /** The width. */
+  /**
+   * The width.
+   */
   protected int width, height;
 
-  /** The byte position. */
+  /**
+   * The byte position.
+   */
   protected int bytePos, maxPos;
 
-  /** CRC. */
+  /**
+   * CRC.
+   */
   protected CRC32 crc = new CRC32();
 
-  /** The CRC value. */
+  /**
+   * The CRC value.
+   */
   protected long crcValue;
 
-  /** Encode alpha? */
+  /**
+   * Encode alpha?
+   */
   protected boolean encodeAlpha;
 
-  /** The filter type. */
+  /**
+   * The filter type.
+   */
   protected int filter;
 
-  /** The bytes-per-pixel. */
+  /**
+   * The bytes-per-pixel.
+   */
   protected int bytesPerPixel;
 
-  /** The compression level. */
+  /**
+   * The compression level.
+   */
   protected int compressionLevel;
 
-  /** Class constructor */
+  /**
+   * Class constructor
+   */
   public PngEncoderFX() {
     this(null, false, FILTER_NONE, 0);
   }
@@ -115,10 +162,10 @@ public class PngEncoderFX extends Object {
    * Class constructor specifying Image source to encode, whether to encode alpha, filter to use,
    * and compression level.
    *
-   * @param image A Java Image object
+   * @param image       A Java Image object
    * @param encodeAlpha Encode the alpha channel? false=no; true=yes
    * @param whichFilter 0=none, 1=sub, 2=up
-   * @param compLevel 0..9
+   * @param compLevel   0..9
    * @see java.awt.Image
    */
   public PngEncoderFX(Image image, boolean encodeAlpha, int whichFilter, int compLevel) {
@@ -143,7 +190,7 @@ public class PngEncoderFX extends Object {
   /**
    * Class constructor specifying Image to encode, and whether to encode alpha.
    *
-   * @param image A Java Image object which uses the DirectColorModel
+   * @param image       A Java Image object which uses the DirectColorModel
    * @param encodeAlpha Encode the alpha channel? false=no; true=yes
    * @see java.awt.Image
    */
@@ -154,7 +201,7 @@ public class PngEncoderFX extends Object {
   /**
    * Class constructor specifying Image to encode, whether to encode alpha, and filter to use.
    *
-   * @param image A Java Image object which uses the DirectColorModel
+   * @param image       A Java Image object which uses the DirectColorModel
    * @param encodeAlpha Encode the alpha channel? false=no; true=yes
    * @param whichFilter 0=none, 1=sub, 2=up
    * @see java.awt.Image
@@ -290,7 +337,7 @@ public class PngEncoderFX extends Object {
    * The array is resized by 1000 bytes or the length of the data to be written, whichever is
    * larger.
    *
-   * @param data The data to be written into pngBytes.
+   * @param data   The data to be written into pngBytes.
    * @param nBytes The number of bytes to be written.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
@@ -307,7 +354,7 @@ public class PngEncoderFX extends Object {
   /**
    * Write a two-byte integer into the pngBytes array at a given position.
    *
-   * @param n The integer to be written into pngBytes.
+   * @param n      The integer to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    */
@@ -321,7 +368,7 @@ public class PngEncoderFX extends Object {
    * updating maxPos, the largest element written in the array. The array is resized by 1000 bytes
    * or the length of the data to be written, whichever is larger.
    *
-   * @param data The data to be written into pngBytes.
+   * @param data   The data to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    */
@@ -337,10 +384,10 @@ public class PngEncoderFX extends Object {
   /**
    * Increase or decrease the length of a byte array.
    *
-   * @param array The original array.
+   * @param array     The original array.
    * @param newLength The length you wish the new array to have.
    * @return Array of newly desired length. If shorter than the original, the trailing elements are
-   *     truncated.
+   * truncated.
    */
   protected byte[] resizeByteArray(byte[] array, int newLength) {
     byte[] newArray = new byte[newLength];
@@ -353,16 +400,16 @@ public class PngEncoderFX extends Object {
   /**
    * Write a four-byte integer into the pngBytes array at a given position.
    *
-   * @param n The integer to be written into pngBytes.
+   * @param n      The integer to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    */
   protected int writeInt4(int n, int offset) {
     byte[] temp = {
-      (byte) ((n >> 24) & 0xff),
-      (byte) ((n >> 16) & 0xff),
-      (byte) ((n >> 8) & 0xff),
-      (byte) (n & 0xff)
+        (byte) ((n >> 24) & 0xff),
+        (byte) ((n >> 16) & 0xff),
+        (byte) ((n >> 8) & 0xff),
+        (byte) (n & 0xff)
     };
     return writeBytes(temp, offset);
   }
@@ -370,7 +417,7 @@ public class PngEncoderFX extends Object {
   /**
    * Write a single byte into the pngBytes array at a given position.
    *
-   * @param b The integer to be written into pngBytes.
+   * @param b      The integer to be written into pngBytes.
    * @param offset The starting point to write to.
    * @return The next place to be written to in the pngBytes array.
    */
@@ -379,7 +426,9 @@ public class PngEncoderFX extends Object {
     return writeBytes(temp, offset);
   }
 
-  /** Write a PNG "IHDR" chunk into the pngBytes array. */
+  /**
+   * Write a PNG "IHDR" chunk into the pngBytes array.
+   */
   protected void writeHeader() {
     int startPos;
 
@@ -405,9 +454,9 @@ public class PngEncoderFX extends Object {
    * values of the previous pixels. The array is 16 bytes long, which will easily hold two-byte
    * samples plus two-byte alpha.
    *
-   * @param pixels The array holding the scan lines being built
+   * @param pixels   The array holding the scan lines being built
    * @param startPos Starting position within pixels of bytes to be filtered.
-   * @param width Width of a scanline in pixels.
+   * @param width    Width of a scanline in pixels.
    */
   protected void filterSub(byte[] pixels, int startPos, int width) {
     int i;
@@ -428,9 +477,9 @@ public class PngEncoderFX extends Object {
   /**
    * Perform "up" filtering on the given row. Side effect: refills the prior row with current row
    *
-   * @param pixels The array holding the scan lines being built
+   * @param pixels   The array holding the scan lines being built
    * @param startPos Starting position within pixels of bytes to be filtered.
-   * @param width Width of a scanline in pixels.
+   * @param width    Width of a scanline in pixels.
    */
   protected void filterUp(byte[] pixels, int startPos, int width) {
     int i, nBytes;
@@ -552,7 +601,9 @@ public class PngEncoderFX extends Object {
     }
   }
 
-  /** Write a PNG "IEND" chunk into the pngBytes array. */
+  /**
+   * Write a PNG "IEND" chunk into the pngBytes array.
+   */
   protected void writeEnd() {
     bytePos = writeInt4(0, bytePos);
     bytePos = writeBytes(IEND, bytePos);

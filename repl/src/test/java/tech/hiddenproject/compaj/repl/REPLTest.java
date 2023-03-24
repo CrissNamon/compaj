@@ -28,14 +28,14 @@ public class REPLTest {
     Main.init();
   }
 
-  @BeforeEach
-  public void resetCaptor() {
-    OUTPUT_CAPTOR.reset();
-  }
-
   @AfterAll
   public static void release() {
     System.setOut(STANDARD_OUT);
+  }
+
+  @BeforeEach
+  public void resetCaptor() {
+    OUTPUT_CAPTOR.reset();
   }
 
   @Test

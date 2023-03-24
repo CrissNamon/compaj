@@ -2,6 +2,7 @@ package tech.hiddenproject.compaj.gui.view;
 
 import java.util.Set;
 import java.util.function.Consumer;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,7 +25,8 @@ public class ReplView extends ScrollPane {
   }
 
   private final VBox historyContainer;
-  private Consumer<Object> event = (x) -> {};
+  private Consumer<Object> event = (x) -> {
+  };
 
   public ReplView() {
     super(root);
