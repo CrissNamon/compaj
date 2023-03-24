@@ -24,9 +24,10 @@ jobs:
       - name: Generate Javadoc
         run: |
           mvn -B javadoc:aggregate --file pom.xml
-          mkdir compaj-docs
-          mkdir compaj-docs/javadoc
-          cd compaj-docs
+          rm -rf compaj-docs
+          mkdir docs
+          mkdir docs/javadoc
+          cd docs
           cp -r ../target/site/apidocs/. ./javadoc/
           git fetch origin apidocs:apidocs
           git checkout apidocs
