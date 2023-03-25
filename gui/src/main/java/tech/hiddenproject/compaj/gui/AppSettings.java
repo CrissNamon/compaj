@@ -1,12 +1,14 @@
 package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.prefs.Preferences;
 
 public class AppSettings {
 
   private static final String APP_DIRECTORY = "CompaJ";
-  private static final String SCRIPTS_FOLDER = "scripts";
+  private static final String SCRIPTS_DIRECTORY = "scripts";
+  private static final String PLUGINS_DIRECTORY = "plugins";
   private static AppSettings INSTANCE;
   private Preferences preferences;
 
@@ -26,7 +28,7 @@ public class AppSettings {
   }
 
   private File createScriptsDirectory(File projectDir) {
-    File scriptsDir = new File(projectDir.toString() + "/" + SCRIPTS_FOLDER);
+    File scriptsDir = new File(projectDir.toString() + "/" + SCRIPTS_DIRECTORY);
     scriptsDir.mkdir();
     return scriptsDir;
   }
@@ -44,11 +46,22 @@ public class AppSettings {
     return dir;
   }
 
+  public File getPluginsDirectory() {
+    File appDirectory = getAppDirectory();
+    File pluginsDir = new File(appDirectory.getAbsolutePath() + "/" + PLUGINS_DIRECTORY + "/");
+    pluginsDir.mkdir();
+    return pluginsDir;
+  }
+
   public void put(AppPreference preference, String value) {
     preferences.put(preference.getName(), value);
   }
 
   public String get(AppPreference preference, String defaultValue) {
     return preferences.get(preference.getName(), defaultValue);
+  }
+
+  public FileFilter pluginsFileFilter() {
+    return pathname -> pathname.getName().endsWith(".jar");
   }
 }

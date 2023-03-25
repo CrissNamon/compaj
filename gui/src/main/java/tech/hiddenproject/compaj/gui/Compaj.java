@@ -2,7 +2,11 @@ package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -17,6 +21,8 @@ import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import org.apache.commons.math3.complex.ComplexFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
 import tech.hiddenproject.compaj.extension.ComplexExtension;
@@ -40,12 +46,14 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Compaj extends Application {
 
+  public static final Logger LOGGER = LoggerFactory.getLogger(Compaj.class);
   public static final ComplexFormat COMPLEX_FORMAT;
   private static final GroovyTranslator translator;
   private static final String[] normalImports =
       new String[]{
           "tech.hiddenproject.compaj.extension.MathExtension",
-          "tech.hiddenproject.compaj.extension.CompaJComplex"
+          "tech.hiddenproject.compaj.extension.CompaJComplex",
+          Compaj.class.getCanonicalName()
       };
   private static final String[] starImports =
       new String[]{
@@ -71,11 +79,19 @@ public class Compaj extends Application {
   }
 
   static {
+    File[] pluginFiles = Optional.ofNullable(AppSettings.getInstance().getPluginsDirectory()
+                                                 .listFiles(
+                                                     AppSettings.getInstance().pluginsFileFilter()))
+        .orElse(new File[]{});
+    List<String> pluginsPaths = Arrays.stream(pluginFiles)
+        .map(File::getAbsolutePath)
+        .collect(Collectors.toList());
+    LOGGER.info("Found plugins: {}", pluginsPaths);
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
-    translator = new GroovyTranslator(translatorUtils);
+    translator = new GroovyTranslator(translatorUtils, pluginsPaths);
   }
 
-  {
+  static {
     CompaJScriptBase.addExtension(new StarterExtension());
     CompaJScriptBase.addExtension(new MathExtension());
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());

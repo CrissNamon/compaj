@@ -12,10 +12,12 @@ Please note we have a code of conduct, please follow it in all your interactions
 3. make a pull request into dev branch
 
 > `NOTE:` Always remember to describe you PR with the exact issue id.
-> OR if you are making PR which doesn't solves any listed issue then please mention it(*this PR doesn't resembles with
+> OR if you are making PR which doesn't solves any listed issue then please mention it(*this PR
+doesn't resembles with
 > any listed issue*) into your PR
 
 ### Git workflow
+
 - _main_ - stable release branch, can be updated only by PR from dev
 - _dev_ - development branch, should be updated by PR from other branches
 

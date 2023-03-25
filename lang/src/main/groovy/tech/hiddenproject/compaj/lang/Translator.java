@@ -2,8 +2,6 @@ package tech.hiddenproject.compaj.lang;
 
 import java.util.Set;
 
-import org.codehaus.groovy.control.CompilerConfiguration;
-
 /**
  * Represents translator for some lang.
  */
@@ -35,6 +33,4 @@ public interface Translator {
    * @return Variables that should not be displayed
    */
   Set<String> getHiddenVariables();
-
-  CompilerConfiguration getConfig();
 }

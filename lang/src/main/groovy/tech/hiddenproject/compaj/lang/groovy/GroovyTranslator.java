@@ -1,7 +1,11 @@
 package tech.hiddenproject.compaj.lang.groovy;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +20,14 @@ import groovy.lang.Script;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.lang.CodeTranslation;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
+import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent.GLOBAL;
-import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
 import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 
 /**
@@ -29,13 +35,13 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
  */
 public class GroovyTranslator implements Translator {
 
-  private static final String SCRIPT_BASE = "CompaJScriptBase";
-
   public static final Set<String> HIDDEN_VARIABLES = Set.of(
       "out",
       "$compajOut",
       "$compajOutputStream"
   );
+  private static final Logger LOGGER = LoggerFactory.getLogger(GroovyTranslator.class);
+  private static final String SCRIPT_BASE = "CompaJScriptBase";
   private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
   private static final ImportCustomizer importCustomizer;
   private static final String[] normalImports =
@@ -57,8 +63,7 @@ public class GroovyTranslator implements Translator {
           "tech.hiddenproject.compaj.applied.epidemic",
           "org.apache.commons.math3.ode.nonstiff",
           "org.apache.commons.math3.linear",
-          "java.util.stream",
-          "tech.hiddenproject.aide.optional"
+          "java.util.stream"
       };
 
   private static final String[] staticStarsImports = new String[]{"java.lang.Math"};
@@ -76,8 +81,8 @@ public class GroovyTranslator implements Translator {
   private final TranslatorUtils translatorUtils;
   private final Map<String, Object> variables;
   private final ByteArrayOutputStream output;
-
-  private final CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+  private final CompilerConfiguration compilerConfiguration;
+  private final List<String> libraries = new ArrayList<>();
 
   public GroovyTranslator(TranslatorUtils translatorUtils) {
     this(SCRIPT_BASE, translatorUtils, new ArrayList<>());
@@ -88,15 +93,11 @@ public class GroovyTranslator implements Translator {
   }
 
   public GroovyTranslator(String base, TranslatorUtils translatorUtils, List<String> libraries) {
-    CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-    List<String> cp = compilerConfiguration.getClasspath();
-    cp.addAll(libraries);
-    compilerConfiguration.setClasspathList(cp);
-    compilerConfiguration.addCompilationCustomizers(
-        customizerList.toArray(new CompilationCustomizer[]{})
-    );
-    compilerConfiguration.setScriptBaseClass(base);
+    this.compilerConfiguration = new CompilerConfiguration();
+    this.libraries.addAll(libraries);
+    initConfiguration(base, libraries);
     importPluginClasses(getPluginImports(loadPluginsClasses()));
+    EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null));
     this.binding = new Binding();
     this.output = new ByteArrayOutputStream();
     this.binding.setVariable("out", new PrintStream(output));
@@ -111,10 +112,6 @@ public class GroovyTranslator implements Translator {
 
   public Object evaluate(String script) {
     return evaluate(script, Set.of());
-  }
-
-  public CompilerConfiguration getConfig() {
-    return compilerConfiguration;
   }
 
   @Override
@@ -142,6 +139,17 @@ public class GroovyTranslator implements Translator {
     return HIDDEN_VARIABLES;
   }
 
+  private void initConfiguration(String base, List<String> libraries) {
+    List<String> cp = compilerConfiguration.getClasspath();
+    cp.addAll(libraries);
+    LOGGER.info("Classpath: {}", cp);
+    this.compilerConfiguration.setClasspathList(cp);
+    this.compilerConfiguration.addCompilationCustomizers(
+        customizerList.toArray(new CompilationCustomizer[]{})
+    );
+    this.compilerConfiguration.setScriptBaseClass(base);
+  }
+
   private void updateVariables() {
     Map<String, Object> tmp = getBinding().getVariables();
     variables.putAll(tmp);
@@ -155,27 +163,33 @@ public class GroovyTranslator implements Translator {
     return variables;
   }
 
-  private Class[] getLoadedClasses() {
-    return groovyShell.getClassLoader().getLoadedClasses();
-  }
-
-  private GroovyShell getGroovyShell() {
-    return groovyShell;
-  }
-
   private void importPluginClasses(List<String> pluginClassesNames) {
     pluginClassesNames.forEach(importCustomizer::addImports);
   }
 
   private List<Class<?>> loadPluginsClasses() {
-    return ServiceLoader.load(CompaJPlugin.class).stream()
-        .map(Provider::get)
-        .peek(compaJPlugin -> EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null)))
-        .flatMap(plugin -> plugin.getClasses().stream())
-        .collect(Collectors.toList());
+    URL[] libUrls = libraries.stream()
+        .map(this::getLibUrl)
+        .toArray(URL[]::new);
+    try (URLClassLoader urlClassLoader = new URLClassLoader(libUrls)) {
+      return ServiceLoader.load(CompaJPlugin.class, urlClassLoader).stream()
+          .map(Provider::get)
+          .flatMap(plugin -> plugin.getClasses().stream())
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private List<String> getPluginImports(List<Class<?>> classes) {
     return classes.stream().map(Class::getCanonicalName).collect(Collectors.toList());
+  }
+
+  private URL getLibUrl(String path) {
+    try {
+      return new File(path).toURI().toURL();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

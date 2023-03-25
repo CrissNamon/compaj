@@ -34,6 +34,11 @@ public class CompaJEvent {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(payload, name);
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -43,11 +48,6 @@ public class CompaJEvent {
     }
     CompaJEvent that = (CompaJEvent) o;
     return payload.equals(that.payload) && name.equals(that.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(payload, name);
   }
 
   @Override
@@ -62,6 +62,7 @@ public class CompaJEvent {
    * Global event names in CompaJ system.
    */
   public static class GLOBAL {
+
     public static final String STARTUP = "STARTUP";
   }
 }

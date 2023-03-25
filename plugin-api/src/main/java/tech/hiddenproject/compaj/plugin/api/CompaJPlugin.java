@@ -6,8 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Represents plugin for CompaJ.
- * All plugins must implement this interface.
+ * Represents plugin for CompaJ. All plugins must implement this interface.
  */
 public interface CompaJPlugin {
 

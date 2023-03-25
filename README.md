@@ -3,6 +3,8 @@
 [![Build](https://github.com/CrissNamon/compaj/actions/workflows/main.yml/badge.svg)](https://github.com/CrissNamon/compaj/actions/workflows/main.yml)
 [![Trello](https://img.shields.io/badge/Trello-Follow%20progress-blueviolet)](https://trello.com/b/4c7FvMFI/compaj-desktop)
 
+<img width="640" alt="Compaj logo wide" src="https://user-images.githubusercontent.com/22001123/227656456-b43f3ef3-80d0-4c36-b5ef-d8e84e40ddcf.png">
+
 This is the home of the CompaJ Project - open source, cross-platform programming and numeric
 computing platform for math modelling.
 
@@ -19,7 +21,8 @@ computing platform for math modelling.
 ___
 Project is under active development. CompaJ supports only basic functions and models now, which are
 not intended to use in real projects.
-See project progress and feature on public [Trello board](https://trello.com/b/4c7FvMFI/compaj-desktop).
+See project progress and feature on
+public [Trello board](https://trello.com/b/4c7FvMFI/compaj-desktop).
 
 ### Structure
 
@@ -33,6 +36,9 @@ CompaJ has modular structure based on Maven modules.
 - [CompaJ Lang](https://github.com/CrissNamon/compaj/tree/main/lang)
     - CompaJ Lang is an object oriented and optionally typed programming language based on Groovy
       with useful extensions to reduce redundant symbols and simplify calculations.
+- [CompaJ Plugin API](https://github.com/CrissNamon/compaj/tree/main/plugin-api)
+    - CompaJ can load external plugins
+      using [Plugin API](https://github.com/CrissNamon/compaj/wiki/Plugin-API)
 - [CompaJ REPL](https://github.com/CrissNamon/compaj/tree/main/repl)
     - CompaJ REPL is a console application which provides all functionality of CompaJ Lang.
 - [CompaJ](https://github.com/CrissNamon/compaj/tree/main/gui)

@@ -20,7 +20,7 @@
   <properties>
     <applied.version>0.0.2</applied.version>
     <core.version>0.0.2</core.version>
-    <groovy.version>4.0.2</groovy.version>
+    <groovy.version>4.0.10</groovy.version>
     <gui.version>0.0.3</gui.version>
     <lang-extensions.version>0.0.3</lang-extensions.version>
     <lang.version>0.0.3</lang.version>
@@ -42,6 +42,21 @@
       <scope>test</scope>
       <version>5.9.2</version>
     </dependency>
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <artifactId>slf4j-reload4j</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <artifactId>log4j-core</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <version>2.19.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -49,7 +64,7 @@
       <plugin>
         <artifactId>flatten-maven-plugin</artifactId>
         <configuration>
-          <updatePomFile>true</updatePomFile>
+          <updatePomFile>false</updatePomFile>
         </configuration>
         <executions>
           <execution>

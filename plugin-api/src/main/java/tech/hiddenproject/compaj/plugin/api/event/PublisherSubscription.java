@@ -1,15 +1,36 @@
 package tech.hiddenproject.compaj.plugin.api.event;
 
+import java.util.Objects;
+
 /**
  * Represents subscription on {@link EventPublisher}.
  */
-public record PublisherSubscription(String topic, Long id) {
+public final class PublisherSubscription {
+
+  private final String topic;
+  private final Long id;
+
 
   /**
    * @param topic Topic name
    * @param id    Subscription id
    */
-  public PublisherSubscription {
+  public PublisherSubscription(String topic, Long id) {
+    this.topic = topic;
+    this.id = id;
+  }
+
+  public String topic() {
+    return topic;
+  }
+
+  public Long id() {
+    return id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(topic, id);
   }
 
   @Override
@@ -31,5 +52,6 @@ public record PublisherSubscription(String topic, Long id) {
         "topic=" + topic + ", " +
         "id=" + id + ']';
   }
+
 
 }
