@@ -10,7 +10,7 @@ public class AppSettings {
   private static final String SCRIPTS_DIRECTORY = "scripts";
   private static final String PLUGINS_DIRECTORY = "plugins";
   private static AppSettings INSTANCE;
-  private Preferences preferences;
+  private final Preferences preferences;
 
   private AppSettings() {
     preferences = Preferences.userNodeForPackage(tech.hiddenproject.compaj.gui.Compaj.class);
@@ -44,6 +44,13 @@ public class AppSettings {
     File dir = new File(userHome + "/" + APP_DIRECTORY + "/");
     dir.mkdir();
     return dir;
+  }
+
+  public File getLibrariesDirectory() {
+    File appDirectory = getAppDirectory();
+    File libDirectory = new File(appDirectory.getAbsolutePath() + "/lib/");
+    libDirectory.mkdir();
+    return libDirectory;
   }
 
   public File getPluginsDirectory() {

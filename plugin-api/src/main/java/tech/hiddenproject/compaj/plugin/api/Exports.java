@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Defines classes that should be imported on startup.
+ * CompaJ.readFile("/Users/danilarassohin/CompaJ/plugins/plugin.cjp")
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

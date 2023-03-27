@@ -34,15 +34,16 @@ CompaJ has modular structure based on Maven modules.
 - [CompaJ Applied](https://github.com/CrissNamon/compaj/tree/main/applied)
     - Applied module contains ready to use models.
 - [CompaJ Lang](https://github.com/CrissNamon/compaj/tree/main/lang)
-    - CompaJ Lang is an object oriented and optionally typed programming language based on Groovy
+    - CompaJ Lang is an object-oriented and optionally typed programming language based on Groovy
       with useful extensions to reduce redundant symbols and simplify calculations.
 - [CompaJ Plugin API](https://github.com/CrissNamon/compaj/tree/main/plugin-api)
-    - CompaJ can load external plugins
-      using [Plugin API](https://github.com/CrissNamon/compaj/wiki/Plugin-API)
+    - CompaJ can load external plugins using Plugin API
 - [CompaJ REPL](https://github.com/CrissNamon/compaj/tree/main/repl)
     - CompaJ REPL is a console application which provides all functionality of CompaJ Lang.
 - [CompaJ](https://github.com/CrissNamon/compaj/tree/main/gui)
     - CompaJ is a standalone application with GUI and many useful tools for CompaJ REPL.
+- [CompaJ Cloud](https://github.com/CrissNamon/compaj-cloud)
+    - Cloud infrastructure to run CompaJ as SaaS
 
 ### Learn
 
@@ -67,6 +68,11 @@ in [Wiki](https://github.com/CrissNamon/compaj/wiki/CompaJ-Math).
 CompaJ uses widgets system for visualization in _WorkSpace_. Documentation available
 in [Wiki](https://github.com/CrissNamon/compaj/wiki/CompaJ-WorkSpace)
 
+#### Plugin API
+
+Plugin API provides a way for developers to extend CompaJ system with new features.
+Documentation available in [Wiki](https://github.com/CrissNamon/compaj/wiki/Plugin-API)
+
 #### Other
 
 All documentation and necessary information with tutorials will be released soon.
@@ -75,7 +81,7 @@ All documentation and necessary information with tutorials will be released soon
 
 ___
 
-* [Danila Rassokhin](https://gihub.com/crissnamon) [![Twitter](https://img.shields.io/twitter/follow/kpekepsalt?style=social)](https://twitter.com/kpekepsalt)
+* [Danila Rassokhin](https://github.com/crissnamon) [![Twitter](https://img.shields.io/twitter/follow/kpekepsalt_en?style=social)](https://twitter.com/kpekepsalt_en)
 
 ### Copyright
 

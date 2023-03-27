@@ -79,16 +79,18 @@ public class Compaj extends Application {
   }
 
   static {
-    File[] pluginFiles = Optional.ofNullable(AppSettings.getInstance().getPluginsDirectory()
+    File[] librariesFiles = Optional.ofNullable(AppSettings.getInstance().getLibrariesDirectory()
                                                  .listFiles(
                                                      AppSettings.getInstance().pluginsFileFilter()))
         .orElse(new File[]{});
-    List<String> pluginsPaths = Arrays.stream(pluginFiles)
+    List<String> librariesPaths = Arrays.stream(librariesFiles)
         .map(File::getAbsolutePath)
         .collect(Collectors.toList());
-    LOGGER.info("Found plugins: {}", pluginsPaths);
+    LOGGER.info("Found libs: {}", librariesPaths);
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
-    translator = new GroovyTranslator(translatorUtils, pluginsPaths);
+    translator = new GroovyTranslator(translatorUtils, librariesPaths,
+                                      AppSettings.getInstance().getPluginsDirectory().getAbsolutePath(),
+                                      GroovyTranslator.DEFAULT_TMP_FILE, Compaj.class.getClassLoader());
   }
 
   static {

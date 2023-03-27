@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
@@ -13,6 +15,7 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
+  private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
   private static final List<String> LIBRARIES = new ArrayList<>();
 
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
@@ -60,7 +63,7 @@ public class Main {
   private static void processLibrariesArg() {
     if (ARGUMENTS.containsKey("l")) {
       List<String> libsPaths = ARGUMENTS.get("l");
-      System.out.println("Loading libs: " + libsPaths);
+      LOGGER.info("Loading libs: " + libsPaths);
       LIBRARIES.addAll(libsPaths);
     }
   }

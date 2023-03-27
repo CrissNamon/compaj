@@ -216,7 +216,8 @@ public class GridAgent implements Agent<GridLocation, String> {
     newAgent.moveAs(moveFunction);
     newAgent.collidesAs(collideFunction);
     for (Entry<String, Double> entry : numericProperties.entrySet()) {
-      newAgent.setProperty(entry.getKey(), new Double(entry.getValue()));
+      Double v = entry.getValue();
+      newAgent.setProperty(entry.getKey(), v);
     }
     for (Entry<String, String> entry : stringProperties.entrySet()) {
       newAgent.setProperty(entry.getKey(), new String(entry.getValue()));

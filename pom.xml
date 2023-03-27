@@ -64,7 +64,7 @@
       <plugin>
         <artifactId>flatten-maven-plugin</artifactId>
         <configuration>
-          <updatePomFile>false</updatePomFile>
+          <updatePomFile>true</updatePomFile>
         </configuration>
         <executions>
           <execution>
