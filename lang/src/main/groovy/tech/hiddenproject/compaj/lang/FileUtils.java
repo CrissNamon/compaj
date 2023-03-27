@@ -11,6 +11,7 @@ import java.nio.channels.FileLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.hiddenproject.aide.optional.BooleanOptional;
+import tech.hiddenproject.compaj.lang.exception.FileException;
 
 /**
  * Utils for files.
@@ -29,10 +30,10 @@ public class FileUtils {
     try {
       File file = new File(path);
       BooleanOptional.of(file.exists())
-          .ifFalseThrow(() -> new RuntimeException("File not found: " + path));
+          .ifFalseThrow(() -> new FileException("File not found: " + path));
       return file.toURI().toURL();
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw new FileException(e);
     }
   }
 
@@ -52,7 +53,7 @@ public class FileUtils {
       stream.write(data.getBytes());
     } catch (IOException e) {
       LOGGER.error("IO Error", e);
-      throw new RuntimeException(e);
+      throw new FileException(e);
     }
   }
 
@@ -69,13 +70,13 @@ public class FileUtils {
       file.createNewFile();
       StringBuilder res = new StringBuilder();
       int b = stream.read();
-      while(b != -1) {
+      while (b != -1) {
         res.append((char) b);
         b = stream.read();
       }
       return res.toString();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new FileException(e);
     }
   }
 }

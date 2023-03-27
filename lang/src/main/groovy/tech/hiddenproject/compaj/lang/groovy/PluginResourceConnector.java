@@ -14,6 +14,7 @@ import tech.hiddenproject.compaj.lang.FileUtils;
 import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 
 public class PluginResourceConnector implements ResourceConnector {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(PluginResourceConnector.class);
   private final GroovyClassLoader groovyClassLoader;
   private final String pluginsDir;
@@ -27,8 +28,10 @@ public class PluginResourceConnector implements ResourceConnector {
   public URLConnection getResourceConnection(String filePath) {
     String classFilePath = filePathToClass(filePath);
     try {
-      return getResourceFrom(classFilePath, groovyClassLoader, GroovyTranslator.class.getClassLoader(),
-                             CompaJScriptBase.class.getClassLoader(), ClassLoader.getPlatformClassLoader())
+      return getResourceFrom(classFilePath, groovyClassLoader,
+                             GroovyTranslator.class.getClassLoader(),
+                             CompaJScriptBase.class.getClassLoader(),
+                             ClassLoader.getPlatformClassLoader())
           .orElseGet(() -> FileUtils.getFileUrl(pluginsDir + "/" + filePath)).openConnection();
     } catch (Exception e) {
       throw new RuntimeException(e);

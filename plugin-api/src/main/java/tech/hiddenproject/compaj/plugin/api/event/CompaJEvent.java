@@ -63,6 +63,17 @@ public class CompaJEvent {
    */
   public static class GLOBAL {
 
-    public static final String STARTUP = "STARTUP";
+    /**
+     * Called one time after all plugins and libs are loaded and translator initialized.
+     */
+    public static final String STARTUP = "_STARTUP_";
+    /**
+     * Called on each evaluation request in translator.
+     */
+    public static final String INPUT = "_INPUT_";
+    /**
+     * Called on each new class import.
+     */
+    public static final String IMPORT = "_IMPORT_";
   }
 }

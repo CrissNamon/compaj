@@ -23,12 +23,13 @@ import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
  * Base class for REPL.
  */
 public class CompaJ {
+
   private static CompaJ INSTANCE;
-
-  private Translator translator;
   public PrintStream out;
+  private Translator translator;
 
-  private CompaJ() {}
+  private CompaJ() {
+  }
 
   /**
    * Reads file content from url and evaluates it.

@@ -38,6 +38,7 @@ import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent.GLOBAL;
 import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
+import tech.hiddenproject.compaj.plugin.api.exception.PluginException;
 
 /**
  * Implementation of {@link Translator} for Groovy.
@@ -67,7 +68,8 @@ public class GroovyTranslator implements Translator {
   private final PrintStream standardOut = System.out;
 
   public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries) {
-    this(translatorUtils, libraries, TranslatorProperties.PLUGINS_DIR, TranslatorProperties.DEFAULT_TMP_FILE);
+    this(translatorUtils, libraries, TranslatorProperties.PLUGINS_DIR,
+         TranslatorProperties.DEFAULT_TMP_FILE);
   }
 
   public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries,
@@ -84,7 +86,8 @@ public class GroovyTranslator implements Translator {
     this.translatorUtils = translatorUtils;
     this.tmpFile = new File(temporalFilePath);
     GroovyClassLoader groovyClassLoader = groovyShell.getClassLoader();
-    ResourceConnector resourceConnector = new PluginResourceConnector(groovyClassLoader, pluginsDir);
+    ResourceConnector resourceConnector = new PluginResourceConnector(groovyClassLoader,
+                                                                      pluginsDir);
     GroovyResourceLoader resourceLoader = new DependencyResourceLoader(
         groovyClassLoader.getResourceLoader(),
         compilerConfiguration.getScriptExtensions(),
@@ -111,6 +114,7 @@ public class GroovyTranslator implements Translator {
   @Override
   public Object evaluate(String script, Set<CodeTranslation> codeTranslations) {
     output.reset();
+    EventPublisher.INSTANCE.sendTo(GLOBAL.INPUT, new CompaJEvent(GLOBAL.INPUT, script));
     FileUtils.writeToFile(tmpFile, translatorUtils.translate(script, codeTranslations));
     Script res = ThrowableOptional.sneaky(() -> groovyShell.parse(tmpFile));
     Object result = res.run();
@@ -134,6 +138,16 @@ public class GroovyTranslator implements Translator {
     return TranslatorProperties.HIDDEN_VARIABLES;
   }
 
+  @Override
+  public Map<String, Object> getVariables() {
+    return variables;
+  }
+
+  @Override
+  public PrintStream getStandardOut() {
+    return standardOut;
+  }
+
   private void initImports() {
     importCustomizer.addImports(Imports.normalImports.toArray(String[]::new));
     importCustomizer.addStarImports(Imports.starImports.toArray(String[]::new));
@@ -152,16 +166,6 @@ public class GroovyTranslator implements Translator {
     compilerConfiguration.setScriptBaseClass(TranslatorProperties.SCRIPT_BASE);
     compilerConfiguration.setDefaultScriptExtension(TranslatorProperties.DEFAULT_SCRIPT_EXTENSION);
     compilerConfiguration.setScriptExtensions(TranslatorProperties.SCRIPT_EXTENSIONS);
-  }
-
-  @Override
-  public Map<String, Object> getVariables() {
-    return variables;
-  }
-
-  @Override
-  public PrintStream getStandardOut() {
-    return standardOut;
   }
 
   @SuppressWarnings("unchecked")
@@ -188,18 +192,26 @@ public class GroovyTranslator implements Translator {
           .flatMap(plugin -> plugin.getClasses().stream())
           .collect(Collectors.toList());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PluginException(e);
     }
   }
 
   private void loadRawPlugins(String pluginsDir) {
     File file = new File(pluginsDir);
-    String[] pluginDirectories = Optional.ofNullable(file.list((dir, name) -> new File(dir, name).isDirectory()))
-        .orElse(new String[]{});
-    Arrays.stream(pluginDirectories).map(pluginDir -> new File(pluginsDir + "/" + pluginDir + "/Main.cjp"))
+    String[] pluginDirectories = Optional.ofNullable(
+        file.list((dir, name) -> new File(dir, name).isDirectory())
+    ).orElse(new String[]{});
+    Arrays.stream(pluginDirectories)
+        .map(pluginDir -> createPluginDirFile(pluginsDir, pluginDir))
         .filter(File::exists)
         .forEach(mainFile -> ThrowableOptional.sneaky(() -> groovyShell.parse(mainFile).run()));
     importLoadedClasses();
+  }
+
+  private File createPluginDirFile(String pluginsDir, String pluginDir) {
+    return new File(pluginsDir + "/" + pluginDir + "/"
+                        + TranslatorProperties.MAIN_FILE_NAME + "."
+                        + TranslatorProperties.DEFAULT_SCRIPT_EXTENSION);
   }
 
   private List<String> getPluginImports(List<Class<?>> classes) {
@@ -215,6 +227,10 @@ public class GroovyTranslator implements Translator {
     if (Imports.normalImports.isEmpty()) {
       return;
     }
+    Imports.normalImports
+        .forEach(el -> EventPublisher.INSTANCE.sendTo(
+            GLOBAL.IMPORT, new CompaJEvent(GLOBAL.IMPORT, el))
+        );
     importCustomizer.addImports(Imports.normalImports.toArray(String[]::new));
     Imports.normalImports.clear();
     compilerConfiguration.addCompilationCustomizers(importCustomizer);

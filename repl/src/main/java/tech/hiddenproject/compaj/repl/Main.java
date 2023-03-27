@@ -15,10 +15,10 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
   private static final List<String> LIBRARIES = new ArrayList<>();
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
   private static final CompaJ INSTANCE = CompaJ.getInstance();
+  private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
 
   public static void main(String... args) {
     processArgs(args);

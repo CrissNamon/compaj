@@ -13,34 +13,36 @@ public class TranslatorProperties {
   public static final String SCRIPT_BASE = CompaJScriptBase.class.getCanonicalName();
   public static final String DEFAULT_SCRIPT_EXTENSION = "cjp";
   public static final Set<String> SCRIPT_EXTENSIONS = Set.of("cjp", "cjn");
-  
+  public static String MAIN_FILE_NAME = "Main";
+
   public static class Imports {
+
     public static final Set<String> normalImports =
         Collections.synchronizedSet(
             new HashSet<>(
-              Set.of("tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
-                   "org.apache.commons.math3.analysis.MultivariateFunction",
-                   "java.lang.reflect.Array",
-                   "java.lang.reflect.ParameterizedType",
-                   "java.lang.reflect.Type",
-                   "tech.hiddenproject.compaj.core.model.DynamicFunction"
-              )
+                Set.of("tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
+                       "org.apache.commons.math3.analysis.MultivariateFunction",
+                       "java.lang.reflect.Array",
+                       "java.lang.reflect.ParameterizedType",
+                       "java.lang.reflect.Type",
+                       "tech.hiddenproject.compaj.core.model.DynamicFunction"
+                )
             )
         );
 
     public static final Set<String> starImports =
         Collections.synchronizedSet(
             new HashSet<>(
-              Set.of(
-                "tech.hiddenproject.compaj.core.data",
-                "tech.hiddenproject.compaj.core.data.base",
-                "tech.hiddenproject.compaj.core.model.base",
-                "tech.hiddenproject.compaj.core.model",
-                "tech.hiddenproject.compaj.applied.epidemic",
-                "org.apache.commons.math3.ode.nonstiff",
-                "org.apache.commons.math3.linear",
-                "java.util.stream"
-              )
+                Set.of(
+                    "tech.hiddenproject.compaj.core.data",
+                    "tech.hiddenproject.compaj.core.data.base",
+                    "tech.hiddenproject.compaj.core.model.base",
+                    "tech.hiddenproject.compaj.core.model",
+                    "tech.hiddenproject.compaj.applied.epidemic",
+                    "org.apache.commons.math3.ode.nonstiff",
+                    "org.apache.commons.math3.linear",
+                    "java.util.stream"
+                )
             )
         );
 

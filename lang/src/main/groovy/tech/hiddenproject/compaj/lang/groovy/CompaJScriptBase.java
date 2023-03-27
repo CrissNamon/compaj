@@ -3,8 +3,9 @@ package tech.hiddenproject.compaj.lang.groovy;
 import java.util.HashSet;
 import java.util.Set;
 
-import groovy.lang.GroovyRuntimeException;
 import groovy.lang.Script;
+import tech.hiddenproject.aide.optional.ThrowableOptional;
+import tech.hiddenproject.compaj.lang.exception.ExtensionException;
 import tech.hiddenproject.compaj.lang.extension.Extension;
 
 /**
@@ -19,15 +20,8 @@ public abstract class CompaJScriptBase extends Script {
   }
 
   public CompaJScriptBase() {
-    extensions.forEach(
-        e -> {
-          try {
-            e.extend(CompaJScriptBase.this);
-          } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new GroovyRuntimeException("Unable to load extension: " + e.getName());
-          }
-        });
+    extensions.forEach(e -> ThrowableOptional.sneaky(() -> e.extend(CompaJScriptBase.this),
+                                                     ex -> new ExtensionException(e)));
   }
 
   public static void addExtension(Extension e) {
