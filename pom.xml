@@ -14,17 +14,18 @@
     <module>lang</module>
     <module>repl</module>
     <module>gui</module>
-    <module>lang-extensions</module>
+    <module>lang-extensions</module><module>plugin-api</module>
   </modules>
 
   <properties>
     <applied.version>0.0.2</applied.version>
     <core.version>0.0.2</core.version>
-    <groovy.version>4.0.2</groovy.version>
+    <groovy.version>4.0.10</groovy.version>
     <gui.version>0.0.3</gui.version>
     <lang-extensions.version>0.0.3</lang-extensions.version>
     <lang.version>0.0.3</lang.version>
     <repl.version>0.0.3</repl.version>
+    <plugin-api.version>0.0.3</plugin-api.version>
     <revision>0.0.3</revision>
   </properties>
 
@@ -40,6 +41,21 @@
       <groupId>org.junit.jupiter</groupId>
       <scope>test</scope>
       <version>5.9.2</version>
+    </dependency>
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <artifactId>slf4j-reload4j</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <artifactId>log4j-core</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <version>2.19.0</version>
     </dependency>
   </dependencies>
 

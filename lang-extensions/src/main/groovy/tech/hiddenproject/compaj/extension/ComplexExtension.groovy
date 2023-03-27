@@ -1,12 +1,23 @@
 package tech.hiddenproject.compaj.extension
 
 import org.apache.commons.math3.complex.Complex
+import org.apache.commons.math3.complex.ComplexFormat
 import tech.hiddenproject.compaj.lang.extension.Extension
+
+import java.text.NumberFormat
 
 /**
  * Extension to add math operators to Complex.
  */
 class ComplexExtension implements Extension {
+
+    public static ComplexFormat COMPLEX_FORMAT
+
+    static {
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.US)
+        COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat)
+    }
+
     @Override
     void extend(Script thisBase) {
         Complex.metaClass.asType = { CompaJComplex t -> new CompaJComplex(delegate.getReal(), delegate.getImaginary()) }

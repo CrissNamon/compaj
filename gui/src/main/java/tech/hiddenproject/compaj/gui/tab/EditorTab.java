@@ -2,7 +2,6 @@ package tech.hiddenproject.compaj.gui.tab;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.Set;
 
 import javafx.beans.Observable;
 import javafx.event.Event;
@@ -86,7 +85,10 @@ public class EditorTab extends Tab {
               .button(I18nUtils.get("alert.ok"), ButtonBar.ButtonData.OK_DONE)
               .build();
       Optional<ButtonType> result = alert.showAndWait();
-      if (result.get().getButtonData() != ButtonBar.ButtonData.OK_DONE) {
+      boolean choice = result.map(ButtonType::getButtonData)
+          .map(buttonData -> buttonData != ButtonBar.ButtonData.OK_DONE)
+          .orElse(false);
+      if (choice) {
         return;
       }
     }
@@ -116,8 +118,7 @@ public class EditorTab extends Tab {
     console.setExpanded(true);
     logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
     try {
-      Object result = Compaj.getTranslator()
-          .evaluate(codeArea.getText(), Set.of(this::translateCatchOutput));
+      Object result = Compaj.getTranslator().evaluate(codeArea.getText());
       log(result.toString());
       logInfo(I18nUtils.get("tab.editor.console.compilation.ok"));
     } catch (Exception e) {
@@ -147,16 +148,5 @@ public class EditorTab extends Tab {
 
   private void logError(String text) {
     consoleText.appendText(LOG_ERROR_PREFIX + " " + text + "\n");
-  }
-
-  private String translateCatchOutput(String script) {
-    return "$compajOut = new ByteArrayOutputStream()\n"
-        + "$compajOutputStream = new PrintStream($compajOut)\n"
-        + "System.setOut($compajOutputStream)\n"
-        + script
-        + "\n"
-        + "println $compajOut.toString()\n"
-        + "$compajOut.close()\n"
-        + "$compajOutputStream.close()";
   }
 }
