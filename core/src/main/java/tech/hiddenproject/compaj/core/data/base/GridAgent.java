@@ -16,6 +16,8 @@ import tech.hiddenproject.compaj.core.data.EnvironmentObject;
  */
 public class GridAgent implements Agent<GridLocation, String> {
 
+  private final Map<String, Double> numericProperties;
+  private final Map<String, String> stringProperties;
   private Object id;
   private GridLocation location;
   private Supplier<GridLocation> locationSupplier;
@@ -27,8 +29,6 @@ public class GridAgent implements Agent<GridLocation, String> {
   private BiFunction<Long, Agent<GridLocation, ?>, GridLocation> moveFunction;
   private BiFunction<EnvironmentObject<GridLocation>, GridLocation, GridLocation> collideFunction;
   private BiConsumer<Long, Agent<GridLocation, String>> stepFunction;
-  private final Map<String, Double> numericProperties;
-  private final Map<String, String> stringProperties;
 
   public GridAgent(String group) {
     this.id = 1;
@@ -216,7 +216,8 @@ public class GridAgent implements Agent<GridLocation, String> {
     newAgent.moveAs(moveFunction);
     newAgent.collidesAs(collideFunction);
     for (Entry<String, Double> entry : numericProperties.entrySet()) {
-      newAgent.setProperty(entry.getKey(), new Double(entry.getValue()));
+      Double v = entry.getValue();
+      newAgent.setProperty(entry.getKey(), v);
     }
     for (Entry<String, String> entry : stringProperties.entrySet()) {
       newAgent.setProperty(entry.getKey(), new String(entry.getValue()));

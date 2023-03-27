@@ -1,5 +1,7 @@
 package tech.hiddenproject.compaj.lang;
 
+import java.io.PrintStream;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,4 +35,14 @@ public interface Translator {
    * @return Variables that should not be displayed
    */
   Set<String> getHiddenVariables();
+
+  /**
+   * @return All variables
+   */
+  Map<String, Object> getVariables();
+
+  /**
+   * @return {@link PrintStream} of standard output stream
+   */
+  PrintStream getStandardOut();
 }

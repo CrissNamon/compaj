@@ -1,9 +1,13 @@
 package tech.hiddenproject.compaj.repl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
@@ -11,11 +15,19 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
+  private static final List<String> LIBRARIES = new ArrayList<>();
+  private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
+  private static final CompaJ INSTANCE = CompaJ.getInstance();
+  private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
+
   public static void main(String... args) {
-    init();
     processArgs(args);
-    System.out.println("Welcome to CompaJ REPL!");
-    System.out.println("Version 0.0.3");
+    processLibrariesArg();
+    init();
+    processFileInputArg();
+    processInputStringArg();
+    CompaJ.getInstance().out.println("Welcome to CompaJ REPL!");
+    CompaJ.getInstance().out.println("Version 0.0.3");
     processInput();
   }
 
@@ -25,11 +37,8 @@ public class Main {
   protected static void init() {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
-    GroovyTranslator.getImportCustomizer()
-        .addImports("tech.hiddenproject.compaj.repl.CompaJ")
-        .addStaticImport("tech.hiddenproject.compaj.repl.CompaJ", "exit");
-    Translator translator = new GroovyTranslator(translatorUtils);
-    CompaJ.getInstance().setTranslator(translator);
+    Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);
+    INSTANCE.setTranslator(translator);
   }
 
   /**
@@ -44,24 +53,62 @@ public class Main {
    * @param args REPL arguments
    */
   private static void processArgs(String... args) {
-    Map<String, List<String>> mappedData = CompaJ.getCLIParams(args);
-    if (mappedData.containsKey("f")) {
-      List<String> files = mappedData.get("f");
-      if (files.size() == 0) {
-        throw new RuntimeException("Flag -f found, but no files provided!");
+    Map<String, List<String>> mappedData = getCLIParams(args);
+    ARGUMENTS.putAll(mappedData);
+  }
+
+  /**
+   * Maps CLI parameters to {@link Map}.
+   *
+   * @param args CLI arguments
+   * @return {@link Map} of arguments
+   */
+  private static Map<String, List<String>> getCLIParams(String[] args) {
+    final Map<String, List<String>> params = new HashMap<>();
+    List<String> options = null;
+    for (final String a : args) {
+      if (a.charAt(0) == '-') {
+        if (a.length() < 2) {
+          continue;
+        }
+        options = new ArrayList<>();
+        params.put(a.substring(1), options);
+      } else if (options != null) {
+        options.add(a);
       }
-      for (String file : files) {
-        CompaJ.readFile(file);
-      }
-      CompaJ.exit();
     }
-    if (mappedData.containsKey("s")) {
-      List<String> sources = mappedData.get("s");
+    return params;
+  }
+
+  private static void processLibrariesArg() {
+    if (ARGUMENTS.containsKey("l")) {
+      List<String> libsPaths = ARGUMENTS.get("l");
+      LOGGER.info("Loading libs: " + libsPaths);
+      LIBRARIES.addAll(libsPaths);
+    }
+  }
+
+  private static void processInputStringArg() {
+    if (ARGUMENTS.containsKey("s")) {
+      List<String> sources = ARGUMENTS.get("s");
       if (sources.size() == 0) {
         throw new RuntimeException("Flag -s found, but no scripts provided!");
       }
       for (String source : sources) {
         CompaJ.readInput(source);
+      }
+      CompaJ.exit();
+    }
+  }
+
+  private static void processFileInputArg() {
+    if (ARGUMENTS.containsKey("f")) {
+      List<String> files = ARGUMENTS.get("f");
+      if (files.size() == 0) {
+        throw new RuntimeException("Flag -f found, but no files provided!");
+      }
+      for (String file : files) {
+        CompaJ.readFile(file);
       }
       CompaJ.exit();
     }
@@ -73,7 +120,7 @@ public class Main {
   private static void processInput() {
     Scanner sc = new Scanner(System.in);
     do {
-      System.out.print("> ");
+      CompaJ.getInstance().out.print("> ");
       String input = sc.nextLine();
       CompaJ.readInput(input);
     } while (true);

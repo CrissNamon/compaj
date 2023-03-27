@@ -43,6 +43,18 @@
       <version>${applied.version}</version>
     </dependency>
     <dependency>
+      <artifactId>plugin-api</artifactId>
+      <groupId>tech.hiddenproject.compaj</groupId>
+      <scope>compile</scope>
+      <version>0.0.3</version>
+    </dependency>
+    <dependency>
+      <artifactId>aide-optional</artifactId>
+      <groupId>tech.hiddenproject</groupId>
+      <scope>compile</scope>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
       <artifactId>groovy-all</artifactId>
       <groupId>org.apache.groovy</groupId>
       <type>pom</type>

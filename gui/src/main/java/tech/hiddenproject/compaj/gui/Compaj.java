@@ -1,8 +1,13 @@
 package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
-import java.text.NumberFormat;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -16,9 +21,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
-import org.apache.commons.math3.complex.ComplexFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
+import tech.hiddenproject.compaj.extension.CompaJComplex;
 import tech.hiddenproject.compaj.extension.ComplexExtension;
 import tech.hiddenproject.compaj.extension.MathExtension;
 import tech.hiddenproject.compaj.extension.ModelExtension;
@@ -37,62 +44,51 @@ import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
+import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties;
+import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 
 public class Compaj extends Application {
 
-  public static final ComplexFormat COMPLEX_FORMAT;
-  private static final GroovyTranslator translator;
-  private static final String[] normalImports =
-      new String[]{
-          "tech.hiddenproject.compaj.extension.MathExtension",
-          "tech.hiddenproject.compaj.extension.CompaJComplex"
-      };
-  private static final String[] starImports =
-      new String[]{
-          "tech.hiddenproject.compaj.gui",
-          "tech.hiddenproject.compaj.gui.widget",
-          "tech.hiddenproject.compaj.gui.component"
-      };
+  public static final Logger LOGGER = LoggerFactory.getLogger(Compaj.class);
+  private static GroovyTranslator translator;
   private static TabPane content;
   private static TerminalTab terminalTab;
   private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
-  static {
-    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-    COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat);
-  }
-
-  static {
-    GroovyTranslator.getImportCustomizer()
-        .addStarImports(starImports)
-        .addImports(normalImports)
-        .addStaticImport("tech.hiddenproject.compaj.gui.Compaj", "COMPLEX_FORMAT");
-  }
-
-  static {
-    TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
-    translator = new GroovyTranslator(translatorUtils);
-  }
-
-  {
-    CompaJScriptBase.addExtension(new StarterExtension());
-    CompaJScriptBase.addExtension(new MathExtension());
-    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
-    CompaJScriptBase.addExtension(new ModelExtension());
-    CompaJScriptBase.addExtension(new NamedFunctionExtension());
-    CompaJScriptBase.addExtension(new ComplexExtension());
-    CompaJScriptBase.addExtension(new AgentExtension());
-  }
-
   public static void main(String[] args) {
+    FileFilter libFilter = AppSettings.getInstance().pluginsFileFilter();
+    File[] librariesFiles = Optional
+        .ofNullable(AppSettings.getInstance().getLibrariesDirectory().listFiles(libFilter))
+        .orElse(new File[]{});
+    List<String> librariesPaths = Arrays.stream(librariesFiles)
+        .map(File::getAbsolutePath)
+        .collect(Collectors.toList());
+    initTranslator();
+    LOGGER.info("Found libs: {}", librariesPaths);
+    TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
+    translator = new GroovyTranslator(translatorUtils, librariesPaths,
+                                      AppSettings.getInstance().getPluginsDirectory()
+                                          .getAbsolutePath(),
+                                      TranslatorProperties.DEFAULT_TMP_FILE);
     launch(args);
   }
 
+  /**
+   * Creates widget from {@link Node} and adds it to WorkSpace.
+   *
+   * @param name Widget name
+   * @param node {@link Node}
+   */
   public static void addWorkSpaceWidget(String name, Node node) {
     addWorkSpaceWidget(new BaseWidget(node, name));
   }
 
+  /**
+   * Adds widget to WorkSpace.
+   *
+   * @param workSpaceWidget {@link WorkSpaceWidget}
+   */
   public static void addWorkSpaceWidget(WorkSpaceWidget workSpaceWidget) {
     workSpaceTab.addItem(workSpaceWidget);
     if (!content.getTabs().contains(workSpaceTab)) {
@@ -100,26 +96,69 @@ public class Compaj extends Application {
     }
   }
 
+  /**
+   * Creates widget from {@link Node} and adds it to WorkSpace.
+   *
+   * @param node {@link Node}
+   */
   public static void addWorkSpaceWidget(Node node) {
     addWorkSpaceWidget(new BaseWidget(node));
   }
 
+  /**
+   * Evaluates script from file.
+   *
+   * @param path Script path
+   * @return Evaluation result
+   */
   public static Object exec(String path) {
     File f = new File(path);
     return getTranslator().evaluate(FileUtils.readFile(f));
   }
 
+  /**
+   * @return {@link GroovyTranslator}
+   */
   public static GroovyTranslator getTranslator() {
     return translator;
   }
 
+  /**
+   * Evaluates script from file using file picker.
+   *
+   * @return Evaluation result
+   */
   public static Object exec() {
     File f = FileUtils.openNoteWindow();
     return getTranslator().evaluate(FileUtils.readFile(f));
   }
 
+  /**
+   * @return Main stage {@link Stage}
+   */
   public static Stage getMainStage() {
     return mainStage;
+  }
+
+  private static void initTranslator() {
+    Imports.normalImports.addAll(
+        Set.of(
+            CompaJComplex.class.getCanonicalName(),
+            Compaj.class.getCanonicalName()
+        )
+    );
+    Imports.starImports.addAll(Set.of(
+        "tech.hiddenproject.compaj.gui",
+        "tech.hiddenproject.compaj.gui.widget",
+        "tech.hiddenproject.compaj.gui.component"
+    ));
+    CompaJScriptBase.addExtension(new StarterExtension());
+    CompaJScriptBase.addExtension(new MathExtension());
+    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
+    CompaJScriptBase.addExtension(new ModelExtension());
+    CompaJScriptBase.addExtension(new NamedFunctionExtension());
+    CompaJScriptBase.addExtension(new ComplexExtension());
+    CompaJScriptBase.addExtension(new AgentExtension());
   }
 
   @Override
