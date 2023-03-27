@@ -8,12 +8,16 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.aide.optional.BooleanOptional;
 
 /**
  * Utils for files.
  */
 public class FileUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
   /**
    * Converts string path to {@link URL}.
@@ -39,6 +43,7 @@ public class FileUtils {
    * @param data Data to write
    */
   public static void writeToFile(File file, String data) {
+    file.getParentFile().mkdirs();
     try (RandomAccessFile stream = new RandomAccessFile(file.getPath(), "rw");
          FileChannel channel = stream.getChannel();
          FileLock fileLock = channel.tryLock()) {
@@ -46,6 +51,7 @@ public class FileUtils {
       stream.setLength(0);
       stream.write(data.getBytes());
     } catch (IOException e) {
+      LOGGER.error("IO Error", e);
       throw new RuntimeException(e);
     }
   }
