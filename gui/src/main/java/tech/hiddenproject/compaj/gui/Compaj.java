@@ -1,11 +1,11 @@
 package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javafx.application.Application;
@@ -20,11 +20,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
-import org.apache.commons.math3.complex.ComplexFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
+import tech.hiddenproject.compaj.extension.CompaJComplex;
 import tech.hiddenproject.compaj.extension.ComplexExtension;
 import tech.hiddenproject.compaj.extension.MathExtension;
 import tech.hiddenproject.compaj.extension.ModelExtension;
@@ -43,39 +43,30 @@ import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
+import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties;
+import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 
 public class Compaj extends Application {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(Compaj.class);
-  public static final ComplexFormat COMPLEX_FORMAT;
   private static final GroovyTranslator translator;
-  private static final String[] normalImports =
-      new String[]{
-          "tech.hiddenproject.compaj.extension.MathExtension",
-          "tech.hiddenproject.compaj.extension.CompaJComplex",
-          Compaj.class.getCanonicalName()
-      };
-  private static final String[] starImports =
-      new String[]{
-          "tech.hiddenproject.compaj.gui",
-          "tech.hiddenproject.compaj.gui.widget",
-          "tech.hiddenproject.compaj.gui.component"
-      };
   private static TabPane content;
   private static TerminalTab terminalTab;
   private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
   static {
-    NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-    COMPLEX_FORMAT = new ComplexFormat(numberFormat, numberFormat);
-  }
-
-  static {
-    GroovyTranslator.getImportCustomizer()
-        .addStarImports(starImports)
-        .addImports(normalImports)
-        .addStaticImport("tech.hiddenproject.compaj.gui.Compaj", "COMPLEX_FORMAT");
+    Imports.normalImports.addAll(
+        Set.of(
+            CompaJComplex.class.getCanonicalName(),
+            Compaj.class.getCanonicalName()
+        )
+    );
+    Imports.starImports.addAll(Set.of(
+        "tech.hiddenproject.compaj.gui",
+        "tech.hiddenproject.compaj.gui.widget",
+        "tech.hiddenproject.compaj.gui.component"
+    ));
   }
 
   static {
@@ -90,7 +81,7 @@ public class Compaj extends Application {
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
     translator = new GroovyTranslator(translatorUtils, librariesPaths,
                                       AppSettings.getInstance().getPluginsDirectory().getAbsolutePath(),
-                                      GroovyTranslator.DEFAULT_TMP_FILE);
+                                      TranslatorProperties.DEFAULT_TMP_FILE);
   }
 
   static {

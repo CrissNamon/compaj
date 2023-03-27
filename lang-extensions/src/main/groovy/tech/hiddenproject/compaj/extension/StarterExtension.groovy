@@ -1,7 +1,6 @@
 package tech.hiddenproject.compaj.extension
 
 import tech.hiddenproject.compaj.lang.extension.Extension
-
 /**
  * Extension to enable ExpandoMetaClass.
  */

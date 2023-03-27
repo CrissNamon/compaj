@@ -34,7 +34,7 @@ public class DependencyResourceLoader implements GroovyResourceLoader {
         URLConnection dependentScriptConn = resourceConnector.getResourceConnection(filename);
         return dependentScriptConn.getURL();
       } catch (Throwable t) {
-        LOGGER.debug("Error loading dependency: {}", filename);
+        LOGGER.debug("Dependency loading error: {}", filename);
       }
     }
     return parentLoader.loadGroovySource(s);

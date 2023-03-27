@@ -26,8 +26,8 @@ public class Main {
     init();
     processFileInputArg();
     processInputStringArg();
-    System.out.println("Welcome to CompaJ REPL!");
-    System.out.println("Version 0.0.3");
+    CompaJ.getInstance().out.println("Welcome to CompaJ REPL!");
+    CompaJ.getInstance().out.println("Version 0.0.3");
     processInput();
   }
 
@@ -37,9 +37,6 @@ public class Main {
   protected static void init() {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
-    GroovyTranslator.getImportCustomizer()
-        .addImports("tech.hiddenproject.compaj.repl.CompaJ")
-        .addStaticImport("tech.hiddenproject.compaj.repl.CompaJ", "exit");
     Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);
     CompaJ.getInstance().setTranslator(translator);
   }
@@ -56,8 +53,31 @@ public class Main {
    * @param args REPL arguments
    */
   private static void processArgs(String... args) {
-    Map<String, List<String>> mappedData = CompaJ.getCLIParams(args);
+    Map<String, List<String>> mappedData = getCLIParams(args);
     ARGUMENTS.putAll(mappedData);
+  }
+
+  /**
+   * Maps CLI parameters to {@link Map}.
+   *
+   * @param args CLI arguments
+   * @return {@link Map} of arguments
+   */
+  private static Map<String, List<String>> getCLIParams(String[] args) {
+    final Map<String, List<String>> params = new HashMap<>();
+    List<String> options = null;
+    for (final String a : args) {
+      if (a.charAt(0) == '-') {
+        if (a.length() < 2) {
+          continue;
+        }
+        options = new ArrayList<>();
+        params.put(a.substring(1), options);
+      } else if (options != null) {
+        options.add(a);
+      }
+    }
+    return params;
   }
 
   private static void processLibrariesArg() {
@@ -100,7 +120,7 @@ public class Main {
   private static void processInput() {
     Scanner sc = new Scanner(System.in);
     do {
-      System.out.print("> ");
+      CompaJ.getInstance().out.print("> ");
       String input = sc.nextLine();
       CompaJ.readInput(input);
     } while (true);

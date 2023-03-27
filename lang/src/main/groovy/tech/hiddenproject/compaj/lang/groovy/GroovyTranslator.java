@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,11 +27,13 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.hiddenproject.aide.optional.BooleanOptional;
 import tech.hiddenproject.aide.optional.ThrowableOptional;
 import tech.hiddenproject.compaj.lang.CodeTranslation;
 import tech.hiddenproject.compaj.lang.FileUtils;
 import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
+import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent.GLOBAL;
@@ -43,75 +44,46 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
  */
 public class GroovyTranslator implements Translator {
 
-  public static final String DEFAULT_DIR = System.getProperty("user.home") + "/CompaJ/";
-  public static final String PLUGINS_DIR = DEFAULT_DIR + "plugins/";
-  public static final String DEFAULT_TMP_FILE = DEFAULT_DIR + "tmp.cjn";
-  public static final Set<String> HIDDEN_VARIABLES = Set.of(
-      "out",
-      "$compajOut",
-      "$compajOutputStream"
-  );
   private static final Logger LOGGER = LoggerFactory.getLogger(GroovyTranslator.class);
-  private static final String SCRIPT_BASE = "CompaJScriptBase";
-  private static final List<CompilationCustomizer> customizerList = new ArrayList<>();
-  private static final ImportCustomizer importCustomizer;
-  private static final Set<String> normalImports =
-      new HashSet<>(
-          Set.of("tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase",
-          "org.apache.commons.math3.analysis.MultivariateFunction",
-          "java.lang.reflect.Array",
-          "java.lang.reflect.ParameterizedType",
-          "java.lang.reflect.Type",
-          "tech.hiddenproject.compaj.core.model.DynamicFunction"
-          )
-      );
-
-  private static final String[] starImports =
-      new String[]{
-          "tech.hiddenproject.compaj.core.data",
-          "tech.hiddenproject.compaj.core.data.base",
-          "tech.hiddenproject.compaj.core.model.base",
-          "tech.hiddenproject.compaj.core.model",
-          "tech.hiddenproject.compaj.applied.epidemic",
-          "org.apache.commons.math3.ode.nonstiff",
-          "org.apache.commons.math3.linear",
-          "java.util.stream"
-      };
-
-  private static final String[] staticStarsImports = new String[]{"java.lang.Math"};
-
-  static {
-    importCustomizer = new ImportCustomizer();
-    importCustomizer.addImports(normalImports.toArray(String[]::new));
-    importCustomizer.addStarImports(starImports);
-    importCustomizer.addStaticStars(staticStarsImports);
-    customizerList.add(importCustomizer);
-  }
-
+  private final List<CompilationCustomizer> customizerList = new ArrayList<>();
+  private final ImportCustomizer importCustomizer;
   private final GroovyShell groovyShell;
   private final Binding binding;
   private final TranslatorUtils translatorUtils;
   private final Map<String, Object> variables;
+  /**
+   * Output from Groovy console.
+   */
   private final ByteArrayOutputStream output;
   private final CompilerConfiguration compilerConfiguration;
+  /**
+   * Libraries to add on classpath.
+   */
   private final List<String> libraries = new ArrayList<>();
+  /**
+   * Temporal file to evaluate input from.
+   */
   private final File tmpFile;
+  private final PrintStream standardOut = System.out;
 
   public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries) {
-    this(translatorUtils, libraries, PLUGINS_DIR, DEFAULT_TMP_FILE);
+    this(translatorUtils, libraries, TranslatorProperties.PLUGINS_DIR, TranslatorProperties.DEFAULT_TMP_FILE);
   }
 
   public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries,
                           String pluginsDir, String temporalFilePath) {
+    this.importCustomizer = new ImportCustomizer();
     this.compilerConfiguration = new CompilerConfiguration();
     this.libraries.addAll(libraries);
-    initConfiguration(SCRIPT_BASE, libraries);
+    initImports();
+    initConfiguration(libraries);
     this.binding = new Binding();
     this.output = new ByteArrayOutputStream();
-    this.binding.setVariable("out", new PrintStream(output));
     this.variables = binding.getVariables();
     this.groovyShell = new GroovyShell(binding, compilerConfiguration);
     this.translatorUtils = translatorUtils;
+    this.tmpFile = new File(temporalFilePath);
+
     GroovyClassLoader groovyClassLoader = groovyShell.getClassLoader();
     ResourceConnector resourceConnector = new PluginResourceConnector(groovyClassLoader, pluginsDir);
     GroovyResourceLoader resourceLoader = new DependencyResourceLoader(
@@ -119,18 +91,17 @@ public class GroovyTranslator implements Translator {
         compilerConfiguration.getScriptExtensions(),
         resourceConnector
     );
+
     importPluginClasses(getPluginImports(loadCompiledPlugins()));
-    groovyShell.getClassLoader().setResourceLoader(resourceLoader);
+    groovyClassLoader.setResourceLoader(resourceLoader);
     groovyShell.parse("class plugin{}");
+
+    System.setOut(new PrintStream(output));
+
     loadCompiledPlugins();
     loadRawPlugins(pluginsDir);
-    importLoadedClasses();
-    EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null));
-    this.tmpFile = new File(temporalFilePath);
-  }
 
-  public static ImportCustomizer getImportCustomizer() {
-    return importCustomizer;
+    EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null));
   }
 
   public Object evaluate(String script) {
@@ -145,9 +116,8 @@ public class GroovyTranslator implements Translator {
     Object result = res.run();
     importLoadedClasses();
     updateVariables();
-    if (result != null) {
-      getBinding().setVariable("trn", result);
-    }
+    BooleanOptional.of(Objects.nonNull(result))
+        .ifTrueThen(() -> getBinding().setVariable("trn", result));
     if (output.toString().isEmpty()) {
       return result;
     }
@@ -161,10 +131,17 @@ public class GroovyTranslator implements Translator {
 
   @Override
   public Set<String> getHiddenVariables() {
-    return HIDDEN_VARIABLES;
+    return TranslatorProperties.HIDDEN_VARIABLES;
   }
 
-  private void initConfiguration(String base, List<String> libraries) {
+  private void initImports() {
+    importCustomizer.addImports(Imports.normalImports.toArray(String[]::new));
+    importCustomizer.addStarImports(Imports.starImports.toArray(String[]::new));
+    importCustomizer.addStaticStars(Imports.staticStarsImports.toArray(String[]::new));
+    customizerList.add(importCustomizer);
+  }
+
+  private void initConfiguration(List<String> libraries) {
     List<String> cp = compilerConfiguration.getClasspath();
     cp.addAll(libraries);
     LOGGER.info("Classpath: {}", cp);
@@ -172,11 +149,22 @@ public class GroovyTranslator implements Translator {
     compilerConfiguration.addCompilationCustomizers(
         customizerList.toArray(new CompilationCustomizer[]{})
     );
-    compilerConfiguration.setScriptBaseClass(base);
-    compilerConfiguration.setDefaultScriptExtension("cjp");
-    compilerConfiguration.setScriptExtensions(Set.of("cjp"));
+    compilerConfiguration.setScriptBaseClass(TranslatorProperties.SCRIPT_BASE);
+    compilerConfiguration.setDefaultScriptExtension(TranslatorProperties.DEFAULT_SCRIPT_EXTENSION);
+    compilerConfiguration.setScriptExtensions(TranslatorProperties.SCRIPT_EXTENSIONS);
   }
 
+  @Override
+  public Map<String, Object> getVariables() {
+    return variables;
+  }
+
+  @Override
+  public PrintStream getStandardOut() {
+    return standardOut;
+  }
+
+  @SuppressWarnings("unchecked")
   private void updateVariables() {
     Map<String, Object> tmp = getBinding().getVariables();
     variables.putAll(tmp);
@@ -184,10 +172,6 @@ public class GroovyTranslator implements Translator {
 
   private Binding getBinding() {
     return binding;
-  }
-
-  public Map<String, Object> getVariables() {
-    return variables;
   }
 
   private void importPluginClasses(List<String> pluginClassesNames) {
@@ -214,7 +198,7 @@ public class GroovyTranslator implements Translator {
         .orElse(new String[]{});
     Arrays.stream(pluginDirectories).map(pluginDir -> new File(pluginsDir + "/" + pluginDir + "/Main.cjp"))
         .filter(File::exists)
-        .forEach(mainFile -> ThrowableOptional.sneaky(() -> groovyShell.parse(mainFile)));
+        .forEach(mainFile -> ThrowableOptional.sneaky(() -> groovyShell.parse(mainFile).run()));
     importLoadedClasses();
   }
 
@@ -223,12 +207,16 @@ public class GroovyTranslator implements Translator {
   }
 
   private void importLoadedClasses() {
-    Arrays.stream(groovyShell.getClassLoader().getLoadedClasses())
-        .filter(c -> Objects.nonNull(c.getCanonicalName()))
-        .filter(c -> !normalImports.contains(c.getCanonicalName()))
-        .forEach(c -> {
-          normalImports.add(c.getCanonicalName());
-          importCustomizer.addImports(c.getCanonicalName());
-        });
+    Set<String> newImports = Arrays.stream(groovyShell.getClassLoader().getLoadedClasses())
+        .map(Class::getCanonicalName)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
+    Imports.normalImports.addAll(newImports);
+    if (Imports.normalImports.isEmpty()) {
+      return;
+    }
+    importCustomizer.addImports(Imports.normalImports.toArray(String[]::new));
+    Imports.normalImports.clear();
+    compilerConfiguration.addCompilationCustomizers(importCustomizer);
   }
 }
