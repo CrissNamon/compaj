@@ -56,30 +56,6 @@ public class Compaj extends Application {
   private static WorkSpaceTab workSpaceTab;
   private static Stage mainStage;
 
-  static {
-    Imports.normalImports.addAll(
-        Set.of(
-            CompaJComplex.class.getCanonicalName(),
-            Compaj.class.getCanonicalName()
-        )
-    );
-    Imports.starImports.addAll(Set.of(
-        "tech.hiddenproject.compaj.gui",
-        "tech.hiddenproject.compaj.gui.widget",
-        "tech.hiddenproject.compaj.gui.component"
-    ));
-  }
-
-  static {
-    CompaJScriptBase.addExtension(new StarterExtension());
-    CompaJScriptBase.addExtension(new MathExtension());
-    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
-    CompaJScriptBase.addExtension(new ModelExtension());
-    CompaJScriptBase.addExtension(new NamedFunctionExtension());
-    CompaJScriptBase.addExtension(new ComplexExtension());
-    CompaJScriptBase.addExtension(new AgentExtension());
-  }
-
   public static void main(String[] args) {
     FileFilter libFilter = AppSettings.getInstance().pluginsFileFilter();
     File[] librariesFiles = Optional
@@ -88,6 +64,7 @@ public class Compaj extends Application {
     List<String> librariesPaths = Arrays.stream(librariesFiles)
         .map(File::getAbsolutePath)
         .collect(Collectors.toList());
+    initTranslator();
     LOGGER.info("Found libs: {}", librariesPaths);
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
     translator = new GroovyTranslator(translatorUtils, librariesPaths,
@@ -160,6 +137,27 @@ public class Compaj extends Application {
    */
   public static Stage getMainStage() {
     return mainStage;
+  }
+
+  private static void initTranslator() {
+      Imports.normalImports.addAll(
+          Set.of(
+              CompaJComplex.class.getCanonicalName(),
+              Compaj.class.getCanonicalName()
+          )
+      );
+      Imports.starImports.addAll(Set.of(
+          "tech.hiddenproject.compaj.gui",
+          "tech.hiddenproject.compaj.gui.widget",
+          "tech.hiddenproject.compaj.gui.component"
+      ));
+      CompaJScriptBase.addExtension(new StarterExtension());
+      CompaJScriptBase.addExtension(new MathExtension());
+      CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
+      CompaJScriptBase.addExtension(new ModelExtension());
+      CompaJScriptBase.addExtension(new NamedFunctionExtension());
+      CompaJScriptBase.addExtension(new ComplexExtension());
+      CompaJScriptBase.addExtension(new AgentExtension());
   }
 
   @Override

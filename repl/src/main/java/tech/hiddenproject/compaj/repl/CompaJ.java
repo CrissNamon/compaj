@@ -25,27 +25,6 @@ import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 public class CompaJ {
   private static CompaJ INSTANCE;
 
-  static {
-    CompaJScriptBase.addExtension(new StarterExtension());
-    CompaJScriptBase.addExtension(new MathExtension());
-    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
-    CompaJScriptBase.addExtension(new ModelExtension());
-    CompaJScriptBase.addExtension(new NamedFunctionExtension());
-    CompaJScriptBase.addExtension(new ComplexExtension());
-    CompaJScriptBase.addExtension(new AgentExtension());
-  }
-
-  static {
-    Imports.normalImports.addAll(
-        Set.of(
-            CompaJ.class.getCanonicalName(),
-            MathExtension.class.getCanonicalName(),
-            CompaJComplex.class.getCanonicalName(),
-            Complex.class.getCanonicalName()
-        )
-    );
-  }
-
   private Translator translator;
   public PrintStream out;
 
@@ -89,8 +68,9 @@ public class CompaJ {
     }
   }
 
-  public static CompaJ getInstance() {
+  public static synchronized CompaJ getInstance() {
     if (INSTANCE == null) {
+      init();
       INSTANCE = new CompaJ();
     }
     return INSTANCE;
@@ -102,6 +82,25 @@ public class CompaJ {
   public static void exit() {
     System.exit(0);
   }
+
+  public static void init() {
+    CompaJScriptBase.addExtension(new StarterExtension());
+    CompaJScriptBase.addExtension(new MathExtension());
+    CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
+    CompaJScriptBase.addExtension(new ModelExtension());
+    CompaJScriptBase.addExtension(new NamedFunctionExtension());
+    CompaJScriptBase.addExtension(new ComplexExtension());
+    CompaJScriptBase.addExtension(new AgentExtension());
+    Imports.normalImports.addAll(
+        Set.of(
+            CompaJ.class.getCanonicalName(),
+            MathExtension.class.getCanonicalName(),
+            CompaJComplex.class.getCanonicalName(),
+            Complex.class.getCanonicalName()
+        )
+    );
+  }
+
 
   public Translator getTranslator() {
     return translator;

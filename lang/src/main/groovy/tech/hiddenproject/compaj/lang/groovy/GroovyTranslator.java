@@ -83,7 +83,6 @@ public class GroovyTranslator implements Translator {
     this.groovyShell = new GroovyShell(binding, compilerConfiguration);
     this.translatorUtils = translatorUtils;
     this.tmpFile = new File(temporalFilePath);
-
     GroovyClassLoader groovyClassLoader = groovyShell.getClassLoader();
     ResourceConnector resourceConnector = new PluginResourceConnector(groovyClassLoader, pluginsDir);
     GroovyResourceLoader resourceLoader = new DependencyResourceLoader(
@@ -100,6 +99,7 @@ public class GroovyTranslator implements Translator {
 
     loadCompiledPlugins();
     loadRawPlugins(pluginsDir);
+    importLoadedClasses();
 
     EventPublisher.INSTANCE.sendTo(GLOBAL.STARTUP, new CompaJEvent(GLOBAL.STARTUP, null));
   }

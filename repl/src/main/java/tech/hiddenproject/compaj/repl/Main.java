@@ -17,8 +17,8 @@ public class Main {
 
   private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
   private static final List<String> LIBRARIES = new ArrayList<>();
-
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
+  private static final CompaJ INSTANCE = CompaJ.getInstance();
 
   public static void main(String... args) {
     processArgs(args);
@@ -38,7 +38,7 @@ public class Main {
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
     Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);
-    CompaJ.getInstance().setTranslator(translator);
+    INSTANCE.setTranslator(translator);
   }
 
   /**

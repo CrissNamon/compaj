@@ -13,11 +13,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.extension.CompaJComplex;
 
 @DisplayName("REPLTest should > ")
 public class REPLTest {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(REPLTest.class);
   private static final PrintStream STANDARD_OUT = System.out;
   private static final ByteArrayOutputStream OUTPUT_CAPTOR = new ByteArrayOutputStream();
   private static final ClassLoader CLASS_LOADER = REPLTest.class.getClassLoader();
@@ -67,7 +70,6 @@ public class REPLTest {
   @DisplayName("load CompaJComplex extension")
   public void complexExtensionTest() {
     String expected = new CompaJComplex(0, 1).toString();
-
     String script = "print new CompaJComplex(0, 1)";
     CompaJ.readInput(script);
 
