@@ -102,7 +102,7 @@ public class GroovyTranslator implements Translator {
   }
 
   public GroovyTranslator(TranslatorUtils translatorUtils, List<String> libraries,
-                          String pluginsDir, String temporalFilePath, ClassLoader... classLoaders) {
+                          String pluginsDir, String temporalFilePath) {
     this.compilerConfiguration = new CompilerConfiguration();
     this.libraries.addAll(libraries);
     initConfiguration(SCRIPT_BASE, libraries);

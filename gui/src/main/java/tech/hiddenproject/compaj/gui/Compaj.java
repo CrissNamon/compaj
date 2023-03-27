@@ -90,7 +90,7 @@ public class Compaj extends Application {
     TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
     translator = new GroovyTranslator(translatorUtils, librariesPaths,
                                       AppSettings.getInstance().getPluginsDirectory().getAbsolutePath(),
-                                      GroovyTranslator.DEFAULT_TMP_FILE, Compaj.class.getClassLoader());
+                                      GroovyTranslator.DEFAULT_TMP_FILE);
   }
 
   static {
