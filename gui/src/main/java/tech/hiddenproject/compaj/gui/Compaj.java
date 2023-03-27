@@ -1,6 +1,7 @@
 package tech.hiddenproject.compaj.gui;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +50,7 @@ import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 public class Compaj extends Application {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(Compaj.class);
-  private static final GroovyTranslator translator;
+  private static GroovyTranslator translator;
   private static TabPane content;
   private static TerminalTab terminalTab;
   private static WorkSpaceTab workSpaceTab;
@@ -70,21 +71,6 @@ public class Compaj extends Application {
   }
 
   static {
-    File[] librariesFiles = Optional.ofNullable(AppSettings.getInstance().getLibrariesDirectory()
-                                                 .listFiles(
-                                                     AppSettings.getInstance().pluginsFileFilter()))
-        .orElse(new File[]{});
-    List<String> librariesPaths = Arrays.stream(librariesFiles)
-        .map(File::getAbsolutePath)
-        .collect(Collectors.toList());
-    LOGGER.info("Found libs: {}", librariesPaths);
-    TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
-    translator = new GroovyTranslator(translatorUtils, librariesPaths,
-                                      AppSettings.getInstance().getPluginsDirectory().getAbsolutePath(),
-                                      TranslatorProperties.DEFAULT_TMP_FILE);
-  }
-
-  static {
     CompaJScriptBase.addExtension(new StarterExtension());
     CompaJScriptBase.addExtension(new MathExtension());
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
@@ -95,13 +81,36 @@ public class Compaj extends Application {
   }
 
   public static void main(String[] args) {
+    FileFilter libFilter = AppSettings.getInstance().pluginsFileFilter();
+    File[] librariesFiles = Optional
+        .ofNullable(AppSettings.getInstance().getLibrariesDirectory().listFiles(libFilter))
+        .orElse(new File[]{});
+    List<String> librariesPaths = Arrays.stream(librariesFiles)
+        .map(File::getAbsolutePath)
+        .collect(Collectors.toList());
+    LOGGER.info("Found libs: {}", librariesPaths);
+    TranslatorUtils translatorUtils = new GroovyTranslatorUtils();
+    translator = new GroovyTranslator(translatorUtils, librariesPaths,
+                                      AppSettings.getInstance().getPluginsDirectory().getAbsolutePath(),
+                                      TranslatorProperties.DEFAULT_TMP_FILE);
     launch(args);
   }
 
+  /**
+   * Creates widget from {@link Node} and adds it to WorkSpace.
+   *
+   * @param name Widget name
+   * @param node {@link Node}
+   */
   public static void addWorkSpaceWidget(String name, Node node) {
     addWorkSpaceWidget(new BaseWidget(node, name));
   }
 
+  /**
+   * Adds widget to WorkSpace.
+   *
+   * @param workSpaceWidget {@link WorkSpaceWidget}
+   */
   public static void addWorkSpaceWidget(WorkSpaceWidget workSpaceWidget) {
     workSpaceTab.addItem(workSpaceWidget);
     if (!content.getTabs().contains(workSpaceTab)) {
@@ -109,24 +118,46 @@ public class Compaj extends Application {
     }
   }
 
+  /**
+   * Creates widget from {@link Node} and adds it to WorkSpace.
+   *
+   * @param node {@link Node}
+   */
   public static void addWorkSpaceWidget(Node node) {
     addWorkSpaceWidget(new BaseWidget(node));
   }
 
+  /**
+   * Evaluates script from file.
+   *
+   * @param path Script path
+   * @return Evaluation result
+   */
   public static Object exec(String path) {
     File f = new File(path);
     return getTranslator().evaluate(FileUtils.readFile(f));
   }
 
+  /**
+   * @return {@link GroovyTranslator}
+   */
   public static GroovyTranslator getTranslator() {
     return translator;
   }
 
+  /**
+   * Evaluates script from file using file picker.
+   *
+   * @return Evaluation result
+   */
   public static Object exec() {
     File f = FileUtils.openNoteWindow();
     return getTranslator().evaluate(FileUtils.readFile(f));
   }
 
+  /**
+   * @return Main stage {@link Stage}
+   */
   public static Stage getMainStage() {
     return mainStage;
   }
