@@ -71,7 +71,6 @@ public class CompaJ {
 
   public static synchronized CompaJ getInstance() {
     if (INSTANCE == null) {
-      init();
       INSTANCE = new CompaJ();
     }
     return INSTANCE;
