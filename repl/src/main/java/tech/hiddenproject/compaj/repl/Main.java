@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.lang.Translator;
@@ -18,7 +19,12 @@ public class Main {
   private static final List<String> LIBRARIES = new ArrayList<>();
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
   private static final CompaJ INSTANCE = CompaJ.getInstance();
-  private static Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
+
+  // No logs, because they will spam REPL console
+  static {
+    org.apache.log4j.Logger.getRootLogger().setLevel(Level.ERROR);
+  }
 
   public static void main(String... args) {
     processArgs(args);
@@ -27,7 +33,7 @@ public class Main {
     processFileInputArg();
     processInputStringArg();
     CompaJ.getInstance().out.println("Welcome to CompaJ REPL!");
-    CompaJ.getInstance().out.println("Version 0.0.3");
+    CompaJ.getInstance().out.println("Version 0.0.3.1");
     processInput();
   }
 
@@ -35,6 +41,7 @@ public class Main {
    * Initializes {@link GroovyTranslator}.
    */
   protected static void init() {
+    CompaJ.init();
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
     Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);

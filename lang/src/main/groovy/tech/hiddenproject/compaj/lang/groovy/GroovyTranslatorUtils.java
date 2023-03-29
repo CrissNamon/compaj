@@ -45,7 +45,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
     codeTranslations.add(this::translateNewObjects);
     codeTranslations.add(this::translateLocalMetaClassMethod);
     codeTranslations.add(this::translateDoubleSuffix);
-    codeTranslations.add(this::translateOverrideMethods);
+    codeTranslations.add(this::translateExtendWithNewMethod);
     codeTranslations.add(this::translateEraseTypes);
   }
 
@@ -139,7 +139,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
   }
 
   private String translateNewObjects(String script) {
-    Pattern p = Pattern.compile("(?<![:\\[])(:)(\\w++)(\\([^)]*\\))?(?![ ]*[{\\]])");
+    Pattern p = Pattern.compile("(?<![:\\[])(:)([\\w.]++)(\\([^)]*\\))?(?![ ]*[{\\]])");
     Matcher m = p.matcher(script);
     StringBuilder sb = new StringBuilder();
     while (m.find()) {
@@ -209,7 +209,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
         continue;
       }
       checkMetaClassChangesAllowed(m.group(1));
-      int i = findCodeBlockEnd(m.end() + 1, script);
+      int i = findCodeBlockEnd(m.end(), script);
       String body = tmp.substring(m.end(), i);
       script = script.replace(m.group() + body, "");
       methodOverriderMap.putIfAbsent(m.group(1), new ArrayList<>());
@@ -258,7 +258,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
     return i;
   }
 
-  private String translateOverrideMethods(String script) {
+  private String translateExtendWithNewMethod(String script) {
     Pattern p =
         Pattern.compile(
             "(\\w+)(\\([\\w, ]*\\))\\*\\*(\\w+)\\.(\\w+(\\([\\w, .]*\\)))(?>::(\\w+))?[\n ]*\\{");

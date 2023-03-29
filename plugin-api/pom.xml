@@ -19,6 +19,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Plugins API for CompaJ project</description>
     <developers>

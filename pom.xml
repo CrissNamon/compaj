@@ -21,12 +21,12 @@
     <applied.version>0.0.2</applied.version>
     <core.version>0.0.2</core.version>
     <groovy.version>4.0.10</groovy.version>
-    <gui.version>0.0.3</gui.version>
+    <gui.version>0.0.3.1</gui.version>
     <lang-extensions.version>0.0.3</lang-extensions.version>
-    <lang.version>0.0.3</lang.version>
-    <repl.version>0.0.3</repl.version>
+    <lang.version>0.0.3.1</lang.version>
+    <repl.version>0.0.3.1</repl.version>
     <plugin-api.version>0.0.3</plugin-api.version>
-    <revision>0.0.3</revision>
+    <revision>0.0.3.1</revision>
   </properties>
 
   <dependencies>
@@ -41,6 +41,12 @@
       <groupId>org.junit.jupiter</groupId>
       <scope>test</scope>
       <version>5.9.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.2.0</version>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <artifactId>slf4j-api</artifactId>
@@ -119,6 +125,29 @@
         </executions>
         <groupId>org.apache.maven.plugins</groupId>
         <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>false</failsOnError>
+          <linkXRef>false</linkXRef>
+          <propertyExpansion>
+            config_loc=${maven.multiModuleProjectDirectory}/config/checkstyle
+          </propertyExpansion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

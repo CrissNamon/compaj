@@ -35,7 +35,7 @@ public enum EventPublisher {
    */
   public void sendTo(String topic, CompaJEvent message) {
     Map<Long, Consumer<CompaJEvent>> subscribers = feed.getOrDefault(topic, new HashMap<>());
-    LOGGER.info("Event {} on {}", message, topic);
+    LOGGER.debug("Event {} on {}", message, topic);
     switch (publisherType) {
       case SEQUENCE:
         sendSequence(message, subscribers);
@@ -44,6 +44,10 @@ public enum EventPublisher {
         sendParallel(message, subscribers);
         break;
     }
+  }
+
+  public void sendTo(CompaJEvent event) {
+    sendTo(event.getName(), event);
   }
 
   /**

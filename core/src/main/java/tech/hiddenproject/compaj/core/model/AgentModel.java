@@ -7,7 +7,7 @@ import tech.hiddenproject.compaj.core.data.Distance;
 import tech.hiddenproject.compaj.core.data.EnvironmentObject;
 
 /**
- * Represents simple agent based model
+ * Represents simple agent based model.
  *
  * @param <A> Agent type
  * @param <L> Location type

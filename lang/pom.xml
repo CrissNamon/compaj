@@ -7,6 +7,9 @@
     <plugins>
       <plugin>
         <artifactId>gmavenplus-plugin</artifactId>
+        <configuration>
+          <parameters>true</parameters>
+        </configuration>
         <executions>
           <execution>
             <goals>

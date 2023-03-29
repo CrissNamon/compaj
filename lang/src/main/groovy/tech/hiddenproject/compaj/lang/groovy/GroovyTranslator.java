@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +53,7 @@ public class GroovyTranslator implements Translator {
   private final Binding binding;
   private final TranslatorUtils translatorUtils;
   private final Map<String, Object> variables;
+  private final Set<String> imports = new HashSet<>();
   /**
    * Output from Groovy console.
    */
@@ -100,7 +102,6 @@ public class GroovyTranslator implements Translator {
 
     System.setOut(new PrintStream(output));
 
-    loadCompiledPlugins();
     loadRawPlugins(pluginsDir);
     importLoadedClasses();
 
@@ -198,6 +199,7 @@ public class GroovyTranslator implements Translator {
 
   private void loadRawPlugins(String pluginsDir) {
     File file = new File(pluginsDir);
+    file.mkdir();
     String[] pluginDirectories = Optional.ofNullable(
         file.list((dir, name) -> new File(dir, name).isDirectory())
     ).orElse(new String[]{});
@@ -224,15 +226,13 @@ public class GroovyTranslator implements Translator {
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());
     Imports.normalImports.addAll(newImports);
-    if (Imports.normalImports.isEmpty()) {
-      return;
-    }
-    Imports.normalImports
-        .forEach(el -> EventPublisher.INSTANCE.sendTo(
-            GLOBAL.IMPORT, new CompaJEvent(GLOBAL.IMPORT, el))
-        );
+    Imports.normalImports.stream()
+        .filter(el -> !imports.contains(el))
+        .forEach(el -> {
+          imports.add(el);
+          EventPublisher.INSTANCE.sendTo(GLOBAL.IMPORT, new CompaJEvent(GLOBAL.IMPORT, el));
+        });
     importCustomizer.addImports(Imports.normalImports.toArray(String[]::new));
-    Imports.normalImports.clear();
     compilerConfiguration.addCompilationCustomizers(importCustomizer);
   }
 }

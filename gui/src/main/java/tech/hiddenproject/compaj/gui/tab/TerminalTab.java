@@ -1,20 +1,22 @@
 package tech.hiddenproject.compaj.gui.tab;
 
+import java.util.UUID;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.view.ReplView;
 import tech.hiddenproject.compaj.gui.view.VariablesTableView;
 
-public class TerminalTab extends Tab {
+public class TerminalTab extends CloseConfirmationTab {
 
   private final ReplView replView;
 
   public TerminalTab() {
     super(I18nUtils.get("tab.terminal.title"));
+    setId(UUID.randomUUID().toString());
     Button clear = new Button(I18nUtils.get("tab.terminal.repl.clear"));
     clear.setOnAction(actionEvent -> clear());
     ToolBar toolBar = new ToolBar();
