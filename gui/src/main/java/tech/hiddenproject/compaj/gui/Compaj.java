@@ -180,14 +180,10 @@ public class Compaj extends Application {
 
     stage.setTitle(AppSettings.APP_TITLE);
 
-    MenuItem terminalItem = new MenuItem(I18nUtils.get("tab.terminal.title"));
-    terminalItem.setOnAction(actionEvent -> content.getTabs().add(new TerminalTab()));
-    MenuItem workSpaceItem = new MenuItem(I18nUtils.get("tab.workspace.title"));
-    workSpaceItem.setOnAction(actionEvent -> content.getTabs().add(workSpaceTab));
     MenuItem editorItem = new MenuItem(I18nUtils.get("tab.editor.title"));
     editorItem.setOnAction(actionEvent -> content.getTabs().add(new EditorTab()));
     Menu mainMenu = new Menu(I18nUtils.get("menu.view"));
-    mainMenu.getItems().addAll(terminalItem, editorItem, workSpaceItem);
+    mainMenu.getItems().addAll(editorItem);
 
     Menu helpMenu = new Menu(I18nUtils.get("menu.help"));
     Menu settingsMenu = new Menu(I18nUtils.get("menu.settings"));
@@ -206,7 +202,7 @@ public class Compaj extends Application {
     EventPublisher.INSTANCE.subscribeOn(UiMenuEvent.ADD_CHILD_NAME, this::addChildMenu);
     EventPublisher.INSTANCE.sendTo(UiMenuEvent.STARTUP);
 
-    content.getTabs().add(terminalTab);
+    content.getTabs().addAll(terminalTab, workSpaceTab);
 
     BorderPane rootNode = new BorderPane();
     rootNode.setTop(menuBar);
