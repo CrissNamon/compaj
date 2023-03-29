@@ -17,8 +17,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Test
-        run: mvn -B test --file pom.xml
       - name: Generate Javadoc
         run: |
           mvn -B -DskipTests javadoc:aggregate --file pom.xml
