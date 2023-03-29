@@ -43,6 +43,12 @@
       <version>5.9.2</version>
     </dependency>
     <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.2.0</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
       <artifactId>slf4j-api</artifactId>
       <groupId>org.slf4j</groupId>
       <version>2.0.6</version>
@@ -126,7 +132,6 @@
         <version>3.2.1</version>
         <configuration>
           <configLocation>config/checkstyle/checkstyle.xml</configLocation>
-          <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>false</failsOnError>
           <linkXRef>false</linkXRef>
