@@ -6,6 +6,7 @@ import java.util.prefs.Preferences;
 
 public class AppSettings {
 
+  public static final String APP_TITLE = "CompaJ";
   private static final String APP_DIRECTORY = "CompaJ";
   private static final String SCRIPTS_DIRECTORY = "scripts";
   private static final String PLUGINS_DIRECTORY = "plugins";

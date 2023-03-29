@@ -46,6 +46,10 @@ public enum EventPublisher {
     }
   }
 
+  public void sendTo(CompaJEvent event) {
+    sendTo(event.getName(), event);
+  }
+
   /**
    * Subscribes on topic with given {@link Consumer}.
    *

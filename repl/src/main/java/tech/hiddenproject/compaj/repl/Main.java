@@ -16,15 +16,15 @@ import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
 
 public class Main {
 
-  // No logs, because they will spam REPL console
-  static {
-    org.apache.log4j.Logger.getRootLogger().setLevel(Level.ERROR);
-  }
-
   private static final List<String> LIBRARIES = new ArrayList<>();
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
   private static final CompaJ INSTANCE = CompaJ.getInstance();
   private static final Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
+
+  // No logs, because they will spam REPL console
+  static {
+    org.apache.log4j.Logger.getRootLogger().setLevel(Level.ERROR);
+  }
 
   public static void main(String... args) {
     processArgs(args);
@@ -33,7 +33,7 @@ public class Main {
     processFileInputArg();
     processInputStringArg();
     CompaJ.getInstance().out.println("Welcome to CompaJ REPL!");
-    CompaJ.getInstance().out.println("Version 0.0.3");
+    CompaJ.getInstance().out.println("Version 0.0.3.1");
     processInput();
   }
 

@@ -102,7 +102,6 @@ public class GroovyTranslator implements Translator {
 
     System.setOut(new PrintStream(output));
 
-    loadCompiledPlugins();
     loadRawPlugins(pluginsDir);
     importLoadedClasses();
 
@@ -200,6 +199,7 @@ public class GroovyTranslator implements Translator {
 
   private void loadRawPlugins(String pluginsDir) {
     File file = new File(pluginsDir);
+    file.mkdir();
     String[] pluginDirectories = Optional.ofNullable(
         file.list((dir, name) -> new File(dir, name).isDirectory())
     ).orElse(new String[]{});
