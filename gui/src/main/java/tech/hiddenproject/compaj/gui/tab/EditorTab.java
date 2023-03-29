@@ -1,7 +1,9 @@
 package tech.hiddenproject.compaj.gui.tab;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import javafx.beans.Observable;
 import javafx.event.Event;
@@ -19,8 +21,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
+import tech.hiddenproject.aide.optional.Action;
 import tech.hiddenproject.compaj.gui.Compaj;
-import tech.hiddenproject.compaj.gui.component.AlertBuilder;
+import tech.hiddenproject.compaj.gui.component.AlertBuilder.Prebuilt;
 import tech.hiddenproject.compaj.gui.util.FileUtils;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.view.CodeAreaView;
@@ -39,8 +42,8 @@ public class EditorTab extends Tab {
 
   public EditorTab() {
     super("Untitled.cjn");
-
     /* ToolBar Creation */
+    setId(UUID.randomUUID().toString());
     Button run = new Button();
     run.setGraphic(new FontIcon(CarbonIcons.PLAY_FILLED_ALT));
     Button save = new Button();
@@ -72,33 +75,41 @@ public class EditorTab extends Tab {
     root.setCenter(editorContent);
     setContent(root);
     setOnClosed(this::onClose);
+    setOnCloseRequest(this::onCloseRequest);
   }
 
   private void openFileAction(Event event) {
+    onCloseRequest(null, this::openNewFile);
+  }
+
+  private void openNewFile() {
+    File f = FileUtils.openNoteWindow();
+    if (Objects.nonNull(f)) {
+      savedFile = f;
+      this.setText(f.getName());
+      codeArea.clear();
+      codeArea.replaceText(0, 0, FileUtils.readFile(f));
+      setGraphic(null);
+      unsavedChanges = false;
+    }
+  }
+
+  private void onCloseRequest(Event event) {
+    onCloseRequest(event, () -> {
+    });
+  }
+
+  private void onCloseRequest(Event event, Action action) {
     if (unsavedChanges) {
-      Alert alert =
-          new AlertBuilder(I18nUtils.get("alert.confirm"), Alert.AlertType.CONFIRMATION)
-              .header(I18nUtils.get("alert.unsaved.header"))
-              .content(I18nUtils.get("alert.unsaved.content"))
-              .clearButtonTypes()
-              .button(I18nUtils.get("alert.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE)
-              .button(I18nUtils.get("alert.ok"), ButtonBar.ButtonData.OK_DONE)
-              .build();
+      Alert alert = Prebuilt.CLOSE_CONFIRMATION;
       Optional<ButtonType> result = alert.showAndWait();
-      boolean choice = result.map(ButtonType::getButtonData)
+      boolean toClose = result.map(ButtonType::getButtonData)
           .map(buttonData -> buttonData != ButtonBar.ButtonData.OK_DONE)
           .orElse(false);
-      if (choice) {
-        return;
+      if (!toClose) {
+        action.make();
       }
     }
-    File f = FileUtils.openNoteWindow();
-    savedFile = f;
-    this.setText(f.getName());
-    codeArea.clear();
-    codeArea.replaceText(0, 0, FileUtils.readFile(f));
-    setGraphic(null);
-    unsavedChanges = false;
   }
 
   private void saveFileAction(Event event) {
