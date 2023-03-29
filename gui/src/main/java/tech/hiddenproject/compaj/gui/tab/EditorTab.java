@@ -40,6 +40,10 @@ public class EditorTab extends Tab {
   private File savedFile;
   private boolean unsavedChanges = false;
 
+  private static final String TAB_EDITOR_CONSOLE_TITLE = I18nUtils.get("tab.editor.console.title");
+  private static final String TAB_EDITOR_CONSOLE_COMPILATION = I18nUtils.get("tab.editor.console.compilation");
+  private static final String TAB_EDITOR_CONSOLE_COMPILATION_OK = I18nUtils.get("tab.editor.console.compilation.ok");
+
   public EditorTab() {
     super("Untitled.cjn");
     /* ToolBar Creation */
@@ -60,7 +64,7 @@ public class EditorTab extends Tab {
     codeArea = new CodeAreaView();
     VBox.setVgrow(codeArea, Priority.ALWAYS);
     consoleText = new TextArea();
-    console = new TitledPane(I18nUtils.get("tab.editor.console.title"), consoleText);
+    console = new TitledPane(TAB_EDITOR_CONSOLE_TITLE, consoleText);
     console.setAnimated(false);
     console.setExpanded(false);
     consoleText.setEditable(false);
@@ -127,11 +131,11 @@ public class EditorTab extends Tab {
   private void runFileAction(Event event) {
     consoleText.clear();
     console.setExpanded(true);
-    logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
+    logInfo(TAB_EDITOR_CONSOLE_COMPILATION + " " + getText());
     try {
       Object result = Compaj.getTranslator().evaluate(codeArea.getText());
       log(result.toString());
-      logInfo(I18nUtils.get("tab.editor.console.compilation.ok"));
+      logInfo(TAB_EDITOR_CONSOLE_COMPILATION_OK);
     } catch (Exception e) {
       logError(e.getMessage());
       e.printStackTrace();

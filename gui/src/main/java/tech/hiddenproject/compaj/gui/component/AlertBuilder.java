@@ -8,6 +8,11 @@ import tech.hiddenproject.compaj.gui.util.I18nUtils;
 public class AlertBuilder {
 
   private final Alert alert;
+  private static final String ALERT_CONFIRM = I18nUtils.get("alert.confirm");
+  private static final String ALERT_UNSAVED_HEADER = I18nUtils.get("alert.unsaved.header");
+  private static final String ALERT_UNSAVED_CONTENT = I18nUtils.get("alert.unsaved.content");
+  private static final String ALERT_CANCEL = I18nUtils.get("alert.cancel");
+  private static final String ALERT_OK = I18nUtils.get("alert.ok");
 
   public AlertBuilder(String title) {
     this(title, Alert.AlertType.NONE);
@@ -47,13 +52,12 @@ public class AlertBuilder {
   public static class Prebuilt {
 
     public static final Alert CLOSE_CONFIRMATION =
-        new AlertBuilder(I18nUtils.get("alert.confirm"), Alert.AlertType.CONFIRMATION)
-            .header(I18nUtils.get("alert.unsaved.header"))
-            .content(I18nUtils.get("alert.unsaved.content"))
-            .clearButtonTypes()
-            .button(I18nUtils.get("alert.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE)
-            .button(I18nUtils.get("alert.ok"), ButtonBar.ButtonData.OK_DONE)
-            .build();
-
+      new AlertBuilder(ALERT_CONFIRM, Alert.AlertType.CONFIRMATION)
+      .header(ALERT_UNSAVED_HEADER)
+      .content(ALERT_UNSAVED_CONTENT)
+      .clearButtonTypes()
+      .button(ALERT_CANCEL, ButtonBar.ButtonData.CANCEL_CLOSE)
+      .button(ALERT_OK, ButtonBar.ButtonData.OK_DONE)
+      .build();
   }
 }

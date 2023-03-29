@@ -23,9 +23,14 @@ public class WidgetTreeView extends TreeView<WorkSpaceWidget> {
 
   private TreeItem<WorkSpaceWidget> rootItem;
 
+  private static final String TAB_WORKSPACE_DESC = I18nUtils.get("tab.workspace.desc");
+  private static final String TAB_WORKSPACE_TITLE = I18nUtils.get("tab.workspace.title");
+  private static final String ALERT_CLOSE = I18nUtils.get("alert.close");
+  private static final String TAB_WORKSPACE_WIDGET_CONTEXT_EXPORT = I18nUtils.get("tab.workspace.widget.context.export");
+
   public WidgetTreeView() {
-    Label workSpaceDesc = new Label(I18nUtils.get("tab.workspace.desc"));
-    BaseWidget rootWidget = new BaseWidget(workSpaceDesc, I18nUtils.get("tab.workspace.title"));
+    Label workSpaceDesc = new Label(TAB_WORKSPACE_DESC);
+    BaseWidget rootWidget = new BaseWidget(workSpaceDesc, TAB_WORKSPACE_TITLE);
     rootItem = new TreeItem<>(rootWidget);
     rootItem.setExpanded(true);
     setRoot(rootItem);
@@ -39,14 +44,14 @@ public class WidgetTreeView extends TreeView<WorkSpaceWidget> {
       ContextMenu contextMenu =
           new ContextMenuBuilder()
               .add(
-                  I18nUtils.get("alert.close"),
+                  ALERT_CLOSE,
                   i -> {
                     treeCell.getWidget().close();
                     treeCell.getParentItem().getChildren().remove(treeCell.getCellItem());
                     getSelectionModel().clearSelection();
                   })
               .add(
-                  I18nUtils.get("tab.workspace.widget.context.export"),
+                  TAB_WORKSPACE_WIDGET_CONTEXT_EXPORT,
                   i -> {
                     try {
                       File f = FileUtils.saveFileWindow("PNG Image", "*.png");

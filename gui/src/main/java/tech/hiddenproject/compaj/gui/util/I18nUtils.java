@@ -17,6 +17,9 @@ public class I18nUtils {
   private static Locale currentLocale;
   private static ResourceBundle currentBundle;
 
+  private static final String ALERT_INFO = "alert.info";
+  private static final String MENU_SETTINGS_LANG_CHANGE = "menu.settings.lang.change";
+
   static {
     String lang =
         AppSettings.getInstance().get(AppPreference.LANGUAGE, Locale.getDefault().toLanguageTag());
@@ -29,8 +32,8 @@ public class I18nUtils {
     currentLocale = locale;
     loadBundle();
     clearCache();
-    new AlertBuilder(I18nUtils.get("alert.info"), Alert.AlertType.INFORMATION)
-        .content(I18nUtils.get("menu.settings.lang.change"))
+    new AlertBuilder(get(ALERT_INFO), Alert.AlertType.INFORMATION)
+        .content(get(MENU_SETTINGS_LANG_CHANGE))
         .build()
         .show();
   }

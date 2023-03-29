@@ -65,6 +65,11 @@ public class Compaj extends Application {
   private static Stage mainStage;
   private MenuBar menuBar;
 
+  private static final String TAB_EDITOR_TITLE = I18nUtils.get("tab.editor.title");
+  private static final String MENU_VIEW = I18nUtils.get("menu.view");
+  private static final String MENU_HELP = I18nUtils.get("menu.help");
+  private static final String MENU_SETTINGS = I18nUtils.get("menu.settings")
+
   public static void main(String[] args) {
     FileFilter libFilter = APP_SETTINGS.pluginsFileFilter();
     File[] librariesFiles = Optional.ofNullable(
@@ -180,13 +185,13 @@ public class Compaj extends Application {
 
     stage.setTitle(AppSettings.APP_TITLE);
 
-    MenuItem editorItem = new MenuItem(I18nUtils.get("tab.editor.title"));
+    MenuItem editorItem = new MenuItem(TAB_EDITOR_TITLE);
     editorItem.setOnAction(actionEvent -> content.getTabs().add(new EditorTab()));
-    Menu mainMenu = new Menu(I18nUtils.get("menu.view"));
+    Menu mainMenu = new Menu(MENU_VIEW);
     mainMenu.getItems().addAll(editorItem);
 
-    Menu helpMenu = new Menu(I18nUtils.get("menu.help"));
-    Menu settingsMenu = new Menu(I18nUtils.get("menu.settings"));
+    Menu helpMenu = new Menu(MENU_HELP);
+    Menu settingsMenu = new Menu(MENU_SETTINGS);
 
     ROOT_MENUS.put("menu.help", helpMenu);
     ROOT_MENUS.put("menu.settings", settingsMenu);

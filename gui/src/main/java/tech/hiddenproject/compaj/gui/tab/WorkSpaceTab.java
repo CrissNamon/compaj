@@ -12,11 +12,13 @@ import tech.hiddenproject.compaj.gui.widget.WorkSpaceWidget;
 
 public class WorkSpaceTab extends CloseConfirmationTab {
 
+  private static final String TAB_WORKSPACE_TITLE = I18nUtils.get("tab.workspace.title");
+
   private final WidgetTreeView widgetTreeView;
   private final ScrollPane widgetPane;
 
   public WorkSpaceTab() {
-    super(I18nUtils.get("tab.workspace.title"));
+    super(TAB_WORKSPACE_TITLE);
     widgetPane = new ScrollPane();
     widgetPane.setFitToWidth(true);
     widgetPane.setFitToHeight(true);

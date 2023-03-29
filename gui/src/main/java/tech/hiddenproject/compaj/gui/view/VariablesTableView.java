@@ -17,16 +17,19 @@ public class VariablesTableView extends VBox {
   private TableView<Variable> root;
   private List<Variable> data;
 
+  private static final String TAB_TERMINAL_VARIABLES_VARIABLE = I18nUtils.get("tab.terminal.variables.variable");
+  private static final String TAB_TERMINAL_VARIABLES_VALUE = I18nUtils.get("tab.terminal.variables.value");
+
   public VariablesTableView() {
     data = new ArrayList<>();
     root = new TableView<>();
     root.prefHeightProperty().bind(heightProperty());
     root.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     TableColumn<Variable, String> nameColumn =
-        new TableColumn<>(I18nUtils.get("tab.terminal.variables.variable"));
+        new TableColumn<>(TAB_TERMINAL_VARIABLES_VARIABLE);
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
     TableColumn<Variable, Object> dataColumn =
-        new TableColumn<>(I18nUtils.get("tab.terminal.variables.value"));
+        new TableColumn<>(TAB_TERMINAL_VARIABLES_VALUE);
     dataColumn.setCellValueFactory(new PropertyValueFactory<>("data"));
     root.getColumns().addAll(nameColumn, dataColumn);
     root.getItems().addAll(data);
