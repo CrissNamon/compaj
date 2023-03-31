@@ -1,4 +1,4 @@
-FROM alt:latest as packager
+FROM alpine:latest as packager
 
 RUN apk --no-cache add openjdk11-jdk openjdk11-jmods
 
