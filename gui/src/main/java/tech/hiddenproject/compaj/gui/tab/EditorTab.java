@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
 import tech.hiddenproject.aide.optional.Action;
+import tech.hiddenproject.aide.optional.BooleanOptional;
 import tech.hiddenproject.compaj.gui.Compaj;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder.Prebuilt;
 import tech.hiddenproject.compaj.gui.util.FileUtils;
@@ -79,7 +80,7 @@ public class EditorTab extends Tab {
   }
 
   private void openFileAction(Event event) {
-    onCloseRequest(null, this::openNewFile);
+    onCloseRequest(this::openNewFile);
   }
 
   private void openNewFile() {
@@ -95,20 +96,19 @@ public class EditorTab extends Tab {
   }
 
   private void onCloseRequest(Event event) {
-    onCloseRequest(event, () -> {
-    });
+    onCloseRequest(() -> {});
   }
 
-  private void onCloseRequest(Event event, Action action) {
+  private void onCloseRequest(Action action) {
     if (unsavedChanges) {
       Alert alert = Prebuilt.CLOSE_CONFIRMATION;
       Optional<ButtonType> result = alert.showAndWait();
       boolean toClose = result.map(ButtonType::getButtonData)
           .map(buttonData -> buttonData != ButtonBar.ButtonData.OK_DONE)
           .orElse(false);
-      if (!toClose) {
-        action.make();
-      }
+      BooleanOptional.of(toClose).ifTrueThen(action);
+    } else {
+      action.make();
     }
   }
 
