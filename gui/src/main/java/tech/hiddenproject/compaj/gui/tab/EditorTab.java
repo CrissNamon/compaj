@@ -96,7 +96,8 @@ public class EditorTab extends Tab {
   }
 
   private void onCloseRequest(Event event) {
-    onCloseRequest(() -> {});
+    onCloseRequest(() -> {
+    });
   }
 
   private void onCloseRequest(Action action) {

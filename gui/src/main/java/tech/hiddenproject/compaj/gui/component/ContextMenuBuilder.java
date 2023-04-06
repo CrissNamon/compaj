@@ -13,6 +13,10 @@ public class ContextMenuBuilder {
     contextMenu = new ContextMenu();
   }
 
+  public ContextMenuBuilder(ContextMenu contextMenu) {
+    this.contextMenu = contextMenu;
+  }
+
   public ContextMenuBuilder add(String name, Consumer<MenuItem> event) {
     MenuItem menuItem = new MenuItem(name);
     menuItem.setOnAction(actionEvent -> event.accept(menuItem));

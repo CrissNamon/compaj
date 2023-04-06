@@ -188,8 +188,16 @@ public class Compaj extends Application {
     Menu helpMenu = new Menu(I18nUtils.get("menu.help"));
     Menu settingsMenu = new Menu(I18nUtils.get("menu.settings"));
 
+    Menu terminalSettingsMenu = new Menu(I18nUtils.get("tab.terminal.title"));
+    Menu editorSettingsMenu = new Menu(I18nUtils.get("tab.editor.title"));
+    Menu workSpaceSettingsMenu = new Menu(I18nUtils.get("tab.workspace.title"));
+    settingsMenu.getItems().addAll(terminalSettingsMenu, editorSettingsMenu, workSpaceSettingsMenu);
+
     ROOT_MENUS.put("menu.help", helpMenu);
     ROOT_MENUS.put("menu.settings", settingsMenu);
+    ROOT_MENUS.put("menu.settings.terminal", terminalSettingsMenu);
+    ROOT_MENUS.put("menu.settings.editor", editorSettingsMenu);
+    ROOT_MENUS.put("menu.settings.workspace", workSpaceSettingsMenu);
 
     menuBar = new MenuBar();
     final String os = System.getProperty("os.name");

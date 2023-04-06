@@ -65,8 +65,16 @@ public class AppSettings {
     preferences.put(preference.getName(), value);
   }
 
+  public void put(AppPreference preference, Boolean value) {
+    preferences.put(preference.getName(), String.valueOf(value));
+  }
+
   public String get(AppPreference preference, String defaultValue) {
     return preferences.get(preference.getName(), defaultValue);
+  }
+
+  public Boolean get(AppPreference preference, Boolean defaultValue) {
+    return Boolean.valueOf(preferences.get(preference.getName(), String.valueOf(defaultValue)));
   }
 
   public FileFilter pluginsFileFilter() {
