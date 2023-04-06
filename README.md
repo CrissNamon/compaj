@@ -29,19 +29,16 @@ public [Trello board](https://trello.com/b/4c7FvMFI/compaj-desktop).
 ___
 CompaJ has modular structure based on Maven modules.
 
-- [CompaJ Core](https://github.com/CrissNamon/compaj/tree/main/core)
-    - Core is a library with basic content for CompaJ. It contains simple functions and models.
-- [CompaJ Applied](https://github.com/CrissNamon/compaj/tree/main/applied)
-    - Applied module contains ready to use models.
+- [CompaJ](https://github.com/CrissNamon/compaj/tree/main/gui)
+  - CompaJ is an extendable application with GUI and many useful tools such as terminal,
+    code editor with intelligent code completion and widgets for scientific visualization.
 - [CompaJ Lang](https://github.com/CrissNamon/compaj/tree/main/lang)
     - CompaJ Lang is an object-oriented and optionally typed programming language based on Groovy
       with useful extensions to reduce redundant symbols and simplify calculations.
-- [CompaJ Plugin API](https://github.com/CrissNamon/compaj/tree/main/plugin-api)
-    - CompaJ can load external plugins using Plugin API
 - [CompaJ REPL](https://github.com/CrissNamon/compaj/tree/main/repl)
     - CompaJ REPL is a console application which provides all functionality of CompaJ Lang.
-- [CompaJ](https://github.com/CrissNamon/compaj/tree/main/gui)
-    - CompaJ is a standalone application with GUI and many useful tools for CompaJ REPL.
+- [CompaJ Plugin API](https://github.com/CrissNamon/compaj/tree/main/plugin-api)
+  - CompaJ can load external plugins using Plugin API
 - [CompaJ Cloud](https://github.com/CrissNamon/compaj-cloud)
     - Cloud infrastructure to run CompaJ as SaaS
 
