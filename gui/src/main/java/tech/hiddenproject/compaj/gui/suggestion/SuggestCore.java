@@ -27,9 +27,10 @@ public class SuggestCore {
    * @return {@link SuggestResult}
    */
   public SuggestResult predict(String text, int position) {
-    String preparedText = text.replace("\n", " ");
-    int lastSpace = preparedText.substring(0, position).lastIndexOf(" ");
-    String prefix = (lastSpace > -1 ? preparedText.substring(lastSpace + 1, position)
+    String preparedText = text.replace("\n", " ").replaceAll("\\(.*?\\)", "");
+    int newPosition = position - (text.length() - preparedText.length());
+    int lastSpace = preparedText.substring(0, newPosition).lastIndexOf(" ");
+    String prefix = (lastSpace > -1 ? preparedText.substring(lastSpace + 1, newPosition)
         : preparedText).trim();
     Set<String> suggestions = suggesters.stream()
         .flatMap(suggester -> suggester.predict(preparedText, prefix, position).stream())

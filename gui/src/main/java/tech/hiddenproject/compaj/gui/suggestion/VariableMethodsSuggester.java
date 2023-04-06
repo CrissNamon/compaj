@@ -104,14 +104,22 @@ public class VariableMethodsSuggester implements Suggester {
   private Set<String> suggest(String input) {
     Set<String> suggestions = new HashSet<>();
     String[] chain = (input + " ").split("\\.");
+    Class<?> c;
     for (int i = 0; i < chain.length - 1; i++) {
       String s1 = chain[i].trim();
       String s2 = chain[i + 1].trim();
       if (classMap.containsKey(s1)) {
-        Class<?> c = classMap.get(s1);
-        suggestions.addAll(getMethods(c, s2, s1));
-        suggestions.addAll(getFields(c, s2, s1));
-        suggestions.addAll(getInnerClasses(c, s2));
+        c = classMap.get(s1);
+        if (Objects.nonNull(c)) {
+          Set<String> methods = getMethods(c, s2, s1);
+          Set<String> fields = getFields(c, s2, s1);
+          Set<String> innerClasses = getInnerClasses(c, s2);
+          if (i == chain.length - 2) {
+            suggestions.addAll(methods);
+            suggestions.addAll(fields);
+            suggestions.addAll(innerClasses);
+          }
+        }
       }
     }
     classMap.clear();
@@ -121,6 +129,7 @@ public class VariableMethodsSuggester implements Suggester {
   private Set<String> getMethods(Class<?> parent, String prefix, String prevToken) {
     return Arrays.stream(parent.getDeclaredMethods())
         .filter(method -> isShouldBeCaptured(parent, method, prevToken, prefix))
+        .peek(method -> classMap.put(method.getName(), method.getReturnType()))
         .map(this::createMethodName)
         .collect(Collectors.toSet());
   }
@@ -130,6 +139,7 @@ public class VariableMethodsSuggester implements Suggester {
         .filter(field -> Modifier.isPublic(field.getModifiers())
             && field.getName().startsWith(prefix)
             && isStatic(parent, prevToken, field))
+        .peek(field -> classMap.put(field.getName(), field.getType()))
         .map(Field::getName)
         .collect(Collectors.toSet());
   }
@@ -138,6 +148,7 @@ public class VariableMethodsSuggester implements Suggester {
     return Arrays.stream(parent.getDeclaredClasses())
         .filter(inner -> Modifier.isPublic(inner.getModifiers())
             && inner.getSimpleName().startsWith(prefix))
+        .peek(c -> classMap.put(c.getSimpleName(), c))
         .map(Class::getSimpleName)
         .collect(Collectors.toSet());
   }
@@ -193,7 +204,7 @@ public class VariableMethodsSuggester implements Suggester {
     if (parent.getSimpleName().equals(s1)) {
       return Modifier.isStatic(member.getModifiers());
     }
-    return true;
+    return !Modifier.isStatic(member.getModifiers());
   }
 
 }
