@@ -111,6 +111,7 @@ public class VariableMethodsSuggester implements Suggester {
         suggestions.addAll(getInnerClasses(c, s2));
       }
     }
+    classMap.clear();
     return suggestions;
   }
 

@@ -78,6 +78,13 @@ public class CodeAreaView extends CodeArea {
     suggestCore.addSuggester(variableMethodsSuggester);
     suggestCore.addSuggester(variableNameSuggester);
     suggestCore.addSuggester(keywordSuggester);
+    onMouseClickedProperty().set(mouseEvent -> {
+      if (!mouseEvent.getTarget().equals(autoCompleteSuggestions)) {
+        autoCompleteSuggestions.hide();
+        return;
+      }
+      mouseEvent.consume();
+    });
     onKeyReleasedProperty().set(keyEvent -> autoCompleteSuggest(keyEvent, suggestCore));
   }
 
