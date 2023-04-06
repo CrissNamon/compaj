@@ -41,7 +41,7 @@ public class VariableMethodsSuggester implements Suggester {
   private static final String FUNCTION_TYPE_GROUP = "FUNCTIONTYPE";
   private static final String FUNCTION_NAME_GROUP = "FUNCTIONNAME";
   private static final String UNFORMATTED_PATTERN = "((?<%s>\\w+)[ ]*=[ ]*("
-      + "(?<%s>(?>[ \\n\\t\\d\\w]*\\++[ ]*)*\"[\\w\\d!?\\n\\t]++\")"
+      + "(?<%s>(?>[ \\n\\t\\d\\w]*\\++[ ]*)*\"[\\w\\d!?\\s]++\")"
       + "|(?<%s>[\\d]++\\.[\\d]++)"
       + "|(?<%s>[\\d]++(?![^;\\s]))"
       + "|(?<%s>(?!new)[a-zA-Z][\\w\\d]*)"
@@ -83,6 +83,10 @@ public class VariableMethodsSuggester implements Suggester {
     }
   }
 
+  public VariableMethodsSuggester() {
+    classMap.putAll(EXISTED_CLASSES);
+  }
+
   @Override
   public Set<String> predict(String input, String prefix, int position) {
     analyze(input);
@@ -107,7 +111,6 @@ public class VariableMethodsSuggester implements Suggester {
         suggestions.addAll(getInnerClasses(c, s2));
       }
     }
-    classMap.putAll(EXISTED_CLASSES);
     return suggestions;
   }
 
