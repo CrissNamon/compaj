@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import tech.hiddenproject.aide.optional.BooleanOptional;
 import tech.hiddenproject.aide.optional.IfTrueConditional;
 import tech.hiddenproject.aide.optional.WhenConditional;
+import tech.hiddenproject.compaj.gui.Compaj;
+import tech.hiddenproject.compaj.gui.component.LineChartBuilder;
+import tech.hiddenproject.compaj.gui.component.TableBuilder;
 import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 
 /**
@@ -67,6 +70,10 @@ public class VariableMethodsSuggester implements Suggester {
         Map.of("Supplier", Supplier.class, "Function", Function.class,
                "Consumer", Consumer.class, "Predicate", Predicate.class)
     );
+    EXISTED_CLASSES.putAll(
+        Map.of("Compaj", Compaj.class, "LineChartBuilder", LineChartBuilder.class,
+               "TableBuilder", TableBuilder.class)
+    );
     Imports.normalImports.stream()
         .map(VariableMethodsSuggester::getClassByName)
         .filter(Objects::nonNull)
@@ -86,7 +93,7 @@ public class VariableMethodsSuggester implements Suggester {
   @Override
   public Set<String> predict(String input, String prefix, int position) {
     analyze(input);
-    if (input.contains(".")) {
+    if (prefix.contains(".")) {
       return suggest(prefix + " ");
     }
     return classMap.keySet().stream()
@@ -102,8 +109,8 @@ public class VariableMethodsSuggester implements Suggester {
       String s2 = chain[i + 1].trim();
       if (classMap.containsKey(s1)) {
         Class<?> c = classMap.get(s1);
-        suggestions.addAll(getMethods(c, s2));
-        suggestions.addAll(getFields(c, s2));
+        suggestions.addAll(getMethods(c, s2, s1));
+        suggestions.addAll(getFields(c, s2, s1));
         suggestions.addAll(getInnerClasses(c, s2));
       }
     }
@@ -111,18 +118,18 @@ public class VariableMethodsSuggester implements Suggester {
     return suggestions;
   }
 
-  private Set<String> getMethods(Class<?> parent, String prefix) {
+  private Set<String> getMethods(Class<?> parent, String prefix, String prevToken) {
     return Arrays.stream(parent.getDeclaredMethods())
-        .filter(method -> isShouldBeCaptured(parent, method, prefix))
+        .filter(method -> isShouldBeCaptured(parent, method, prevToken, prefix))
         .map(this::createMethodName)
         .collect(Collectors.toSet());
   }
 
-  private Set<String> getFields(Class<?> parent, String prefix) {
+  private Set<String> getFields(Class<?> parent, String prefix, String prevToken) {
     return Arrays.stream(parent.getDeclaredFields())
         .filter(field -> Modifier.isPublic(field.getModifiers())
             && field.getName().startsWith(prefix)
-            && isStatic(parent, prefix, field))
+            && isStatic(parent, prevToken, field))
         .map(Field::getName)
         .collect(Collectors.toSet());
   }
@@ -135,9 +142,9 @@ public class VariableMethodsSuggester implements Suggester {
         .collect(Collectors.toSet());
   }
 
-  private boolean isShouldBeCaptured(Class<?> parent, Member member, String prefix) {
+  private boolean isShouldBeCaptured(Class<?> parent, Member member, String s1, String prefix) {
     return Modifier.isPublic(member.getModifiers()) && member.getName().startsWith(prefix)
-        && isStatic(parent, prefix, member);
+        && isStatic(parent, s1, member);
   }
 
   private String createMethodName(Method method) {
@@ -182,8 +189,8 @@ public class VariableMethodsSuggester implements Suggester {
     return EXISTED_CLASSES.get(name);
   }
 
-  private boolean isStatic(Class<?> parent, String input, Member member) {
-    if (parent.getSimpleName().equals(input)) {
+  private boolean isStatic(Class<?> parent, String s1, Member member) {
+    if (parent.getSimpleName().equals(s1)) {
       return Modifier.isStatic(member.getModifiers());
     }
     return true;

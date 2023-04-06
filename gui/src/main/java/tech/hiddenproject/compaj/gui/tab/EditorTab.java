@@ -23,6 +23,7 @@ import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
 import tech.hiddenproject.aide.optional.Action;
 import tech.hiddenproject.aide.optional.BooleanOptional;
+import tech.hiddenproject.aide.optional.WhenConditional;
 import tech.hiddenproject.compaj.gui.Compaj;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder.Prebuilt;
 import tech.hiddenproject.compaj.gui.util.FileUtils;
@@ -131,8 +132,9 @@ public class EditorTab extends Tab {
     logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
     try {
       Object result = Compaj.getTranslator().evaluate(codeArea.getText());
-      log(result.toString());
-      logInfo(I18nUtils.get("tab.editor.console.compilation.ok"));
+      WhenConditional.create()
+              .when(Objects.nonNull(result)).then(() -> log(result.toString()))
+              .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
     } catch (Exception e) {
       logError(e.getMessage());
       e.printStackTrace();
