@@ -83,10 +83,6 @@ public class VariableMethodsSuggester implements Suggester {
     }
   }
 
-  public VariableMethodsSuggester() {
-    classMap.putAll(EXISTED_CLASSES);
-  }
-
   @Override
   public Set<String> predict(String input, String prefix, int position) {
     analyze(input);
@@ -175,6 +171,7 @@ public class VariableMethodsSuggester implements Suggester {
             .ifTrueThen(() -> classMap.put(matcher.group(FUNCTION_NAME_GROUP).trim(), c));
       }
     }
+    classMap.putAll(EXISTED_CLASSES);
   }
 
   private boolean isClassExists(String name) {
