@@ -1,5 +1,7 @@
 package tech.hiddenproject.compaj.gui.view;
 
+import java.util.Objects;
+
 import com.sun.javafx.scene.control.ContextMenuContent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -16,6 +18,8 @@ import tech.hiddenproject.compaj.gui.component.ContextMenuBuilder;
  * {@link ContextMenu} for {@link tech.hiddenproject.compaj.gui.suggestion.SuggestCore}.
  */
 public class SuggestContextMenu extends ContextMenu {
+
+  private EventHandler<? super KeyEvent> oldHandler;
 
   /**
    * @return {@link ContextMenuBuilder} for {@link SuggestContextMenu}.
@@ -38,7 +42,9 @@ public class SuggestContextMenu extends ContextMenu {
 
   private void onShowHandler(Event event) {
     ContextMenuContent content = (ContextMenuContent) getSkin().getNode();
-    EventHandler<? super KeyEvent> oldHandler = content.getOnKeyPressed();
+    if (Objects.isNull(oldHandler)) {
+      oldHandler = content.getOnKeyPressed();
+    }
     content.setOnKeyPressed(keyEvent -> WhenConditional.create()
         .when(isInsertSuggestionKeyCode(keyEvent.getCode())).then(() -> oldHandler.handle(keyEvent))
         .orElseDo(this::hide));
