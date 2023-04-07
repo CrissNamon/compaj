@@ -90,7 +90,7 @@ public class EditorTab extends Tab {
       savedFile = f;
       this.setText(f.getName());
       codeArea.clear();
-      codeArea.replaceText(0, 0, FileUtils.readFile(f));
+      codeArea.replaceText(0, 0, tech.hiddenproject.compaj.lang.FileUtils.readFromFile(f));
       setGraphic(null);
       unsavedChanges = false;
     }

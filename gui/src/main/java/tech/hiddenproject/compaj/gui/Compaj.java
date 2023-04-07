@@ -40,10 +40,10 @@ import tech.hiddenproject.compaj.gui.event.UiMenuEvent;
 import tech.hiddenproject.compaj.gui.tab.EditorTab;
 import tech.hiddenproject.compaj.gui.tab.TerminalTab;
 import tech.hiddenproject.compaj.gui.tab.WorkSpaceTab;
-import tech.hiddenproject.compaj.gui.util.FileUtils;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.widget.BaseWidget;
 import tech.hiddenproject.compaj.gui.widget.WorkSpaceWidget;
+import tech.hiddenproject.compaj.lang.FileUtils;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.CompaJScriptBase;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
@@ -121,7 +121,7 @@ public class Compaj extends Application {
    */
   public static Object exec(String path) {
     File f = new File(path);
-    return getTranslator().evaluate(FileUtils.readFile(f));
+    return getTranslator().evaluate(FileUtils.readFromFile(f));
   }
 
   /**
@@ -137,8 +137,8 @@ public class Compaj extends Application {
    * @return Evaluation result
    */
   public static Object exec() {
-    File f = FileUtils.openNoteWindow();
-    return getTranslator().evaluate(FileUtils.readFile(f));
+    File f = tech.hiddenproject.compaj.gui.util.FileUtils.openNoteWindow();
+    return getTranslator().evaluate(FileUtils.readFromFile(f));
   }
 
   /**

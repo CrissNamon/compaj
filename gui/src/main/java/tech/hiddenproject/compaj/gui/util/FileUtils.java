@@ -70,20 +70,4 @@ public class FileUtils {
       ex.printStackTrace();
     }
   }
-
-  public static String readFile(File file) {
-    try {
-      StringBuilder resultStringBuilder = new StringBuilder();
-      try (BufferedReader br =
-               new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-        String line;
-        while ((line = br.readLine()) != null) {
-          resultStringBuilder.append(line).append("\n");
-        }
-      }
-      return resultStringBuilder.toString();
-    } catch (IOException e) {
-      throw new RuntimeException("Exception with file reader!");
-    }
-  }
 }
