@@ -6,6 +6,7 @@ import tech.hiddenproject.aide.optional.ThrowableOptional;
 import tech.hiddenproject.compaj.lang.exception.ExtensionException;
 import tech.hiddenproject.compaj.lang.extension.Extension;
 
+
 /**
  * Custom script base for {@link groovy.lang.GroovyShell}.
  */
