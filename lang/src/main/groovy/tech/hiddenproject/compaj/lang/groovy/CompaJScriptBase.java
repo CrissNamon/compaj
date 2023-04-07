@@ -1,7 +1,5 @@
-package tech.hiddenproject.compaj.lang.groovy;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 import groovy.lang.Script;
 import tech.hiddenproject.aide.optional.ThrowableOptional;
@@ -13,19 +11,10 @@ import tech.hiddenproject.compaj.lang.extension.Extension;
  */
 public abstract class CompaJScriptBase extends Script {
 
-  private static final Set<Extension> extensions;
-
-  static {
-    extensions = new HashSet<>();
-  }
-
   public CompaJScriptBase() {
-    extensions.forEach(e -> ThrowableOptional.sneaky(() -> e.extend(CompaJScriptBase.this),
-                                                     ex -> new ExtensionException(e)));
-  }
-
-  public static void addExtension(Extension e) {
-    extensions.add(e);
+    ServiceLoader<Extension> extensionLoader = ServiceLoader.load(Extension.class);
+    extensionLoader.stream().map(ServiceLoader.Provider::get).collect(Collectors.toList())
+      .forEach(e -> ThrowableOptional.sneaky(() -> e.extend(CompaJScriptBase.this), ex -> new ExtensionException(e)));
   }
 
   public void help() {
