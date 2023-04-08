@@ -3,7 +3,6 @@ package tech.hiddenproject.compaj.gui.tab;
 import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import javafx.beans.Observable;
 import javafx.event.Event;
@@ -22,11 +21,14 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
 import tech.hiddenproject.aide.optional.Action;
+import tech.hiddenproject.aide.optional.BooleanOptional;
+import tech.hiddenproject.aide.optional.WhenConditional;
 import tech.hiddenproject.compaj.gui.Compaj;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder.Prebuilt;
-import tech.hiddenproject.compaj.gui.util.FileUtils;
+import tech.hiddenproject.compaj.gui.util.FileViewUtils;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.view.CodeAreaView;
+import tech.hiddenproject.compaj.lang.FileUtils;
 
 public class EditorTab extends Tab {
 
@@ -43,7 +45,6 @@ public class EditorTab extends Tab {
   public EditorTab() {
     super("Untitled.cjn");
     /* ToolBar Creation */
-    setId(UUID.randomUUID().toString());
     Button run = new Button();
     run.setGraphic(new FontIcon(CarbonIcons.PLAY_FILLED_ALT));
     Button save = new Button();
@@ -79,45 +80,45 @@ public class EditorTab extends Tab {
   }
 
   private void openFileAction(Event event) {
-    onCloseRequest(null, this::openNewFile);
+    onCloseRequest(this::openNewFile);
   }
 
   private void openNewFile() {
-    File f = FileUtils.openNoteWindow();
+    File f = FileViewUtils.openNoteWindow();
     if (Objects.nonNull(f)) {
       savedFile = f;
       this.setText(f.getName());
       codeArea.clear();
-      codeArea.replaceText(0, 0, FileUtils.readFile(f));
+      codeArea.replaceText(0, 0, tech.hiddenproject.compaj.lang.FileUtils.readFromFile(f));
       setGraphic(null);
       unsavedChanges = false;
     }
   }
 
   private void onCloseRequest(Event event) {
-    onCloseRequest(event, () -> {
+    onCloseRequest(() -> {
     });
   }
 
-  private void onCloseRequest(Event event, Action action) {
+  private void onCloseRequest(Action action) {
     if (unsavedChanges) {
       Alert alert = Prebuilt.CLOSE_CONFIRMATION;
       Optional<ButtonType> result = alert.showAndWait();
       boolean toClose = result.map(ButtonType::getButtonData)
           .map(buttonData -> buttonData != ButtonBar.ButtonData.OK_DONE)
           .orElse(false);
-      if (!toClose) {
-        action.make();
-      }
+      BooleanOptional.of(toClose).ifTrueThen(action);
+    } else {
+      action.make();
     }
   }
 
   private void saveFileAction(Event event) {
     if (savedFile == null) {
-      savedFile = FileUtils.saveNoteWindow();
+      savedFile = FileViewUtils.saveNoteWindow();
     }
     if (savedFile != null) {
-      FileUtils.saveFile(savedFile, codeArea.getText());
+      FileUtils.writeToFile(savedFile, codeArea.getText());
       this.setText(savedFile.getName());
       this.setGraphic(null);
       unsavedChanges = false;
@@ -129,9 +130,10 @@ public class EditorTab extends Tab {
     console.setExpanded(true);
     logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
     try {
-      Object result = Compaj.getTranslator().evaluate(codeArea.getText());
-      log(result.toString());
-      logInfo(I18nUtils.get("tab.editor.console.compilation.ok"));
+      Object result = Compaj.getInstance().getTranslator().evaluate(codeArea.getText());
+      WhenConditional.create()
+          .when(Objects.nonNull(result)).then(() -> log(result.toString()))
+          .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
     } catch (Exception e) {
       logError(e.getMessage());
       e.printStackTrace();

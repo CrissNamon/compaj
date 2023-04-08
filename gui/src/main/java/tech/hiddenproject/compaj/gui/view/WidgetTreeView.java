@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder;
 import tech.hiddenproject.compaj.gui.component.ContextMenuBuilder;
 import tech.hiddenproject.compaj.gui.data.WidgetTreeCell;
-import tech.hiddenproject.compaj.gui.util.FileUtils;
+import tech.hiddenproject.compaj.gui.util.FileViewUtils;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.util.SnapshotCreator;
 import tech.hiddenproject.compaj.gui.widget.BaseWidget;
@@ -49,7 +49,7 @@ public class WidgetTreeView extends TreeView<WorkSpaceWidget> {
                   I18nUtils.get("tab.workspace.widget.context.export"),
                   i -> {
                     try {
-                      File f = FileUtils.saveFileWindow("PNG Image", "*.png");
+                      File f = FileViewUtils.saveFileWindow("PNG Image", "*.png");
                       SnapshotCreator.exportPngSnapshot(
                           treeCell.getWidget().getNode(), f.toPath(), Color.TRANSPARENT);
                     } catch (IOException e) {

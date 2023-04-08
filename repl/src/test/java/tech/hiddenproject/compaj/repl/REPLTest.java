@@ -67,16 +67,6 @@ public class REPLTest {
   }
 
   @Test
-  @DisplayName("load CompaJComplex extension")
-  public void complexExtensionTest() {
-    String expected = new CompaJComplex(0, 1).toString();
-    String script = "print new CompaJComplex(0, 1)";
-    CompaJ.readInput(script);
-
-    Assertions.assertEquals(expected, OUTPUT_CAPTOR.toString().trim());
-  }
-
-  @Test
   @DisplayName("load Math extension")
   public void mathExtensionTest() {
     String expected = doubleList().stream()

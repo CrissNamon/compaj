@@ -3,34 +3,37 @@ package tech.hiddenproject.compaj.gui.view;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.concurrent.Task;
+import javafx.geometry.Bounds;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
+import org.reactfx.util.Try;
+import tech.hiddenproject.aide.optional.IfTrueConditional;
+import tech.hiddenproject.compaj.gui.app.AppPreference;
+import tech.hiddenproject.compaj.gui.component.SuggestContextMenu;
+import tech.hiddenproject.compaj.gui.suggestion.KeywordSuggester;
+import tech.hiddenproject.compaj.gui.suggestion.SuggestCore;
+import tech.hiddenproject.compaj.gui.suggestion.SuggestResult;
+import tech.hiddenproject.compaj.gui.suggestion.Suggestion;
+import tech.hiddenproject.compaj.gui.suggestion.VariableMethodsSuggester;
+import tech.hiddenproject.compaj.gui.suggestion.VariableNameSuggester;
 
 public class CodeAreaView extends CodeArea {
-
-  private static final String[] KEYWORDS =
-      new String[]{
-          "abstract", "assert", "boolean", "break", "byte",
-          "case", "catch", "char", "class", "const",
-          "continue", "default", "do", "double", "else",
-          "enum", "extends", "final", "finally", "float",
-          "for", "goto", "if", "implements", "import",
-          "instanceof", "int", "interface", "long", "native",
-          "new", "package", "private", "protected", "public",
-          "return", "short", "static", "strictfp", "super",
-          "switch", "synchronized", "this", "throw", "throws",
-          "transient", "try", "void", "volatile", "while"
-      };
 
   private static final String PAREN_PATTERN = "\\(|\\)";
   private static final String BRACE_PATTERN = "\\{|\\}";
@@ -39,7 +42,8 @@ public class CodeAreaView extends CodeArea {
   private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
   private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
 
-  private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+  private static final String KEYWORD_PATTERN =
+      "\\b(" + String.join("|", KeywordSuggester.KEYWORDS) + ")\\b";
   private static final Pattern PATTERN =
       Pattern.compile(
           "(?<KEYWORD>"
@@ -63,13 +67,30 @@ public class CodeAreaView extends CodeArea {
               + "|(?<COMMENT>"
               + COMMENT_PATTERN
               + ")");
-  private ExecutorService executor;
-  private Subscription syntaxHighlight;
+  private final ExecutorService executor;
+  private final Subscription syntaxHighlight;
+  private final ContextMenu autoCompleteSuggestions = SuggestContextMenu.create().build();
 
   public CodeAreaView() {
     executor = Executors.newSingleThreadExecutor();
     syntaxHighlight = subscribeOnSyntaxHighlight();
     setParagraphGraphicFactory(LineNumberFactory.get(this));
+
+    KeywordSuggester keywordSuggester = new KeywordSuggester();
+    VariableNameSuggester variableNameSuggester = new VariableNameSuggester();
+    VariableMethodsSuggester variableMethodsSuggester = new VariableMethodsSuggester();
+    SuggestCore suggestCore = new SuggestCore();
+    suggestCore.addSuggester(variableMethodsSuggester);
+    suggestCore.addSuggester(variableNameSuggester);
+    suggestCore.addSuggester(keywordSuggester);
+    onMouseClickedProperty().set(mouseEvent -> {
+      if (!mouseEvent.getTarget().equals(autoCompleteSuggestions)) {
+        autoCompleteSuggestions.hide();
+        return;
+      }
+      mouseEvent.consume();
+    });
+    onKeyReleasedProperty().set(keyEvent -> autoCompleteSuggest(keyEvent, suggestCore));
   }
 
   private static StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -102,23 +123,62 @@ public class CodeAreaView extends CodeArea {
     return spansBuilder.create();
   }
 
+  private void autoCompleteSuggest(KeyEvent keyEvent, SuggestCore suggestCore) {
+    if (!AppPreference.CODE_AUTOCOMPLETE.getOrDefault(true)) {
+      return;
+    }
+    KeyCode keyCode = keyEvent.getCode();
+    if (!keyCode.isLetterKey() && !keyCode.isDigitKey()
+        && !keyCode.equals(KeyCode.PERIOD) && !keyCode.equals(KeyCode.BACK_SPACE)) {
+      return;
+    }
+    if (getCaretBounds().isEmpty()) {
+      return;
+    }
+    autoCompleteSuggestions.getItems().clear();
+    Bounds bounds = getCaretBounds().get();
+    SuggestResult suggestResult = suggestCore.predict(getText(), getCaretPosition(),
+                                                      getCurrentLineEndInParargraph());
+    Set<Suggestion> suggestions = suggestResult.getSuggestions();
+    suggestions.forEach(
+        suggestion -> {
+          MenuItem menuItem = new MenuItem(suggestion.getSuggestion());
+          menuItem.setUserData(suggestion);
+          autoCompleteSuggestions.getItems().add(menuItem);
+        });
+    autoCompleteSuggestions.setOnAction(actionEvent -> {
+      MenuItem menuItem = (MenuItem) actionEvent.getTarget();
+      Suggestion suggestion = (Suggestion) menuItem.getUserData();
+      if (Objects.nonNull(suggestion)) {
+        String oneLine = getText().replace("\n", " ").substring(0, getCaretPosition());
+        int lastSpace = oneLine.lastIndexOf(" ");
+        int lastDot = oneLine.lastIndexOf(".");
+        int lastTab = oneLine.lastIndexOf("\t");
+        replaceText(Math.max(Math.max(lastDot, lastSpace), lastTab) + 1, getCaretPosition(),
+                    suggestion.getSuggestion());
+      }
+    });
+    autoCompleteSuggestions.show(CodeAreaView.this, bounds.getCenterX(),
+                                 bounds.getCenterY() + 10);
+  }
+
   private Subscription subscribeOnSyntaxHighlight() {
     return multiPlainChanges()
         .successionEnds(Duration.ofMillis(500))
         .retainLatestUntilLater(executor)
         .supplyTask(this::computeHighlightingAsync)
         .awaitLatest(multiPlainChanges())
-        .filterMap(
-            t -> {
-              if (t.isSuccess()) {
-                return Optional.of(t.get());
-              } else {
-                t.getFailure().printStackTrace();
-                return Optional.empty();
-              }
-            })
+        .filterMap(this::filterMap)
         .subscribe(this::applyHighlighting);
   }
+
+  private Optional<StyleSpans<Collection<String>>> filterMap(
+      Try<StyleSpans<Collection<String>>> t) {
+    return IfTrueConditional.create()
+        .ifTrue(t.isSuccess()).then(() -> Optional.of(t.get()))
+        .orElse(Optional.empty());
+  }
+
 
   private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
     String text = getText();

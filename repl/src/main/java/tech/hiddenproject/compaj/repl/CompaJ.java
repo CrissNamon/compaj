@@ -22,14 +22,17 @@ import tech.hiddenproject.compaj.lang.groovy.TranslatorProperties.Imports;
 /**
  * Base class for REPL.
  */
-public class CompaJ {
+public enum CompaJ {
 
-  private static CompaJ INSTANCE;
-  public PrintStream out;
-  private Translator translator;
+  INSTANCE;
 
-  private CompaJ() {
+  static {
+    init();
   }
+
+  public static PrintStream out;
+
+  private Translator translator;
 
   /**
    * Reads file content from url and evaluates it.
@@ -41,7 +44,7 @@ public class CompaJ {
       String script = FileUtils.readFromFile(new File(url));
       readInput(script);
     } catch (Throwable e) {
-      getInstance().out.println("Error: " + e.getLocalizedMessage());
+      out.println("Error: " + e.getLocalizedMessage());
     }
   }
 
@@ -52,29 +55,21 @@ public class CompaJ {
    */
   public static void readInput(String input) {
     try {
-      Object result = getInstance().getTranslator().evaluate(input);
+      Object result = INSTANCE.getTranslator().evaluate(input);
       if (result != null) {
         if (result.getClass().isArray()) {
-          getInstance().out.println(Arrays.toString((Object[]) result));
+          out.println(Arrays.toString((Object[]) result));
         } else {
-          getInstance().out.println(result);
+          out.println(result);
         }
       } else {
-        getInstance().out.print("");
-        getInstance().out.println();
+        out.print("");
+        out.println();
       }
     } catch (Exception e) {
-      getInstance().out.println("ERROR: " + e.getClass());
-      getInstance().out.println(e.getMessage());
+      out.println("ERROR: " + e.getClass());
+      out.println(e.getMessage());
     }
-  }
-
-  public static synchronized CompaJ getInstance() {
-    if (INSTANCE == null) {
-      init();
-      INSTANCE = new CompaJ();
-    }
-    return INSTANCE;
   }
 
   /**
@@ -84,7 +79,7 @@ public class CompaJ {
     System.exit(0);
   }
 
-  public static void init() {
+  private static void init() {
     CompaJScriptBase.addExtension(new StarterExtension());
     CompaJScriptBase.addExtension(new MathExtension());
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
@@ -102,13 +97,12 @@ public class CompaJ {
     );
   }
 
-
   public Translator getTranslator() {
     return translator;
   }
 
   public void setTranslator(Translator translator) {
     this.translator = translator;
-    this.out = translator.getStandardOut();
+    out = translator.getStandardOut();
   }
 }

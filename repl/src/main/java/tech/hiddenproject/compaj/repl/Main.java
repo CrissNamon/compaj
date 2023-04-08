@@ -13,12 +13,12 @@ import tech.hiddenproject.compaj.lang.Translator;
 import tech.hiddenproject.compaj.lang.TranslatorUtils;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslator;
 import tech.hiddenproject.compaj.lang.groovy.GroovyTranslatorUtils;
+import tech.hiddenproject.compaj.repl.exception.ArgumentValueException;
 
 public class Main {
 
   private static final List<String> LIBRARIES = new ArrayList<>();
   private static final Map<String, List<String>> ARGUMENTS = new HashMap<>();
-  private static final CompaJ INSTANCE = CompaJ.getInstance();
   private static final Logger LOGGER = LoggerFactory.getLogger(CompaJ.class);
 
   // No logs, because they will spam REPL console
@@ -32,8 +32,8 @@ public class Main {
     init();
     processFileInputArg();
     processInputStringArg();
-    CompaJ.getInstance().out.println("Welcome to CompaJ REPL!");
-    CompaJ.getInstance().out.println("Version 0.0.3.1");
+    CompaJ.out.println("Welcome to CompaJ REPL!");
+    CompaJ.out.println("Version 0.0.3.1");
     processInput();
   }
 
@@ -41,11 +41,10 @@ public class Main {
    * Initializes {@link GroovyTranslator}.
    */
   protected static void init() {
-    CompaJ.init();
     TranslatorUtils translatorUtils =
         new GroovyTranslatorUtils();
     Translator translator = new GroovyTranslator(translatorUtils, LIBRARIES);
-    INSTANCE.setTranslator(translator);
+    CompaJ.INSTANCE.setTranslator(translator);
   }
 
   /**
@@ -90,7 +89,7 @@ public class Main {
   private static void processLibrariesArg() {
     if (ARGUMENTS.containsKey("l")) {
       List<String> libsPaths = ARGUMENTS.get("l");
-      LOGGER.info("Loading libs: " + libsPaths);
+      LOGGER.info("Loading libs: {}", libsPaths);
       LIBRARIES.addAll(libsPaths);
     }
   }
@@ -98,8 +97,8 @@ public class Main {
   private static void processInputStringArg() {
     if (ARGUMENTS.containsKey("s")) {
       List<String> sources = ARGUMENTS.get("s");
-      if (sources.size() == 0) {
-        throw new RuntimeException("Flag -s found, but no scripts provided!");
+      if (sources.isEmpty()) {
+        throw new ArgumentValueException("Flag -s found, but no scripts provided!");
       }
       for (String source : sources) {
         CompaJ.readInput(source);
@@ -111,8 +110,8 @@ public class Main {
   private static void processFileInputArg() {
     if (ARGUMENTS.containsKey("f")) {
       List<String> files = ARGUMENTS.get("f");
-      if (files.size() == 0) {
-        throw new RuntimeException("Flag -f found, but no files provided!");
+      if (files.isEmpty()) {
+        throw new ArgumentValueException("Flag -f found, but no files provided!");
       }
       for (String file : files) {
         CompaJ.readFile(file);
@@ -127,7 +126,7 @@ public class Main {
   private static void processInput() {
     Scanner sc = new Scanner(System.in);
     do {
-      CompaJ.getInstance().out.print("> ");
+      CompaJ.out.print("> ");
       String input = sc.nextLine();
       CompaJ.readInput(input);
     } while (true);

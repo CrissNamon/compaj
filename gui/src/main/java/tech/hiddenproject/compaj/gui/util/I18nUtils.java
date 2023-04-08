@@ -5,8 +5,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
-import tech.hiddenproject.compaj.gui.AppPreference;
-import tech.hiddenproject.compaj.gui.AppSettings;
+import tech.hiddenproject.compaj.gui.app.AppPreference;
+import tech.hiddenproject.compaj.gui.app.AppSettings;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder;
 
 public class I18nUtils {

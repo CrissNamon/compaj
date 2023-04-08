@@ -64,7 +64,7 @@ public class ReplView extends ScrollPane {
 
   private Object evaluate(String text) {
     try {
-      return Compaj.getTranslator().evaluate(text, Set.of(this::translateEraseTypes));
+      return Compaj.getInstance().getTranslator().evaluate(text, Set.of(this::translateEraseTypes));
     } catch (Exception e) {
       return e.getLocalizedMessage();
     }
