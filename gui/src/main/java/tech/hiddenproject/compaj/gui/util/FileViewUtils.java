@@ -1,26 +1,16 @@
 package tech.hiddenproject.compaj.gui.util;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 import javafx.stage.FileChooser;
-import tech.hiddenproject.compaj.gui.AppSettings;
-import tech.hiddenproject.compaj.gui.Compaj;
+import tech.hiddenproject.compaj.gui.app.AppSettings;
+import tech.hiddenproject.compaj.gui.view.StageHolder;
 
-public class FileUtils {
+public class FileViewUtils {
 
-  public static final String[] COMPAJ_SCRIPT_EXT = new String[]{"*.cjn"};
-  private static FileUtils INSTANCE;
+  protected static final String[] COMPAJ_SCRIPT_EXT = new String[]{"*.cjn"};
 
-  private FileUtils() {
-  }
-
-  public static FileUtils getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new FileUtils();
-    }
-    return INSTANCE;
+  private FileViewUtils() {
   }
 
   public static File saveFileWindow(String fileType, String fileExt) {
@@ -29,7 +19,7 @@ public class FileUtils {
 
   public static File saveFileWindow(String fileType, String[] fileExt) {
     return createChooser(AppSettings.getInstance().getAppDirectory(), fileType, fileExt)
-        .showSaveDialog(Compaj.getMainStage());
+        .showSaveDialog(StageHolder.getInstance().getStage());
   }
 
   private static FileChooser createChooser(File init, String fileType, String[] fileExt) {
@@ -46,7 +36,7 @@ public class FileUtils {
 
   public static File openFileWindow(String fileType, String[] fileExt) {
     return createChooser(AppSettings.getInstance().getAppDirectory(), fileType, fileExt)
-        .showOpenDialog(Compaj.getMainStage());
+        .showOpenDialog(StageHolder.getInstance().getStage());
   }
 
   public static File openNoteWindow() {
@@ -57,14 +47,4 @@ public class FileUtils {
     return saveFileWindow("CompaJ Note", COMPAJ_SCRIPT_EXT);
   }
 
-  public static void saveFile(File file, String data) {
-    try {
-      PrintWriter writer;
-      writer = new PrintWriter(file);
-      writer.println(data);
-      writer.close();
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    }
-  }
 }

@@ -24,7 +24,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
 import org.reactfx.util.Try;
 import tech.hiddenproject.aide.optional.IfTrueConditional;
-import tech.hiddenproject.compaj.gui.AppPreference;
+import tech.hiddenproject.compaj.gui.app.AppPreference;
 import tech.hiddenproject.compaj.gui.component.SuggestContextMenu;
 import tech.hiddenproject.compaj.gui.suggestion.KeywordSuggester;
 import tech.hiddenproject.compaj.gui.suggestion.SuggestCore;
@@ -171,7 +171,8 @@ public class CodeAreaView extends CodeArea {
         .subscribe(this::applyHighlighting);
   }
 
-  private Optional<StyleSpans<Collection<String>>> filterMap(Try<StyleSpans<Collection<String>>> t) {
+  private Optional<StyleSpans<Collection<String>>> filterMap(
+      Try<StyleSpans<Collection<String>>> t) {
     return IfTrueConditional.create()
         .ifTrue(t.isSuccess()).then(() -> Optional.of(t.get()))
         .orElse(Optional.empty());

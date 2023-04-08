@@ -1,7 +1,5 @@
 package tech.hiddenproject.compaj.gui.tab;
 
-import java.util.UUID;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToolBar;
@@ -16,7 +14,8 @@ public class TerminalTab extends CloseConfirmationTab {
 
   public TerminalTab() {
     super(I18nUtils.get("tab.terminal.title"));
-    setId(UUID.randomUUID().toString());
+    setClosable(false);
+
     Button clear = new Button(I18nUtils.get("tab.terminal.repl.clear"));
     clear.setOnAction(actionEvent -> clear());
     ToolBar toolBar = new ToolBar();

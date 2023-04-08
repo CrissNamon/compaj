@@ -1,11 +1,16 @@
-package tech.hiddenproject.compaj.gui;
+package tech.hiddenproject.compaj.gui.app;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.net.URL;
+import java.util.Objects;
 import java.util.prefs.Preferences;
+
+import tech.hiddenproject.aide.optional.IfTrueConditional;
 
 public class AppSettings {
 
+  public static final String APP_STYLESHEET = "/java-keywords.css";
   public static final String APP_TITLE = "CompaJ";
   private static final String APP_DIRECTORY = "CompaJ";
   private static final String SCRIPTS_DIRECTORY = "scripts";
@@ -22,6 +27,13 @@ public class AppSettings {
       INSTANCE = new AppSettings();
     }
     return INSTANCE;
+  }
+
+  public String getStyleSheet() {
+    URL url = getClass().getResource(APP_STYLESHEET);
+    return IfTrueConditional.create()
+        .ifTrue(Objects.nonNull(url)).then(() -> url.toExternalForm())
+        .orElseThrows(() -> new RuntimeException("Stylesheet not found: " + APP_STYLESHEET));
   }
 
   public File getScriptsDirectoryFor(String project) {

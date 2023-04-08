@@ -17,6 +17,8 @@ public class WorkSpaceTab extends CloseConfirmationTab {
 
   public WorkSpaceTab() {
     super(I18nUtils.get("tab.workspace.title"));
+    setClosable(false);
+
     widgetPane = new ScrollPane();
     widgetPane.setFitToWidth(true);
     widgetPane.setFitToHeight(true);

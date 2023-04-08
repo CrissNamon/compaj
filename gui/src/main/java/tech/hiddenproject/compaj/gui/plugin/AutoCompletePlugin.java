@@ -1,7 +1,7 @@
 package tech.hiddenproject.compaj.gui.plugin;
 
 import javafx.scene.control.MenuItem;
-import tech.hiddenproject.compaj.gui.AppPreference;
+import tech.hiddenproject.compaj.gui.app.AppPreference;
 import tech.hiddenproject.compaj.gui.event.UiChildPayload;
 import tech.hiddenproject.compaj.gui.event.UiMenuEvent;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;

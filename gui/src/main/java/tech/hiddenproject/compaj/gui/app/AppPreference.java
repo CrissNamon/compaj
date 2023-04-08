@@ -1,4 +1,4 @@
-package tech.hiddenproject.compaj.gui;
+package tech.hiddenproject.compaj.gui.app;
 
 /**
  * Contains app preferences.

@@ -3,7 +3,6 @@ package tech.hiddenproject.compaj.gui.tab;
 import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import javafx.beans.Observable;
 import javafx.event.Event;
@@ -26,9 +25,10 @@ import tech.hiddenproject.aide.optional.BooleanOptional;
 import tech.hiddenproject.aide.optional.WhenConditional;
 import tech.hiddenproject.compaj.gui.Compaj;
 import tech.hiddenproject.compaj.gui.component.AlertBuilder.Prebuilt;
-import tech.hiddenproject.compaj.gui.util.FileUtils;
+import tech.hiddenproject.compaj.gui.util.FileViewUtils;
 import tech.hiddenproject.compaj.gui.util.I18nUtils;
 import tech.hiddenproject.compaj.gui.view.CodeAreaView;
+import tech.hiddenproject.compaj.lang.FileUtils;
 
 public class EditorTab extends Tab {
 
@@ -45,7 +45,6 @@ public class EditorTab extends Tab {
   public EditorTab() {
     super("Untitled.cjn");
     /* ToolBar Creation */
-    setId(UUID.randomUUID().toString());
     Button run = new Button();
     run.setGraphic(new FontIcon(CarbonIcons.PLAY_FILLED_ALT));
     Button save = new Button();
@@ -85,7 +84,7 @@ public class EditorTab extends Tab {
   }
 
   private void openNewFile() {
-    File f = FileUtils.openNoteWindow();
+    File f = FileViewUtils.openNoteWindow();
     if (Objects.nonNull(f)) {
       savedFile = f;
       this.setText(f.getName());
@@ -116,10 +115,10 @@ public class EditorTab extends Tab {
 
   private void saveFileAction(Event event) {
     if (savedFile == null) {
-      savedFile = FileUtils.saveNoteWindow();
+      savedFile = FileViewUtils.saveNoteWindow();
     }
     if (savedFile != null) {
-      FileUtils.saveFile(savedFile, codeArea.getText());
+      FileUtils.writeToFile(savedFile, codeArea.getText());
       this.setText(savedFile.getName());
       this.setGraphic(null);
       unsavedChanges = false;
@@ -131,7 +130,7 @@ public class EditorTab extends Tab {
     console.setExpanded(true);
     logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
     try {
-      Object result = Compaj.getTranslator().evaluate(codeArea.getText());
+      Object result = Compaj.getInstance().getTranslator().evaluate(codeArea.getText());
       WhenConditional.create()
           .when(Objects.nonNull(result)).then(() -> log(result.toString()))
           .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
