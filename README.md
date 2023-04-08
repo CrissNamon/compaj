@@ -12,7 +12,7 @@ computing platform for math modelling.
   <summary>Screenshots</summary>
 
 ![Terminal](https://user-images.githubusercontent.com/22001123/172052428-5663f5e4-e667-4280-8099-9c0e2f482f1e.png)
-![CodeEditor](https://user-images.githubusercontent.com/22001123/230459206-1aae2c9f-72de-4c57-88b3-30c3d41934ae.png)
+![CodeEditor](https://user-images.githubusercontent.com/22001123/230720718-85b268fe-a1be-4b78-98f4-3d17b82560c9.png)
 ![WorkSpace](https://user-images.githubusercontent.com/22001123/172052591-0a536b12-2d52-4dde-8a73-af29c178d775.png)
 </details>
 

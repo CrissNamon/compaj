@@ -25,8 +25,6 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 
 public class CompaJApplication extends Application {
 
-  private static final MenuHolder MENU_HOLDER = MenuHolder.getInstance();
-
   public static void launch(String... args) {
     Application.launch(args);
   }
@@ -34,7 +32,7 @@ public class CompaJApplication extends Application {
   @Override
   public void start(Stage stage) {
     StageHolder stageHolder = StageHolder.createInstance(stage);
-
+    MenuHolder menuHolder = MenuHolder.getInstance();
     stage.setTitle(AppSettings.APP_TITLE);
 
     MenuItem editorItem = new MenuItem(I18nUtils.get("tab.editor.title"));
@@ -50,16 +48,16 @@ public class CompaJApplication extends Application {
     Menu workSpaceSettingsMenu = new Menu(I18nUtils.get("tab.workspace.title"));
     settingsMenu.getItems().addAll(terminalSettingsMenu, editorSettingsMenu, workSpaceSettingsMenu);
 
-    MENU_HOLDER.put("menu.help", helpMenu);
-    MENU_HOLDER.put("menu.settings", settingsMenu);
-    MENU_HOLDER.put("menu.settings.terminal", terminalSettingsMenu);
-    MENU_HOLDER.put("menu.settings.editor", editorSettingsMenu);
-    MENU_HOLDER.put("menu.settings.workspace", workSpaceSettingsMenu);
+    menuHolder.put("menu.help", helpMenu);
+    menuHolder.put("menu.settings", settingsMenu);
+    menuHolder.put("menu.settings.terminal", terminalSettingsMenu);
+    menuHolder.put("menu.settings.editor", editorSettingsMenu);
+    menuHolder.put("menu.settings.workspace", workSpaceSettingsMenu);
 
-    MENU_HOLDER.addRootMenu(mainMenu, helpMenu, settingsMenu);
+    menuHolder.addRootMenus(mainMenu, helpMenu, settingsMenu);
 
     EventPublisher.INSTANCE.subscribeOn(UiMenuEvent.ADD_ROOT_NAME,
-                                        menu -> MENU_HOLDER.addRootMenu(menu.getPayload()));
+                                        menu -> menuHolder.addRootMenu(menu.getPayload()));
     EventPublisher.INSTANCE.subscribeOn(UiMenuEvent.ADD_CHILD_NAME, this::addChildMenu);
     EventPublisher.INSTANCE.sendTo(UiMenuEvent.STARTUP);
 
@@ -67,7 +65,7 @@ public class CompaJApplication extends Application {
                                               TabHolder.INSTANCE.getWorkSpaceTab());
 
     BorderPane rootNode = new BorderPane();
-    rootNode.setTop(MENU_HOLDER.getMenuBar());
+    rootNode.setTop(menuHolder.getMenuBar());
     rootNode.setCenter(stageHolder.getContent());
 
     Scene scene = new Scene(rootNode, 1280, 720);
@@ -85,9 +83,10 @@ public class CompaJApplication extends Application {
   }
 
   private void addChildMenu(CompaJEvent event) {
+    MenuHolder menuHolder = MenuHolder.getInstance();
     UiChildPayload uiChildPayload = event.getPayload();
-    BooleanOptional.of(MENU_HOLDER.contains(uiChildPayload.getRootId()))
-        .ifTrueThen(() -> MENU_HOLDER.get(uiChildPayload.getRootId())
+    BooleanOptional.of(menuHolder.contains(uiChildPayload.getRootId()))
+        .ifTrueThen(() -> menuHolder.get(uiChildPayload.getRootId())
             .getItems().add(uiChildPayload.getNode()));
   }
 

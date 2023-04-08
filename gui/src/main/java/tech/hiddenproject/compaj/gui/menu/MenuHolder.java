@@ -32,8 +32,12 @@ public class MenuHolder {
     return menuBar;
   }
 
-  public void addRootMenu(Menu... menus) {
+  public void addRootMenus(Menu... menus) {
     menuBar.getMenus().addAll(menus);
+  }
+
+  public void addRootMenu(Menu menu) {
+    menuBar.getMenus().add(menu);
   }
 
   public boolean contains(String key) {

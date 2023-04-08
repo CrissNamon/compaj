@@ -28,10 +28,11 @@ class SuggestCoreTest {
     VariableNameSuggester variableNameSuggester = new VariableNameSuggester();
     SuggestCore suggestCore = new SuggestCore();
     suggestCore.addSuggester(variableNameSuggester);
-    String text = CODE + "myV";
+    String suggestFor = "myV";
+    String text = CODE + suggestFor;
 
     Set<Suggestion> expected = Set.of(new Suggestion("myVariable"));
-    Set<Suggestion> actual = suggestCore.predict(text, text.length()).getSuggestions();
+    Set<Suggestion> actual = suggestCore.predict(text, text.length(), suggestFor.length()).getSuggestions();
 
     Assertions.assertIterableEquals(expected, actual);
   }
@@ -42,10 +43,11 @@ class SuggestCoreTest {
     VariableNameSuggester variableNameSuggester = new VariableNameSuggester();
     SuggestCore suggestCore = new SuggestCore();
     suggestCore.addSuggester(variableNameSuggester);
-    String text = CODE + "notE";
+    String suggestFor = "notE";
+    String text = CODE + suggestFor;
 
     Set<String> expected = Set.of();
-    Set<Suggestion> actual = suggestCore.predict(text, text.length()).getSuggestions();
+    Set<Suggestion> actual = suggestCore.predict(text, text.length(), suggestFor.length()).getSuggestions();
 
     Assertions.assertIterableEquals(expected, actual);
   }
@@ -59,7 +61,7 @@ class SuggestCoreTest {
 
     String text = "syn";
     Set<Suggestion> expected = Set.of(new Suggestion("synchronized"));
-    Set<Suggestion> actual = suggestCore.predict(text, text.length()).getSuggestions();
+    Set<Suggestion> actual = suggestCore.predict(text, text.length(), text.length()).getSuggestions();
 
     Assertions.assertIterableEquals(expected, actual);
   }
@@ -71,7 +73,8 @@ class SuggestCoreTest {
     SuggestCore suggestCore = new SuggestCore();
     suggestCore.addSuggester(variableMethodsSuggester);
 
-    String text = CODE + "myVariable.valueO";
+    String suggestFor = "myVariable.valueO";
+    String text = CODE + suggestFor;
     Set<Suggestion> expected = Set.of(new Suggestion("valueOf(class java.lang.Object)"),
                                       new Suggestion("valueOf(boolean)"),
                                       new Suggestion("valueOf(class (C, int, int)"),
@@ -81,7 +84,7 @@ class SuggestCoreTest {
                                       new Suggestion("valueOf(double)"),
                                       new Suggestion("valueOf(long)"),
                                       new Suggestion("valueOf(char)"));
-    Set<Suggestion> actual = suggestCore.predict(text, text.length()).getSuggestions();
+    Set<Suggestion> actual = suggestCore.predict(text, text.length(), suggestFor.length()).getSuggestions();
 
     Assertions.assertTrue(expected.containsAll(actual));
   }
@@ -96,7 +99,7 @@ class SuggestCoreTest {
     String text = "String.mat";
     Set<Suggestion> expected = Set.of(
         new Suggestion("matches(class java.lang.String)"));
-    Set<Suggestion> actual = suggestCore.predict(text, text.length()).getSuggestions();
+    Set<Suggestion> actual = suggestCore.predict(text, text.length(), text.length()).getSuggestions();
 
     Assertions.assertTrue(expected.containsAll(actual));
   }

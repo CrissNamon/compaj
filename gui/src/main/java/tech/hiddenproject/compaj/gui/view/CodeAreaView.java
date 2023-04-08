@@ -137,7 +137,8 @@ public class CodeAreaView extends CodeArea {
     }
     autoCompleteSuggestions.getItems().clear();
     Bounds bounds = getCaretBounds().get();
-    SuggestResult suggestResult = suggestCore.predict(getText(), getCaretPosition());
+    SuggestResult suggestResult = suggestCore.predict(getText(), getCaretPosition(),
+                                                      getCurrentLineEndInParargraph());
     Set<Suggestion> suggestions = suggestResult.getSuggestions();
     suggestions.forEach(
         suggestion -> {
