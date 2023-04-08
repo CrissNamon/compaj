@@ -18,8 +18,8 @@ public class LineChartBuilder {
   /**
    * Creates new builder.
    *
-   * @param xAxisLabel Name of x-axis
-   * @param yAxisLabel name of y-axis
+   * @param xAxisLabel    Name of x-axis
+   * @param yAxisLabel    name of y-axis
    * @param createSymbols If labels should be created
    */
   public LineChartBuilder(String xAxisLabel, String yAxisLabel, boolean createSymbols) {
@@ -44,7 +44,7 @@ public class LineChartBuilder {
   /**
    * Adds new line on chart.
    *
-   * @param name Line name
+   * @param name  Line name
    * @param xData Data for x-axis
    * @param yData Data for y-axis
    * @return {@link LineChartBuilder}

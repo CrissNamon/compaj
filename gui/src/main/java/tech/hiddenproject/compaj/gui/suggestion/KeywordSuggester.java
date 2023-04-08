@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * {@link Suggester} for keywords
+ * {@link Suggester} for keywords.
  */
 public class KeywordSuggester implements Suggester {
 
@@ -23,9 +23,10 @@ public class KeywordSuggester implements Suggester {
       );
 
   @Override
-  public Set<String> predict(String input, String prefix, int position) {
+  public Set<Suggestion> predict(String input, String prefix, int position) {
     return KEYWORDS.stream()
         .filter(keyword -> keyword.startsWith(prefix))
+        .map(Suggestion::new)
         .collect(Collectors.toSet());
   }
 }

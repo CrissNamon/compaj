@@ -18,13 +18,14 @@ public class VariableNameSuggester implements Suggester {
       Pattern.compile(String.format(PATTERN_UNFORMATTED, VAR_GROUP));
 
   @Override
-  public Set<String> predict(String text, String prefix, int position) {
+  public Set<Suggestion> predict(String text, String prefix, int position) {
     Set<String> variables = analyze(text);
     if (prefix.contains(".")) {
       return new HashSet<>();
     }
     return variables.parallelStream()
         .filter(name -> name.startsWith(prefix))
+        .map(Suggestion::new)
         .collect(Collectors.toSet());
   }
 

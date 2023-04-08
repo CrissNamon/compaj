@@ -40,6 +40,17 @@
       <version>${lang-extensions.version}</version>
     </dependency>
     <dependency>
+        <groupId>com.github.therapi</groupId>
+        <artifactId>therapi-runtime-javadoc-scribe</artifactId>
+        <version>0.15.0</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.therapi</groupId>
+        <artifactId>therapi-runtime-javadoc</artifactId>
+        <version>0.15.0</version>
+    </dependency>
+    <dependency>
       <artifactId>javafx-controls</artifactId>
       <classifier>${default.classifier}</classifier>
       <groupId>org.openjfx</groupId>

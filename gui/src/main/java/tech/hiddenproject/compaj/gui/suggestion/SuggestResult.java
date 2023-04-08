@@ -7,10 +7,10 @@ import java.util.Set;
  */
 public class SuggestResult {
 
-  private final Set<String> suggestions;
+  private final Set<Suggestion> suggestions;
   private final String prefix;
 
-  public SuggestResult(Set<String> suggestions, String prefix) {
+  public SuggestResult(Set<Suggestion> suggestions, String prefix) {
     this.suggestions = suggestions;
     this.prefix = prefix;
   }
@@ -18,7 +18,7 @@ public class SuggestResult {
   /**
    * @return Found suggestions
    */
-  public Set<String> getSuggestions() {
+  public Set<Suggestion> getSuggestions() {
     return suggestions;
   }
 

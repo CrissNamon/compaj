@@ -14,7 +14,8 @@
     <module>lang</module>
     <module>repl</module>
     <module>gui</module>
-    <module>lang-extensions</module><module>plugin-api</module>
+    <module>lang-extensions</module>
+    <module>plugin-api</module>
   </modules>
 
   <properties>
@@ -106,7 +107,7 @@
         <configuration>
           <doclint>none</doclint>
           <excludePackageNames>tech.hiddenproject.example:tech.hiddenproject.example.*</excludePackageNames>
-          <source>1.8</source>
+          <source>11</source>
         </configuration>
         <executions>
           <execution>

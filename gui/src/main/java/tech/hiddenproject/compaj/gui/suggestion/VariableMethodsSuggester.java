@@ -1,6 +1,5 @@
 package tech.hiddenproject.compaj.gui.suggestion;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.hiddenproject.aide.optional.BooleanOptional;
@@ -91,18 +91,22 @@ public class VariableMethodsSuggester implements Suggester {
   }
 
   @Override
-  public Set<String> predict(String input, String prefix, int position) {
+  public Set<Suggestion> predict(String input, String prefix, int position) {
     analyze(input);
     if (prefix.contains(".")) {
       return suggest(prefix + " ");
     }
     return classMap.keySet().stream()
         .filter(aClass -> aClass.startsWith(prefix))
+        .map(aClass -> new Suggestion(
+            aClass,
+            RuntimeJavadoc.getJavadoc(classMap.get(aClass))
+        ))
         .collect(Collectors.toSet());
   }
 
-  private Set<String> suggest(String input) {
-    Set<String> suggestions = new HashSet<>();
+  private Set<Suggestion> suggest(String input) {
+    Set<Suggestion> suggestions = new HashSet<>();
     String[] chain = (input + " ").split("\\.");
     Class<?> c;
     for (int i = 0; i < chain.length - 1; i++) {
@@ -111,9 +115,9 @@ public class VariableMethodsSuggester implements Suggester {
       if (classMap.containsKey(s1)) {
         c = classMap.get(s1);
         if (Objects.nonNull(c)) {
-          Set<String> methods = getMethods(c, s2, s1);
-          Set<String> fields = getFields(c, s2, s1);
-          Set<String> innerClasses = getInnerClasses(c, s2);
+          Set<Suggestion> methods = getMethods(c, s2, s1);
+          Set<Suggestion> fields = getFields(c, s2, s1);
+          Set<Suggestion> innerClasses = getInnerClasses(c, s2);
           if (i == chain.length - 2) {
             suggestions.addAll(methods);
             suggestions.addAll(fields);
@@ -126,30 +130,39 @@ public class VariableMethodsSuggester implements Suggester {
     return suggestions;
   }
 
-  private Set<String> getMethods(Class<?> parent, String prefix, String prevToken) {
+  private Set<Suggestion> getMethods(Class<?> parent, String prefix, String prevToken) {
     return Arrays.stream(parent.getDeclaredMethods())
         .filter(method -> isShouldBeCaptured(parent, method, prevToken, prefix))
         .peek(method -> classMap.put(method.getName(), method.getReturnType()))
-        .map(this::createMethodName)
+        .map(method -> new Suggestion(
+            createMethodName(method),
+            RuntimeJavadoc.getJavadoc(method)
+        ))
         .collect(Collectors.toSet());
   }
 
-  private Set<String> getFields(Class<?> parent, String prefix, String prevToken) {
+  private Set<Suggestion> getFields(Class<?> parent, String prefix, String prevToken) {
     return Arrays.stream(parent.getDeclaredFields())
         .filter(field -> Modifier.isPublic(field.getModifiers())
             && field.getName().startsWith(prefix)
             && isStatic(parent, prevToken, field))
         .peek(field -> classMap.put(field.getName(), field.getType()))
-        .map(Field::getName)
+        .map(field -> new Suggestion(
+            field.getName(),
+            RuntimeJavadoc.getJavadoc(field)
+        ))
         .collect(Collectors.toSet());
   }
 
-  private Set<String> getInnerClasses(Class<?> parent, String prefix) {
+  private Set<Suggestion> getInnerClasses(Class<?> parent, String prefix) {
     return Arrays.stream(parent.getDeclaredClasses())
         .filter(inner -> Modifier.isPublic(inner.getModifiers())
             && inner.getSimpleName().startsWith(prefix))
         .peek(c -> classMap.put(c.getSimpleName(), c))
-        .map(Class::getSimpleName)
+        .map(c -> new Suggestion(
+            c.getSimpleName(),
+            RuntimeJavadoc.getJavadoc(c)
+        ))
         .collect(Collectors.toSet());
   }
 

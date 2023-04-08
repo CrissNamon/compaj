@@ -133,8 +133,8 @@ public class EditorTab extends Tab {
     try {
       Object result = Compaj.getTranslator().evaluate(codeArea.getText());
       WhenConditional.create()
-              .when(Objects.nonNull(result)).then(() -> log(result.toString()))
-              .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
+          .when(Objects.nonNull(result)).then(() -> log(result.toString()))
+          .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
     } catch (Exception e) {
       logError(e.getMessage());
       e.printStackTrace();

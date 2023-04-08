@@ -22,7 +22,7 @@ public class SuggestCore {
   /**
    * Collects suggestions from all {@link Suggester}.
    *
-   * @param text Text to suggestions are for
+   * @param text     Text to suggestions are for
    * @param position Current caret position in text
    * @return {@link SuggestResult}
    */
@@ -32,7 +32,7 @@ public class SuggestCore {
     int lastSpace = preparedText.substring(0, newPosition).lastIndexOf(" ");
     String prefix = (lastSpace > -1 ? preparedText.substring(lastSpace + 1, newPosition)
         : preparedText).trim();
-    Set<String> suggestions = suggesters.stream()
+    Set<Suggestion> suggestions = suggesters.stream()
         .flatMap(suggester -> suggester.predict(preparedText, prefix, position).stream())
         .collect(Collectors.toSet());
     return new SuggestResult(suggestions, prefix);

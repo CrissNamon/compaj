@@ -25,7 +25,7 @@ public class AlertBuilder {
   /**
    * Creates new builder.
    *
-   * @param title Alert title
+   * @param title     Alert title
    * @param alertType {@link javafx.scene.control.Alert.AlertType}
    */
   public AlertBuilder(String title, Alert.AlertType alertType) {
@@ -68,7 +68,7 @@ public class AlertBuilder {
   /**
    * Adds button to alert.
    *
-   * @param name Button name
+   * @param name       Button name
    * @param buttonData {@link javafx.scene.control.ButtonBar.ButtonData}.
    * @return {@link AlertBuilder}
    */

@@ -9,6 +9,9 @@ import tech.hiddenproject.compaj.plugin.api.CompaJPlugin;
 import tech.hiddenproject.compaj.plugin.api.event.CompaJEvent;
 import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 
+/**
+ * Plugin for code completion settings.
+ */
 public class AutoCompletePlugin implements CompaJPlugin {
 
   public AutoCompletePlugin() {

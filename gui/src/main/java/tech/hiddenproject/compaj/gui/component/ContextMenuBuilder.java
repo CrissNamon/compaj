@@ -31,7 +31,7 @@ public class ContextMenuBuilder {
   /**
    * Adds new {@link MenuItem} to menu.
    *
-   * @param name Item name
+   * @param name  Item name
    * @param event {@link Consumer} for {@link MenuItem}
    * @return {@link ContextMenuBuilder}
    */
