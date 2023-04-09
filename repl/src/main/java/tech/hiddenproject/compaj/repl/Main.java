@@ -33,7 +33,7 @@ public class Main {
     processFileInputArg();
     processInputStringArg();
     CompaJ.out.println("Welcome to CompaJ REPL!");
-    CompaJ.out.println("Version 0.0.3.1");
+    CompaJ.out.println("Version 0.0.4");
     processInput();
   }
 
