@@ -57,4 +57,11 @@ public class Suggestion {
   public int hashCode() {
     return Objects.hash(suggestionText, javadoc);
   }
+
+  @Override
+  public String toString() {
+    return "Suggestion{" +
+        "suggestionText='" + suggestionText + '\'' +
+        '}';
+  }
 }

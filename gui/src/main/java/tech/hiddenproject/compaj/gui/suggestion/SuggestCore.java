@@ -31,11 +31,13 @@ public class SuggestCore {
    */
   public SuggestResult predict(String text, int position, int paragraphEnd) {
     String paragraph = text.substring(position - paragraphEnd, position)
-        .replace("[.,()\t;=]", " ");
+        .replaceAll("[,\t;=]", " ").replaceAll("\\(.*?\\)(?!\")", "");
     int lastSpace = Math.max(paragraph.lastIndexOf(" "), 0);
     String prefix = paragraph.substring(lastSpace).trim();
+    String preparedText = text.replaceAll("\\s", " ")
+        .replaceAll("\\(.*?\\)(?!\")", "");
     Set<Suggestion> suggestions = suggesters.stream()
-        .flatMap(suggester -> suggester.predict(text, prefix, position).stream())
+        .flatMap(suggester -> suggester.predict(preparedText, prefix, position).stream())
         .collect(Collectors.toSet());
     return new SuggestResult(suggestions, text);
   }

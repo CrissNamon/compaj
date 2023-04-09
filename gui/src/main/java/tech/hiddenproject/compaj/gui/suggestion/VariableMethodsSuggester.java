@@ -96,13 +96,7 @@ public class VariableMethodsSuggester implements Suggester {
     if (prefix.contains(".")) {
       return suggest(prefix + " ");
     }
-    return classMap.keySet().stream()
-        .filter(aClass -> aClass.startsWith(prefix))
-        .map(aClass -> new Suggestion(
-            aClass,
-            RuntimeJavadoc.getJavadoc(classMap.get(aClass))
-        ))
-        .collect(Collectors.toSet());
+    return new HashSet<>();
   }
 
   private Set<Suggestion> suggest(String input) {

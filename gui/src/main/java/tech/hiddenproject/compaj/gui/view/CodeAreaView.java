@@ -23,6 +23,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
 import org.reactfx.util.Try;
+import org.slf4j.LoggerFactory;
 import tech.hiddenproject.aide.optional.IfTrueConditional;
 import tech.hiddenproject.compaj.gui.app.AppPreference;
 import tech.hiddenproject.compaj.gui.component.SuggestContextMenu;

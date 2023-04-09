@@ -1,18 +1,16 @@
 package tech.hiddenproject.compaj.plugin.api.event;
 
 /**
- * Frame rate type defines strategy of game scripts notification about update.
+ * Defines how events will be sent to listeners.
  */
 public enum PublisherType {
   /**
-   * All scripts will be notified in sequence they were subscribed.
+   * All listeners will be notified in sequence they were subscribed.
    */
   SEQUENCE,
 
   /**
-   * Try to notify scripts using parallel unordered streams.
-   *
-   * <p>Possibly can be faster if you have many scripts with "heavy" logic
+   * Try to notify listeners using parallel unordered streams.
    */
   PARALLEL
 }
