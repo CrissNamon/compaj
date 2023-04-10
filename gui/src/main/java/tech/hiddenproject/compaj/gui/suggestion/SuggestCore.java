@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.LoggerFactory;
-
 /**
  * Creates suggestions for given text.
  */
@@ -30,16 +28,28 @@ public class SuggestCore {
    * @return {@link SuggestResult}
    */
   public SuggestResult predict(String text, int position, int paragraphEnd) {
-    String paragraph = text.substring(position - paragraphEnd, position)
-        .replaceAll("[,\t;=]", " ").replaceAll("\\(.*?\\)(?!\")", "");
-    int lastSpace = Math.max(paragraph.lastIndexOf(" "), 0);
-    String prefix = paragraph.substring(lastSpace).trim();
-    String preparedText = text.replaceAll("\\s", " ")
-        .replaceAll("\\(.*?\\)(?!\")", "");
+    String paragraph = getParagraph(text, position, paragraphEnd);
+    String prefix = getPrefix(paragraph);
+    String preparedText = prepareText(text);
+    CodeAnalyzer codeAnalyzer = CodeAnalyzer.create(preparedText);
     Set<Suggestion> suggestions = suggesters.stream()
-        .flatMap(suggester -> suggester.predict(preparedText, prefix, position).stream())
+        .flatMap(suggester -> suggester.predict(codeAnalyzer, prefix).stream())
         .collect(Collectors.toSet());
     return new SuggestResult(suggestions, text);
+  }
+
+  private String getParagraph(String text, int position, int paragraphEnd) {
+    return text.substring(Math.max(position - paragraphEnd, 0), position)
+        .replaceAll("[,\t;=]", " ").replaceAll("\\(.*?\\)(?!\")", "");
+  }
+
+  private String getPrefix(String paragraph) {
+    int lastSpace = Math.max(paragraph.lastIndexOf(" "), 0);
+    return paragraph.substring(lastSpace).trim();
+  }
+
+  private String prepareText(String text) {
+    return text.replaceAll("\\s", " ").replaceAll("\\(.*?\\)(?!\")", "");
   }
 
 }

@@ -1,11 +1,17 @@
 package tech.hiddenproject.compaj.gui.suggestion;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.FieldJavadoc;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
+import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 
+/**
+ * Represents suggestion for code completion.
+ */
 public class Suggestion {
 
   private final String suggestionText;
@@ -16,21 +22,24 @@ public class Suggestion {
     this.javadoc = "";
   }
 
-  public Suggestion(String suggestionText, MethodJavadoc javadoc) {
-    this.suggestionText = suggestionText;
-    this.javadoc = javadoc.getComment() + "\n" + javadoc.getParams().stream()
+  public Suggestion(Method method) {
+    this.suggestionText = CodeAnalyzer.createMethodName(method);
+    MethodJavadoc methodJavadoc = RuntimeJavadoc.getJavadoc(method);
+    this.javadoc = methodJavadoc.getComment() + "\n" + methodJavadoc.getParams().stream()
         .map(paramJavadoc -> paramJavadoc.getName() + ": " + paramJavadoc.getComment())
         .reduce("", (s1, s2) -> s1 + s2);
   }
 
-  public Suggestion(String suggestionText, FieldJavadoc javadoc) {
-    this.suggestionText = suggestionText;
-    this.javadoc = javadoc.getComment().toString();
+  public Suggestion(Field field) {
+    this.suggestionText = field.getName();
+    FieldJavadoc fieldJavadoc = RuntimeJavadoc.getJavadoc(field);
+    this.javadoc = fieldJavadoc.getComment().toString();
   }
 
-  public Suggestion(String suggestionText, ClassJavadoc javadoc) {
-    this.suggestionText = suggestionText;
-    this.javadoc = javadoc.getComment().toString();
+  public Suggestion(Class<?> c) {
+    this.suggestionText = c.getSimpleName();
+    ClassJavadoc classJavadoc = RuntimeJavadoc.getJavadoc(c);
+    this.javadoc = classJavadoc.getComment().toString();
   }
 
   public String getSuggestion() {
