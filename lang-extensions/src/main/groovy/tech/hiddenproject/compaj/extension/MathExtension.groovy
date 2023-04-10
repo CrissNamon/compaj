@@ -1,5 +1,6 @@
 package tech.hiddenproject.compaj.extension
 
+import org.apache.commons.math3.complex.Complex
 import tech.hiddenproject.compaj.lang.extension.Extension
 
 import java.lang.reflect.Method
@@ -28,7 +29,7 @@ class MathExtension implements Extension {
 
     private void addMathConstants(Script instance) {
         instance.metaClass.'$pi' = Math.PI
-        instance.metaClass.'$i' = new CompaJComplex(0, 1)
+        instance.metaClass.'$i' = new Complex(0, 1)
         instance.metaClass.'$e' = Math.E
     }
 

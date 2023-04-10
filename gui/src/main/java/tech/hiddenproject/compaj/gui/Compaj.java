@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import tech.hiddenproject.compaj.extension.AgentExtension;
 import tech.hiddenproject.compaj.extension.ArrayRealVectorExtension;
 import tech.hiddenproject.compaj.extension.CompaJComplex;
-import tech.hiddenproject.compaj.extension.ComplexExtension;
 import tech.hiddenproject.compaj.extension.MathExtension;
 import tech.hiddenproject.compaj.extension.ModelExtension;
 import tech.hiddenproject.compaj.extension.NamedFunctionExtension;
@@ -147,7 +146,6 @@ public class Compaj {
     CompaJScriptBase.addExtension(new ArrayRealVectorExtension());
     CompaJScriptBase.addExtension(new ModelExtension());
     CompaJScriptBase.addExtension(new NamedFunctionExtension());
-    CompaJScriptBase.addExtension(new ComplexExtension());
     CompaJScriptBase.addExtension(new AgentExtension());
   }
 

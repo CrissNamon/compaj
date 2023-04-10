@@ -45,6 +45,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
     codeTranslations.add(this::translateNewObjects);
     codeTranslations.add(this::translateLocalMetaClassMethod);
     codeTranslations.add(this::translateDoubleSuffix);
+    codeTranslations.add(this::translateMulNumberOnComplex);
     codeTranslations.add(this::translateExtendWithNewMethod);
     codeTranslations.add(this::translateEraseTypes);
   }
@@ -123,6 +124,20 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
     return codeBlocks.stream().anyMatch(s -> start >= s.getStart() && end <= s.getEnd());
   }
 
+  private String translateMulNumberOnComplex(String script) {
+    Pattern p = Pattern.compile("(\\d+[.]*\\d*d*)\\$i");
+    Matcher m = p.matcher(script);
+    StringBuilder sb = new StringBuilder();
+    while (m.find()) {
+      if (!isLexemeInString(m.start(), m.end())) {
+        String num = "\\$i\\*" + m.group(1);
+        m.appendReplacement(sb, num);
+      }
+    }
+    m.appendTail(sb);
+    return sb.toString();
+  }
+
   private String translateDoubleSuffix(String script) {
     Pattern p = Pattern.compile("\\b(?<!\\!)(\\d++(?:\\.\\d+)++)(?!\\w+)");
     Matcher m = p.matcher(script);
@@ -134,8 +149,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
       }
     }
     m.appendTail(sb);
-    script = sb.toString();
-    return script;
+    return sb.toString();
   }
 
   private String translateNewObjects(String script) {
@@ -156,8 +170,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
   }
 
   private String translateRemoveComments(String script) {
-    script = script.replaceAll("\\/\\*[\\s\\S]*\\*\\/", "");
-    return script;
+    return script.replaceAll("\\/\\*[\\s\\S]*\\*\\/", "");
   }
 
   private boolean checkExplicitMetaClassChanges(String script) {
@@ -235,8 +248,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
                 + "\n");
       }
     }
-    script = scriptBuilder.toString();
-    return script;
+    return scriptBuilder.toString();
   }
 
   private int findCodeBlockEnd(int start, String script) {
@@ -297,8 +309,7 @@ public final class GroovyTranslatorUtils implements TranslatorUtils {
         extenders.entrySet()) {
       overriders.append(entry.getValue().constructClass());
     }
-    script = overriders + script.replaceAll("(?m)^[ \\t]*\\r?\\n", "");
-    return script;
+    return overriders + script.replaceAll("(?m)^[ \\t]*\\r?\\n", "");
   }
 
   private String translateEraseTypes(String script) {
