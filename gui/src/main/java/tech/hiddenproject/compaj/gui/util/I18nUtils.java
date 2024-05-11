@@ -14,6 +14,8 @@ public class I18nUtils {
   private static final ResourceBundle.Control FALLBACK =
       ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
   private static final String RESOURCE_NAME = "lang";
+  private static final String ALERT_INFO = "alert.info";
+  private static final String MENU_SETTINGS_LAND_CHANGE = "menu.settings.lang.change";
   private static Locale currentLocale;
   private static ResourceBundle currentBundle;
 
@@ -29,8 +31,8 @@ public class I18nUtils {
     currentLocale = locale;
     loadBundle();
     clearCache();
-    new AlertBuilder(I18nUtils.get("alert.info"), Alert.AlertType.INFORMATION)
-        .content(I18nUtils.get("menu.settings.lang.change"))
+    new AlertBuilder(I18nUtils.get(ALERT_INFO), Alert.AlertType.INFORMATION)
+        .content(I18nUtils.get(MENU_SETTINGS_LAND_CHANGE))
         .build()
         .show();
   }

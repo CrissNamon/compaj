@@ -19,6 +19,8 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 public class EpidemicModelPlugin implements CompaJPlugin {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EpidemicModelPlugin.class);
+  private static final String MENU_SIMPLE_MODELS = "menu.simple_models";
+  private static final String MENU_SIMPLE_MODELS_EPIDEMIC = "menu.simple_models.epidemic";
 
   public EpidemicModelPlugin() {
     LOGGER.info("Loading: {}", getClass().getName());
@@ -33,10 +35,10 @@ public class EpidemicModelPlugin implements CompaJPlugin {
     sisModel.setOnAction(actionEvent -> Compaj.addWorkSpaceWidget(new SISModelWidget()));
 
     MenuItem seirModel = new MenuItem("SEIR");
-    Menu infectModels = new Menu(I18nUtils.get("menu.simple_models.epidemic"));
+    Menu infectModels = new Menu(I18nUtils.get(MENU_SIMPLE_MODELS_EPIDEMIC));
 
     infectModels.getItems().addAll(sirModel, sisModel, seirModel);
-    Menu modelsMenu = new Menu(I18nUtils.get("menu.simple_models"));
+    Menu modelsMenu = new Menu(I18nUtils.get(MENU_SIMPLE_MODELS));
     modelsMenu.getItems().add(infectModels);
 
     EventPublisher.INSTANCE.sendTo(UiMenuEvent.ADD_ROOT(modelsMenu));

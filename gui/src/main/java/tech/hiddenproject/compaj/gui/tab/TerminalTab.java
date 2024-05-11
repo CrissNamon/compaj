@@ -10,13 +10,16 @@ import tech.hiddenproject.compaj.gui.view.VariablesTableView;
 
 public class TerminalTab extends CloseConfirmationTab {
 
+  private static final String TAB_TERMINAL_TITLE = "tab.terminal.title";
+  private static final String TAB_TERMINAL_REPL_CLEAR = "tab.terminal.repl.clear";
+
   private final ReplView replView;
 
   public TerminalTab() {
-    super(I18nUtils.get("tab.terminal.title"));
+    super(I18nUtils.get(TAB_TERMINAL_TITLE));
     setClosable(false);
 
-    Button clear = new Button(I18nUtils.get("tab.terminal.repl.clear"));
+    Button clear = new Button(I18nUtils.get(TAB_TERMINAL_REPL_CLEAR));
     clear.setOnAction(actionEvent -> clear());
     ToolBar toolBar = new ToolBar();
     toolBar.getItems().add(clear);

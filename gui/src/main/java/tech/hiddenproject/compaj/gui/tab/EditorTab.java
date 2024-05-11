@@ -34,6 +34,9 @@ public class EditorTab extends Tab {
 
   private static final String LOG_INFO_PREFIX = "[INFO]";
   private static final String LOG_ERROR_PREFIX = "[ERROR]";
+  private static final String TAB_EDITOR_CONSOLE_TITLE = "tab.editor.console.title";
+  private static final String TAB_EDITOR_CONSOLE_COMPILATION = "tab.editor.console.compilation";
+  private static final String TAB_EDITOR_CONSOLE_COMPILATION_OK = "tab.editor.console.compilation.ok";
 
   private final CodeAreaView codeArea;
   private final TextArea consoleText;
@@ -61,7 +64,7 @@ public class EditorTab extends Tab {
     codeArea = new CodeAreaView();
     VBox.setVgrow(codeArea, Priority.ALWAYS);
     consoleText = new TextArea();
-    console = new TitledPane(I18nUtils.get("tab.editor.console.title"), consoleText);
+    console = new TitledPane(I18nUtils.get(TAB_EDITOR_CONSOLE_TITLE), consoleText);
     console.setAnimated(false);
     console.setExpanded(false);
     consoleText.setEditable(false);
@@ -128,12 +131,12 @@ public class EditorTab extends Tab {
   private void runFileAction(Event event) {
     consoleText.clear();
     console.setExpanded(true);
-    logInfo(I18nUtils.get("tab.editor.console.compilation") + " " + getText());
+    logInfo(I18nUtils.get(TAB_EDITOR_CONSOLE_COMPILATION) + " " + getText());
     try {
       Object result = Compaj.getInstance().getTranslator().evaluate(codeArea.getText());
       WhenConditional.create()
           .when(Objects.nonNull(result)).then(() -> log(result.toString()))
-          .orFinally(() -> logInfo(I18nUtils.get("tab.editor.console.compilation.ok")));
+          .orFinally(() -> logInfo(I18nUtils.get(TAB_EDITOR_CONSOLE_COMPILATION_OK)));
     } catch (Exception e) {
       logError(e.getMessage());
       e.printStackTrace();

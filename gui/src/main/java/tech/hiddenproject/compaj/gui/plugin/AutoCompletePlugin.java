@@ -13,6 +13,9 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
  * Plugin for code completion settings.
  */
 public class AutoCompletePlugin implements CompaJPlugin {
+  private static final String MENU_SETTINGS_EDITOR = "menu.settings.editor";
+  private static final String MENU_SETTINGS_EDITOR_DISABLE = "menu.settings.editor.autocomplete.disable";
+  private static final String MENU_SETTINGS_EDITOR_ENABLE = "menu.settings.editor.autocomplete.enable";
 
   public AutoCompletePlugin() {
     EventPublisher.INSTANCE.subscribeOn(UiMenuEvent.STARTUP_NAME, this::addSettingsOnStartup);
@@ -27,16 +30,16 @@ public class AutoCompletePlugin implements CompaJPlugin {
       updateCodeCompletionStateText(!isEnabled, codeCompletion);
       AppPreference.CODE_AUTOCOMPLETE.update(!isEnabled);
     });
-    UiChildPayload autoCompleteSettings = new UiChildPayload("menu.settings.editor",
+    UiChildPayload autoCompleteSettings = new UiChildPayload(MENU_SETTINGS_EDITOR,
                                                              codeCompletion);
     EventPublisher.INSTANCE.sendTo(UiMenuEvent.ADD_CHILD(autoCompleteSettings));
   }
 
   private void updateCodeCompletionStateText(Boolean isEnabled, MenuItem menuItem) {
     if (isEnabled) {
-      menuItem.setText(I18nUtils.get("menu.settings.editor.autocomplete.disable"));
+      menuItem.setText(I18nUtils.get(MENU_SETTINGS_EDITOR_DISABLE));
     } else {
-      menuItem.setText(I18nUtils.get("menu.settings.editor.autocomplete.enable"));
+      menuItem.setText(I18nUtils.get(MENU_SETTINGS_EDITOR_ENABLE));
     }
   }
 

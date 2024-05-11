@@ -14,9 +14,10 @@ public class WorkSpaceTab extends CloseConfirmationTab {
 
   private final WidgetTreeView widgetTreeView;
   private final ScrollPane widgetPane;
+  private static final String TAB_WORKSPACE_TITLE = "tab.workspace.title";
 
   public WorkSpaceTab() {
-    super(I18nUtils.get("tab.workspace.title"));
+    super(I18nUtils.get(TAB_WORKSPACE_TITLE));
     setClosable(false);
 
     widgetPane = new ScrollPane();

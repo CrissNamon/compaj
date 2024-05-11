@@ -10,6 +10,12 @@ import tech.hiddenproject.compaj.gui.util.I18nUtils;
  */
 public class AlertBuilder {
 
+  private static final String ALERT_CONFIRM = "alert.confirm";
+  private static final String ALERT_UNSAVED_HEADER = "alert.unsaved.header";
+  private static final String ALERT_UNSAVED_CONTENT = "alert.unsaved.content";
+  private static final String ALERT_CANCEL = "alert.cancel";
+  private static final String ALERT_OK = "alert.ok";
+
   private final Alert alert;
 
   /**
@@ -96,12 +102,12 @@ public class AlertBuilder {
      * {@link Alert} to confirm close.
      */
     public static final Alert CLOSE_CONFIRMATION =
-        new AlertBuilder(I18nUtils.get("alert.confirm"), Alert.AlertType.CONFIRMATION)
-            .header(I18nUtils.get("alert.unsaved.header"))
-            .content(I18nUtils.get("alert.unsaved.content"))
+        new AlertBuilder(I18nUtils.get(ALERT_CONFIRM), Alert.AlertType.CONFIRMATION)
+            .header(I18nUtils.get(ALERT_UNSAVED_HEADER))
+            .content(I18nUtils.get(ALERT_UNSAVED_CONTENT))
             .clearButtonTypes()
-            .button(I18nUtils.get("alert.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE)
-            .button(I18nUtils.get("alert.ok"), ButtonBar.ButtonData.OK_DONE)
+            .button(I18nUtils.get(ALERT_CANCEL), ButtonBar.ButtonData.CANCEL_CLOSE)
+            .button(I18nUtils.get(ALERT_OK), ButtonBar.ButtonData.OK_DONE)
             .build();
 
   }

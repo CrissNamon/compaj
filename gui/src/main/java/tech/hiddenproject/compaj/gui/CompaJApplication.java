@@ -29,23 +29,30 @@ public class CompaJApplication extends Application {
     Application.launch(args);
   }
 
+  private static final String TAB_EDITOR_TITLE = "tab.editor.title";
+  private static final String TAB_TERMINAL_TITLE = "tab.terminal.title";
+  private static final String TAB_WORKSPACE_TITLE = "tab.workspace.title";
+  private static final String MENU_VIEW = "menu.view";
+  private static final String MENU_HELP = "menu.help";
+  private static final String MENU_SETTINGS = "menu.settings";
+
   @Override
   public void start(Stage stage) {
     StageHolder stageHolder = StageHolder.createInstance(stage);
     MenuHolder menuHolder = MenuHolder.getInstance();
     stage.setTitle(AppSettings.APP_TITLE);
 
-    MenuItem editorItem = new MenuItem(I18nUtils.get("tab.editor.title"));
+    MenuItem editorItem = new MenuItem(I18nUtils.get(TAB_EDITOR_TITLE));
     editorItem.setOnAction(actionEvent -> stageHolder.getContent().getTabs().add(new EditorTab()));
-    Menu mainMenu = new Menu(I18nUtils.get("menu.view"));
+    Menu mainMenu = new Menu(I18nUtils.get(MENU_VIEW));
     mainMenu.getItems().addAll(editorItem);
 
-    Menu helpMenu = new Menu(I18nUtils.get("menu.help"));
-    Menu settingsMenu = new Menu(I18nUtils.get("menu.settings"));
+    Menu helpMenu = new Menu(I18nUtils.get(MENU_HELP));
+    Menu settingsMenu = new Menu(I18nUtils.get(MENU_SETTINGS));
 
-    Menu terminalSettingsMenu = new Menu(I18nUtils.get("tab.terminal.title"));
-    Menu editorSettingsMenu = new Menu(I18nUtils.get("tab.editor.title"));
-    Menu workSpaceSettingsMenu = new Menu(I18nUtils.get("tab.workspace.title"));
+    Menu terminalSettingsMenu = new Menu(I18nUtils.get(TAB_TERMINAL_TITLE));
+    Menu editorSettingsMenu = new Menu(I18nUtils.get(TAB_EDITOR_TITLE));
+    Menu workSpaceSettingsMenu = new Menu(I18nUtils.get(TAB_WORKSPACE_TITLE));
     settingsMenu.getItems().addAll(terminalSettingsMenu, editorSettingsMenu, workSpaceSettingsMenu);
 
     menuHolder.put("menu.help", helpMenu);

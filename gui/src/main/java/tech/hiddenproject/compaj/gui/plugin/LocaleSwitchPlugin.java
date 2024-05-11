@@ -19,6 +19,7 @@ import tech.hiddenproject.compaj.plugin.api.event.EventPublisher;
 public class LocaleSwitchPlugin implements CompaJPlugin {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocaleSwitchPlugin.class);
+  private static final String MENU_SETTINGS_LANG = "menu.settings.lang";
 
   public LocaleSwitchPlugin() {
     LOGGER.info("Loading: {}", getClass().getName());
@@ -30,7 +31,7 @@ public class LocaleSwitchPlugin implements CompaJPlugin {
     enLang.setOnAction(actionEvent -> I18nUtils.changeLang(Locale.US));
     MenuItem ruLang = new MenuItem("Русский");
     ruLang.setOnAction(actionEvent -> I18nUtils.changeLang(Locale.forLanguageTag("ru-RU")));
-    Menu languageMenu = new Menu(I18nUtils.get("menu.settings.lang"));
+    Menu languageMenu = new Menu(I18nUtils.get(MENU_SETTINGS_LANG));
     languageMenu.getItems().addAll(enLang, ruLang);
 
     UiChildPayload uiChildPayload = new UiChildPayload("menu.settings", languageMenu);
